@@ -1,0 +1,177 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Installation Instructions &#8212; because 0.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Quickstart Tutorial" href="quickstart.html" />
+    <link rel="prev" title="because" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="installation-instructions">
+<h1>Installation Instructions<a class="headerlink" href="#installation-instructions" title="Permalink to this headline">¶</a></h1>
+<p><code class="docutils literal"><span class="pre">because</span></code> is an ordinary Python package that can be installed with <code class="docutils literal"><span class="pre">pip</span></code>.
+But at least for now, <code class="docutils literal"><span class="pre">because</span></code> is in early stages and can only be installed
+from the <a class="reference external" href="https://github.com/harts-boundless/because">GitHub repository for because</a>, e.g.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">git</span><span class="o">+</span><span class="n">git</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">harts</span><span class="o">-</span><span class="n">boundless</span><span class="o">/</span><span class="n">because</span><span class="o">.</span><span class="n">git</span>
+</pre></div>
+</div>
+<p>Installation methods other than <code class="docutils literal"><span class="pre">pip</span></code> are not really recommended.</p>
+<div class="section" id="virtualenv">
+<h2>Virtualenv<a class="headerlink" href="#virtualenv" title="Permalink to this headline">¶</a></h2>
+<p>As with any other Python package, it is generally recommended to use
+<a class="reference external" href="https://virtualenv.pypa.io/en/stable/userguide/">virtualenv</a> to control
+Python dependencies, and always to avoid running <code class="docutils literal"><span class="pre">sudo</span> <span class="pre">pip</span></code> if you have any
+choice. (This is likely to dump files in your system installation of Python,
+and cause any number of confusing issues at unpredictable times.)</p>
+<p>If you would like to make it slightly easier to work with virtualenv, you may
+want to try <a class="reference external" href="https://pypi.python.org/pypi/vex">vex</a>.</p>
+<p>There is also of course no reason why you could not install the package in a
+container or a VM if you wanted to, it&#8217;s just a bit of a heavyweight solution
+if all you are doing is writing some Python.</p>
+</div>
+<div class="section" id="diagnosing-problems">
+<h2>Diagnosing Problems<a class="headerlink" href="#diagnosing-problems" title="Permalink to this headline">¶</a></h2>
+<p>Once the package is installed, you should immediately be able to import it in
+the normal way, e.g. from a Python shell:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">because</span>
+</pre></div>
+</div>
+<p>Or from the command line, this should run without error:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="o">-</span><span class="n">c</span> <span class="s2">&quot;import because&quot;</span>
+</pre></div>
+</div>
+<p>If <code class="docutils literal"><span class="pre">because</span></code> is not installed in the Python you are using, it would be normal
+to see the following traceback:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
+  <span class="n">File</span> <span class="s2">&quot;&lt;string&gt;&quot;</span><span class="p">,</span> <span class="n">line</span> <span class="mi">1</span><span class="p">,</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+<span class="ne">ImportError</span><span class="p">:</span> <span class="n">No</span> <span class="n">module</span> <span class="n">named</span> <span class="n">because</span>
+</pre></div>
+</div>
+<p>If these commands produce this error, it means that the <code class="docutils literal"><span class="pre">python</span></code> command you
+are running cannot find the installed package.</p>
+<p>This may mean that you did not install the package, that it was deleted, that
+you installed it in a different virtualenv, that you installed it on the system
+and are running Python in a virtualenv (or vice versa), or that you have not
+activated the virtualenv where you installed it.</p>
+<p>In case of such problems, there are several diagnostics you can try from the
+shell (terminal window).</p>
+<p>You may want to see which packages are installed in the current Python
+environment using:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">freeze</span>
+</pre></div>
+</div>
+<p>If you can&#8217;t find a package you expect to be there, you may want to examine the
+list of paths that Python checks for packages using:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span>python -c `import sys; print(sys.path)`
+</pre></div>
+</div>
+<p>You may want to know which python binary is running, use:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">which</span> <span class="n">python</span>
+</pre></div>
+</div>
+<p>Sometimes problems are caused when you aren&#8217;t sure which program is running
+when you run <code class="docutils literal"><span class="pre">pip</span></code> - for example, if you have <code class="docutils literal"><span class="pre">pip</span></code> installed for Python 2
+but you are running Python 3. A starting point to identify this problem is:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">which</span> <span class="n">pip</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Installation Instructions</a><ul>
+<li><a class="reference internal" href="#virtualenv">Virtualenv</a></li>
+<li><a class="reference internal" href="#diagnosing-problems">Diagnosing Problems</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">because</a></li>
+      <li>Next: <a href="quickstart.html" title="next chapter">Quickstart Tutorial</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/installation.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Boundless.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+      |
+      <a href="_sources/installation.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
