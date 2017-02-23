@@ -1,0 +1,26 @@
+=========
+Geocoding
+=========
+
+What is it?
+-----------
+
+The Boundless geocoding service lets you find latitude/longitude coordinates
+which correspond to textual descriptions like mailing addresses.
+
+It is often the case that there are multiple matches. The service will present
+all these matches to you, along with an estimate of how relevant each one might
+be, so that you can decide for yourself what to do with the ambiguity.
+
+There may be minor variations in what data you obtain from different backends.
+
+The actual data may come from sources outside Boundless, like Mapbox, Mapzen,
+or a locally hosted instance of Valhalla.
+
+
+How can I use it?
+-----------------
+
+TODO
+
+

@@ -1,0 +1,64 @@
+.. because documentation master file, created by
+   sphinx-quickstart on Thu Feb 23 10:56:13 2017.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+because
+=======
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Contents:
+
+   installation
+   quickstart
+   routing
+   geocoding
+   reverse_geocoding
+   basemaps
+
+..
+    models
+    services
+    qgis
+    qt
+
+
+``because`` is a library for consuming Boundless HTTP services including 
+:doc:`routing <routing>`,
+:doc:`geocoding <geocoding>`,
+:doc:`reverse geocoding <reverse_geocoding>`,
+and :doc:`basemaps <basemaps>`.
+``because`` wraps these services in high-level interfaces that abstract
+away many of the ugly details, so GIS professionals and programmers can get
+started quickly and focus on how they want to use the data.
+
+If you want to dive right in, feel free to check out the 
+:doc:`Installation Instructions <installation>` 
+and :doc:`Quickstart Tutorial <quickstart>`.
+
+Several interfaces are provided, each tailored to a different environment. For
+example, one interface is tailored for use in most ordinary Python programs and
+adheres to PEP 8, but there is also an interface tailored for use from QGIS
+plugins or other Qt programs which expect to use camelCase,
+QNetworkAccessManager, QObjects and signals. 
+
+The library provides a "layered API": the core, lower-level components used to
+make the high-level interfaces are also exposed, for reuse in cases where the
+provided interfaces do not suit your needs. For example, if you just want to
+know how to parse responses from the routing API, you can just use the part
+you need.
+
+.. note::
+
+    To use Boundless services you will need authentication credentials.
+    You can sign up at `Boundless Connect
+    <https://connect.boundlessgeo.com/>`_.
+
+
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`

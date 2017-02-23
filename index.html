@@ -1,0 +1,169 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>because &#8212; because 0.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Installation Instructions" href="installation.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="because">
+<h1>because<a class="headerlink" href="#because" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation Instructions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#virtualenv">Virtualenv</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#diagnosing-problems">Diagnosing Problems</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quickstart Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="routing.html">Routing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="routing.html#what-is-it">What is it?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="routing.html#how-can-i-use-it">How can I use it?</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="geocoding.html">Geocoding</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="geocoding.html#what-is-it">What is it?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geocoding.html#how-can-i-use-it">How can I use it?</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="reverse_geocoding.html">Reverse Geocoding</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="reverse_geocoding.html#what-is-it">What is it?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="reverse_geocoding.html#how-can-i-use-it">How can I use it?</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="basemaps.html">Basemaps</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="basemaps.html#what-s-this">What&#8217;s this?</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<p><code class="docutils literal"><span class="pre">because</span></code> is a library for consuming Boundless HTTP services including
+<a class="reference internal" href="routing.html"><span class="doc">routing</span></a>,
+<a class="reference internal" href="geocoding.html"><span class="doc">geocoding</span></a>,
+<a class="reference internal" href="reverse_geocoding.html"><span class="doc">reverse geocoding</span></a>,
+and <a class="reference internal" href="basemaps.html"><span class="doc">basemaps</span></a>.
+<code class="docutils literal"><span class="pre">because</span></code> wraps these services in high-level interfaces that abstract
+away many of the ugly details, so GIS professionals and programmers can get
+started quickly and focus on how they want to use the data.</p>
+<p>If you want to dive right in, feel free to check out the
+<a class="reference internal" href="installation.html"><span class="doc">Installation Instructions</span></a>
+and <a class="reference internal" href="quickstart.html"><span class="doc">Quickstart Tutorial</span></a>.</p>
+<p>Several interfaces are provided, each tailored to a different environment. For
+example, one interface is tailored for use in most ordinary Python programs and
+adheres to PEP 8, but there is also an interface tailored for use from QGIS
+plugins or other Qt programs which expect to use camelCase,
+QNetworkAccessManager, QObjects and signals.</p>
+<p>The library provides a &#8220;layered API&#8221;: the core, lower-level components used to
+make the high-level interfaces are also exposed, for reuse in cases where the
+provided interfaces do not suit your needs. For example, if you just want to
+know how to parse responses from the routing API, you can just use the part
+you need.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">To use Boundless services you will need authentication credentials.
+You can sign up at <a class="reference external" href="https://connect.boundlessgeo.com/">Boundless Connect</a>.</p>
+</div>
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></li>
+<li><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></li>
+<li><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></li>
+</ul>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="#">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">because</a></li>
+<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="#">Documentation overview</a><ul>
+      <li>Next: <a href="installation.html" title="next chapter">Installation Instructions</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/index.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Boundless.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+      |
+      <a href="_sources/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

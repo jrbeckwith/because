@@ -1,0 +1,6 @@
+recursive-include docs *
+
+include LICENSE.rst
+include README.rst
+
+prune examples/
