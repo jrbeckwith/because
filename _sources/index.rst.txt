@@ -39,9 +39,9 @@ you need.
 
 
 .. toctree::
+   :hidden:
    :maxdepth: 2
    :caption: Contents:
-   :hidden:
 
    installation
    quickstart
