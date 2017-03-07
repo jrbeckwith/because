@@ -1,0 +1,147 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>because.interfaces.python.transfer module &#8212; because 0.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="because.interfaces.qgis package" href="because.interfaces.qgis.html" />
+    <link rel="prev" title="because.interfaces.python.ssl module" href="because.interfaces.python.ssl.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-because.interfaces.python.transfer">
+<span id="because-interfaces-python-transfer-module"></span><h1>because.interfaces.python.transfer module<a class="headerlink" href="#module-because.interfaces.python.transfer" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="because.interfaces.python.transfer.Transfer">
+<em class="property">class </em><code class="descclassname">because.interfaces.python.transfer.</code><code class="descname">Transfer</code><span class="sig-paren">(</span><em>request</em>, <em>ssl_config=None</em>, <em>log=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/interfaces/python/transfer.html#Transfer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.interfaces.python.transfer.Transfer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<p>This implementation always blocks in start().</p>
+<dl class="method">
+<dt id="because.interfaces.python.transfer.Transfer.close">
+<code class="descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/interfaces/python/transfer.html#Transfer.close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.interfaces.python.transfer.Transfer.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Abort the transfer.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="because.interfaces.python.transfer.Transfer.log">
+<code class="descname">log</code><em class="property"> = &lt;logging.Logger object&gt;</em><a class="headerlink" href="#because.interfaces.python.transfer.Transfer.log" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="because.interfaces.python.transfer.Transfer.start">
+<code class="descname">start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/interfaces/python/transfer.html#Transfer.start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.interfaces.python.transfer.Transfer.start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Begin the transfer.</p>
+<p>This method allows execution of a transfer to be deferred after its
+construction.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="because.interfaces.python.transfer.Transfer.wait">
+<code class="descname">wait</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/interfaces/python/transfer.html#Transfer.wait"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.interfaces.python.transfer.Transfer.wait" title="Permalink to this definition">¶</a></dt>
+<dd><p>Block until transfer is finished, then return a Response.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="because.interfaces.python.transfer.TransferError">
+<em class="property">exception </em><code class="descclassname">because.interfaces.python.transfer.</code><code class="descname">TransferError</code><span class="sig-paren">(</span><em>text</em>, <em>code=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/interfaces/python/transfer.html#TransferError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.interfaces.python.transfer.TransferError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">Exception</span></code></p>
+<p>Represents an error which happened while trying to execute a transfer.</p>
+<p>This does not represent HTTP errors, which are successful transfers.</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="because.html">Because API Reference</a><ul>
+  <li><a href="because.interfaces.html">because.interfaces package</a><ul>
+  <li><a href="because.interfaces.python.html">because.interfaces.python package</a><ul>
+      <li>Previous: <a href="because.interfaces.python.ssl.html" title="previous chapter">because.interfaces.python.ssl module</a></li>
+      <li>Next: <a href="because.interfaces.qgis.html" title="next chapter">because.interfaces.qgis package</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/reference/because.interfaces.python.transfer.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Boundless.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+      |
+      <a href="../_sources/reference/because.interfaces.python.transfer.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,160 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>because.client.transfer &#8212; because 0.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for because.client.transfer</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span> <span class="k">as</span> <span class="n">Datetime</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="n">response</span> <span class="kn">import</span> <span class="nn">Response</span>
+
+<span class="n">LOG</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+
+
+
+<div class="viewcode-block" id="TransferError"><a class="viewcode-back" href="../../../reference/because.client.transfer.html#because.client.transfer.TransferError">[docs]</a><span class="k">class</span> <span class="nc">TransferError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Represents error descriptions encoded as QNetworkReply::NetworkError.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># TODO: why not HTTP also? As long as the two aren&#39;t confused, that is.</span>
+    <span class="c1"># I suppose the HTTP one is a property of the response instead.</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">code</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">text</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">code</span> <span class="o">=</span> <span class="n">code</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">TransferError</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">text</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Transfer"><a class="viewcode-back" href="../../../reference/because.client.transfer.html#because.client.transfer.Transfer">[docs]</a><span class="k">class</span> <span class="nc">Transfer</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Hold per-request state for one ongoing HTTP request cycle.</span>
+
+<span class="sd">    This can play a role like a future or promise in implementations that</span>
+<span class="sd">    support asynchronous network I/O.</span>
+
+<span class="sd">    This can also be used as a device for bundling up multiple descriptions of</span>
+<span class="sd">    a transfer&#39;s state to be handled by e.g. one callback, instead of requiring</span>
+<span class="sd">    many separate callbacks to handle many different state notifications.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># n.b.: can&#39;t define signals here since this is not a QObject. The</span>
+    <span class="c1"># workaround would be to have this instantiate a QObject subclass that</span>
+    <span class="c1"># defines your signals. But the QNetworkReply already defines all the</span>
+    <span class="c1"># signals we need here.</span>
+
+    <span class="c1">#: Default logger to use if no logger was passed.</span>
+    <span class="n">log</span> <span class="o">=</span> <span class="n">LOG</span><span class="o">.</span><span class="n">getChild</span><span class="p">(</span><span class="s2">&quot;Transfer&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">ssl_config</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :arg request:</span>
+<span class="sd">            Request object describing the HTTP request to be performed.</span>
+<span class="sd">        :arg log:</span>
+<span class="sd">            logger instance to use for logging messages.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Store passed parameters</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">request</span> <span class="o">=</span> <span class="n">request</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ssl_config</span> <span class="o">=</span> <span class="n">ssl_config</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">=</span> <span class="n">log</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">log</span>
+
+        <span class="c1"># Initialize internal state</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">response</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="Transfer.start"><a class="viewcode-back" href="../../../reference/because.client.transfer.html#because.client.transfer.Transfer.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Begin the transfer.</span>
+
+<span class="sd">        This method allows execution of a transfer to be deferred after its</span>
+<span class="sd">        construction, which couldn&#39;t be done if __init__ started it.</span>
+<span class="sd">        &quot;&quot;&quot;</span></div>
+
+<div class="viewcode-block" id="Transfer.wait"><a class="viewcode-back" href="../../../reference/because.client.transfer.html#because.client.transfer.Transfer.wait">[docs]</a>    <span class="k">def</span> <span class="nf">wait</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Block until the transfer is finished, then return a Response.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Transfer.close"><a class="viewcode-back" href="../../../reference/because.client.transfer.html#because.client.transfer.Transfer.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Abort the transfer, if possible.</span>
+
+<span class="sd">        If aborting is not possible, then flail your arms like a windmill and</span>
+<span class="sd">        announce your intent to ignore any response becuase it&#39;s too late now,</span>
+<span class="sd">        the crucial moment has already passed and you just can&#39;t anymore.</span>
+<span class="sd">        &quot;&quot;&quot;</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Boundless.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

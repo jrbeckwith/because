@@ -1,0 +1,140 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>because.client.response module &#8212; because 0.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="because.client.service module" href="because.client.service.html" />
+    <link rel="prev" title="because.client.request module" href="because.client.request.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-because.client.response">
+<span id="because-client-response-module"></span><h1>because.client.response module<a class="headerlink" href="#module-because.client.response" title="Permalink to this headline">¶</a></h1>
+<dl class="exception">
+<dt id="because.client.response.InvalidResponse">
+<em class="property">exception </em><code class="descclassname">because.client.response.</code><code class="descname">InvalidResponse</code><span class="sig-paren">(</span><em>message</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/client/response.html#InvalidResponse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.client.response.InvalidResponse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="because.base.errors.html#because.base.errors.InvalidObject" title="because.base.errors.InvalidObject"><code class="xref py py-class docutils literal"><span class="pre">because.base.errors.InvalidObject</span></code></a></p>
+<p>Raised instead of creating an invalid Response instance.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="because.client.response.Response">
+<em class="property">class </em><code class="descclassname">because.client.response.</code><code class="descname">Response</code><span class="sig-paren">(</span><em>status</em>, <em>headers=None</em>, <em>body=b''</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/client/response.html#Response"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.client.response.Response" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="because.base.utils.html#because.base.utils.PrettyPrintable" title="because.base.utils.PrettyPrintable"><code class="xref py py-class docutils literal"><span class="pre">because.base.utils.PrettyPrintable</span></code></a></p>
+<p>Represent a received HTTP response.</p>
+<p>You may be saying to yourself: &#8220;why yet another class Response?!?&#8221; Well &#8211;
+this internal representation is used to abstract over representations like
+httplib.HTTPResponse or QNetworkReply, so that <cite>because</cite> can work about the
+same in multiple environments without all the response processing code
+having to be duplicated with minor variations in it.</p>
+<dl class="method">
+<dt id="because.client.response.Response.pretty_lines">
+<code class="descname">pretty_lines</code><span class="sig-paren">(</span><em>pair_sep=': '</em>, <em>line_start='  '</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/client/response.html#Response.pretty_lines"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.client.response.Response.pretty_lines" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a debug representation of attributes as a list of strings.</p>
+<p>This is really just used to customize the pretty_text() method provided
+by PrettyPrintable, so that each header gets its own line.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="because.client.response.Response.pretty_tuples">
+<code class="descname">pretty_tuples</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/client/response.html#Response.pretty_tuples"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.client.response.Response.pretty_tuples" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a debug representation of attributes as a list of tuples.</p>
+<p>This is really just used to customize the pretty_text() method provided
+by PrettyPrintable.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="because.html">Because API Reference</a><ul>
+  <li><a href="because.client.html">because.client package</a><ul>
+      <li>Previous: <a href="because.client.request.html" title="previous chapter">because.client.request module</a></li>
+      <li>Next: <a href="because.client.service.html" title="next chapter">because.client.service module</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/reference/because.client.response.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Boundless.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+      |
+      <a href="../_sources/reference/because.client.response.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,207 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>because.client.response &#8212; because 0.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for because.client.response</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">textwrap</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">from</span> <span class="nn">because.base.utils</span> <span class="k">import</span> <span class="n">consistent_repr</span><span class="p">,</span> <span class="n">PrettyPrintable</span>
+<span class="kn">from</span> <span class="nn">because.base.errors</span> <span class="k">import</span> <span class="n">InvalidObject</span>
+<span class="kn">from</span> <span class="nn">because.client.headers</span> <span class="k">import</span> <span class="n">Headers</span>
+
+
+<div class="viewcode-block" id="InvalidResponse"><a class="viewcode-back" href="../../../reference/because.client.response.html#because.client.response.InvalidResponse">[docs]</a><span class="k">class</span> <span class="nc">InvalidResponse</span><span class="p">(</span><span class="n">InvalidObject</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Raised instead of creating an invalid Response instance.</span>
+<span class="sd">    &quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="Response"><a class="viewcode-back" href="../../../reference/because.client.response.html#because.client.response.Response">[docs]</a><span class="k">class</span> <span class="nc">Response</span><span class="p">(</span><span class="n">PrettyPrintable</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Represent a received HTTP response.</span>
+
+<span class="sd">    You may be saying to yourself: &quot;why yet another class Response?!?&quot; Well --</span>
+<span class="sd">    this internal representation is used to abstract over representations like</span>
+<span class="sd">    httplib.HTTPResponse or QNetworkReply, so that `because` can work about the</span>
+<span class="sd">    same in multiple environments without all the response processing code</span>
+<span class="sd">    having to be duplicated with minor variations in it.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">body</span><span class="o">=</span><span class="n">b</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+        <span class="c1"># type: (int, Optional[dict], Optional[bytes]) -&gt; None</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :arg status:</span>
+<span class="sd">            HTTP response status code</span>
+<span class="sd">        :arg headers:</span>
+<span class="sd">            HTTP response headers </span>
+<span class="sd">        :arg body:</span>
+<span class="sd">            HTTP response body, as a bytestring</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_init_status</span><span class="p">(</span><span class="n">status</span><span class="p">)</span>     <span class="c1"># type: int</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">body</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_init_body</span><span class="p">(</span><span class="n">body</span><span class="p">)</span>           <span class="c1"># type: Optional[bytes]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">headers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_init_headers</span><span class="p">(</span><span class="n">headers</span><span class="p">)</span>  <span class="c1"># type: Headers</span>
+
+    <span class="k">def</span> <span class="nf">_init_status</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="c1"># type: (int) -&gt; int</span>
+        <span class="c1"># TODO: I have trouble committing to a status repr type</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">InvalidResponse</span><span class="p">(</span><span class="s2">&quot;status must be int&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">value</span>
+
+    <span class="k">def</span> <span class="nf">_init_headers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="c1"># type: (Any) -&gt; Headers</span>
+        <span class="sd">&quot;&quot;&quot;Produce an internal representation of headers as a Headers object.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Pass through Headers instances</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Headers</span><span class="p">):</span>
+            <span class="n">headers</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="c1"># Construct Headers instance from sequence of (name, value) pairs.</span>
+        <span class="k">elif</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">headers</span> <span class="o">=</span> <span class="n">Headers</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="c1"># None or empty should get a new Headers instance</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">value</span><span class="p">:</span>
+            <span class="n">headers</span> <span class="o">=</span> <span class="n">Headers</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">headers</span>
+
+    <span class="k">def</span> <span class="nf">_init_body</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="c1"># type: (Optional[bytes]) -&gt; Optional[bytes]</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">InvalidResponse</span><span class="p">(</span><span class="s2">&quot;body must be bytes&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">value</span>
+
+    <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="c1"># type: (Any) -&gt; bool</span>
+        <span class="sd">&quot;&quot;&quot;Compare two instances for equality.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">attrs</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;status&quot;</span><span class="p">,</span> <span class="s2">&quot;headers&quot;</span><span class="p">,</span> <span class="s2">&quot;body&quot;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="nb">all</span><span class="p">(</span>
+            <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span> <span class="o">==</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">attr</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">attr</span> <span class="ow">in</span> <span class="n">attrs</span> 
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># type: () -&gt; str</span>
+        <span class="sd">&quot;&quot;&quot;Ugly text representation for debug purposes, like tracebacks/shell.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">template</span> <span class="o">=</span> <span class="s2">&quot;&quot;&quot;</span><span class="si">{cls_name}</span><span class="s2">(</span><span class="si">{status}</span><span class="s2">, headers=</span><span class="si">{headers}</span><span class="s2">, body=</span><span class="si">{body}</span><span class="s2">)&quot;&quot;&quot;</span>
+        <span class="n">headers</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">pairs</span><span class="p">())</span>
+        <span class="k">return</span> <span class="n">template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">cls_name</span><span class="o">=</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span>
+            <span class="n">status</span><span class="o">=</span><span class="n">consistent_repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="p">),</span>
+            <span class="n">headers</span><span class="o">=</span><span class="n">consistent_repr</span><span class="p">(</span><span class="n">headers</span><span class="p">),</span>
+            <span class="n">body</span><span class="o">=</span><span class="n">consistent_repr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">body</span><span class="p">),</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="Response.pretty_tuples"><a class="viewcode-back" href="../../../reference/because.client.response.html#because.client.response.Response.pretty_tuples">[docs]</a>    <span class="k">def</span> <span class="nf">pretty_tuples</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># type: () -&gt; List[Tuple[str, Any]]</span>
+        <span class="sd">&quot;&quot;&quot;Get a debug representation of attributes as a list of tuples.</span>
+
+<span class="sd">        This is really just used to customize the pretty_text() method provided</span>
+<span class="sd">        by PrettyPrintable.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="p">(</span><span class="s2">&quot;status&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;headers&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;body&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">body</span><span class="p">),</span>
+        <span class="p">]</span></div>
+
+<div class="viewcode-block" id="Response.pretty_lines"><a class="viewcode-back" href="../../../reference/because.client.response.html#because.client.response.Response.pretty_lines">[docs]</a>    <span class="k">def</span> <span class="nf">pretty_lines</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pair_sep</span><span class="o">=</span><span class="s2">&quot;: &quot;</span><span class="p">,</span> <span class="n">line_start</span><span class="o">=</span><span class="s2">&quot;  &quot;</span><span class="p">):</span>
+        <span class="c1"># type: (str, str) -&gt; str</span>
+        <span class="sd">&quot;&quot;&quot;Get a debug representation of attributes as a list of strings.</span>
+
+<span class="sd">        This is really just used to customize the pretty_text() method provided</span>
+<span class="sd">        by PrettyPrintable, so that each header gets its own line.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pretty_dict</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;body&quot;</span><span class="p">,</span> <span class="s2">&quot;headers&quot;</span><span class="p">]:</span>
+            <span class="k">del</span> <span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{0}{1}{2}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">pair_sep</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;headers</span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pair_sep</span><span class="p">))</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">pairs</span><span class="p">():</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{0}{1}{2}{3}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">line_start</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">pair_sep</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+            <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;body</span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pair_sep</span><span class="p">))</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{0}{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">line_start</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">body</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">lines</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Boundless.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

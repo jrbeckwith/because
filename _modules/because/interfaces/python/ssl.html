@@ -1,0 +1,203 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>because.interfaces.python.ssl &#8212; because 0.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '0.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for because.interfaces.python.ssl</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Helpers for doing HTTP using SSL using the Python stdlib.</span>
+
+<span class="sd">The idea of the interfaces is that we can take &quot;native&quot; request objects and</span>
+<span class="sd">return &quot;native&quot; response objects so user potentially has complete control.</span>
+
+
+<span class="sd">ssl.SSLContext                              # SSLConfig</span>
+
+<span class="sd">httplib.HTTPSConnection                     # Transfer</span>
+<span class="sd">    request(method, url, body, headers)     # send</span>
+<span class="sd">      calls:</span>
+<span class="sd">        connect                                 # open connection</span>
+<span class="sd">        putrequest                              # 1st after connect</span>
+<span class="sd">        putheader                               # send one header</span>
+<span class="sd">        endheaders                              # send blank line, opt. body</span>
+<span class="sd">        send                                    # send whatever</span>
+<span class="sd">        close                                   # close connection</span>
+<span class="sd">    getresponse()                           # await response</span>
+<span class="sd">    close()                                 # like canceling?</span>
+
+<span class="sd">httplib.HTTPException</span>
+
+<span class="sd">httplib.HTTPResponse                        # Response</span>
+<span class="sd">    status                                  # ok, as code</span>
+<span class="sd">    reason                                  # good solution</span>
+<span class="sd">    read                                    # just use .body</span>
+<span class="sd">    getheader, getheaders                   # just use .headers</span>
+
+
+<span class="sd">httplib.HTTPMessage     Headers</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">ssl</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">http.client</span> <span class="k">as</span> <span class="nn">httplib</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">httplib</span>
+
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Text</span>
+
+<span class="kn">from</span> <span class="nn">because.base.errors</span> <span class="k">import</span> <span class="n">InvalidObject</span>
+<span class="kn">from</span> <span class="nn">because.client.ssl</span> <span class="k">import</span> <span class="p">(</span>
+    <span class="n">SSLKey</span> <span class="k">as</span> <span class="n">_SSLKey</span><span class="p">,</span>
+    <span class="n">SSLConfig</span> <span class="k">as</span> <span class="n">_SSLConfig</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># For now, don&#39;t offer a choice, see if anything else is needed</span>
+<span class="n">_PROTOCOL_CHOICES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="c1"># The option recommended in Python docs</span>
+    <span class="c1"># &quot;default&quot;: ssl.PROTOCOL_SSLv23,</span>
+
+    <span class="c1"># same as PROTOCOL_TLS, deprecated in 3.6+</span>
+    <span class="c1"># &quot;ssl v2.3&quot;: ssl.PROTOCOL_SSLv23,</span>
+
+    <span class="c1"># preferred alias only available in 3.6+</span>
+    <span class="c1"># &quot;tls&quot;: ssl.PROTOCOL_TLS,</span>
+
+    <span class="c1"># deprecated options for interop</span>
+    <span class="c1"># &quot;ssl v2&quot;: ssl.PROTOCOL_SSLv2,</span>
+    <span class="c1"># &quot;ssl v3&quot;: ssl.PROTOCOL_SSLv3,</span>
+    <span class="c1"># &quot;tls v1&quot;: ssl.PROTOCOL_TLSv1,</span>
+    <span class="c1"># &quot;tls v1.1&quot;: ssl.PROTOCOL_TLSv1_1,</span>
+    <span class="c1"># &quot;tls v1.2&quot;: ssl.PROTOCOL_TLSv1_2,</span>
+<span class="p">}</span>
+<span class="c1"># In 3.6+ the preferred name is PROTOCOL_TLS</span>
+<span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span> <span class="o">&gt;=</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">):</span>
+    <span class="n">_PROTOCOL_CHOICES</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
+        <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="n">ssl</span><span class="o">.</span><span class="n">PROTOCOL_TLS</span><span class="p">,</span>
+    <span class="p">})</span>
+<span class="c1"># In 2.7 to 3.5, the available name is PROTOCOL_SSLv23</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">_PROTOCOL_CHOICES</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
+        <span class="s2">&quot;default&quot;</span><span class="p">:</span> <span class="n">ssl</span><span class="o">.</span><span class="n">PROTOCOL_SSLv23</span><span class="p">,</span>
+    <span class="p">})</span>
+
+
+
+<span class="c1"># Flags for forbidding protocols</span>
+<span class="n">_PROTOCOL_DISABLE_FLAGS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;ssl v2&quot;</span><span class="p">:</span> <span class="n">ssl</span><span class="o">.</span><span class="n">OP_NO_SSLv2</span><span class="p">,</span>
+    <span class="s2">&quot;ssl v3&quot;</span><span class="p">:</span> <span class="n">ssl</span><span class="o">.</span><span class="n">OP_NO_SSLv3</span><span class="p">,</span>
+    <span class="s2">&quot;tls v1&quot;</span><span class="p">:</span> <span class="n">ssl</span><span class="o">.</span><span class="n">OP_NO_TLSv1</span><span class="p">,</span>
+    <span class="s2">&quot;tls v1.1&quot;</span><span class="p">:</span> <span class="n">ssl</span><span class="o">.</span><span class="n">OP_NO_TLSv1_1</span><span class="p">,</span>
+    <span class="s2">&quot;tls v1.2&quot;</span><span class="p">:</span> <span class="n">ssl</span><span class="o">.</span><span class="n">OP_NO_TLSv1_2</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="c1"># TODO: offer ssl.OP_NO_COMPRESSION consistent with Qt equivalent</span>
+<span class="c1"># TODO: offer ssl.CERT_{NONE,OPTIONAL,REQUIRED} etc. as equiv with Qt</span>
+
+
+<div class="viewcode-block" id="default_ssl_config"><a class="viewcode-back" href="../../../../reference/because.interfaces.python.ssl.html#because.interfaces.python.client.default_ssl_config">[docs]</a><span class="k">def</span> <span class="nf">default_ssl_config</span><span class="p">():</span>
+    <span class="c1"># Settings represent whatever Python developers thought was more secure</span>
+    <span class="n">context</span> <span class="o">=</span> <span class="n">ssl</span><span class="o">.</span><span class="n">create_default_context</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">SSLConfig</span><span class="o">.</span><span class="n">from_ssl_context</span><span class="p">(</span><span class="n">context</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="SSLKey"><a class="viewcode-back" href="../../../../reference/because.interfaces.python.ssl.html#because.interfaces.python.client.SSLKey">[docs]</a><span class="k">class</span> <span class="nc">SSLKey</span><span class="p">(</span><span class="n">_SSLKey</span><span class="p">):</span>
+    <span class="k">pass</span></div>
+
+
+<div class="viewcode-block" id="SSLConfig"><a class="viewcode-back" href="../../../../reference/because.interfaces.python.ssl.html#because.interfaces.python.client.SSLConfig">[docs]</a><span class="k">class</span> <span class="nc">SSLConfig</span><span class="p">(</span><span class="n">_SSLConfig</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_ssl_context</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="c1"># only used within interfaces.python, others just ignore this</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ssl_context</span> <span class="o">=</span> <span class="n">_ssl_context</span>
+
+<div class="viewcode-block" id="SSLConfig.to_ssl_context"><a class="viewcode-back" href="../../../../reference/because.interfaces.python.ssl.html#because.interfaces.python.client.SSLConfig.to_ssl_context">[docs]</a>    <span class="k">def</span> <span class="nf">to_ssl_context</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># type: () -&gt; ssl.SSLContext</span>
+        <span class="k">pass</span></div>
+
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="SSLConfig.from_ssl_context"><a class="viewcode-back" href="../../../../reference/because.interfaces.python.ssl.html#because.interfaces.python.client.SSLConfig.from_ssl_context">[docs]</a>    <span class="k">def</span> <span class="nf">from_ssl_context</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+        <span class="c1"># type: (ssl.SSLContext) -&gt; SSLConfig</span>
+        <span class="k">return</span> <span class="n">cls</span><span class="p">(</span>
+            <span class="n">_ssl_context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span>
+        <span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Boundless.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

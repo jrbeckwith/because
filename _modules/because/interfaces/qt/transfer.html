@@ -1,0 +1,576 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>because.interfaces.qt.transfer &#8212; because 0.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '0.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for because.interfaces.qt.transfer</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span> <span class="k">as</span> <span class="n">Datetime</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">PyQt5.QtCore</span> <span class="k">import</span> <span class="p">(</span>
+        <span class="n">QObject</span><span class="p">,</span>
+        <span class="n">QTimer</span><span class="p">,</span>
+        <span class="n">QUrl</span><span class="p">,</span>
+        <span class="n">QByteArray</span><span class="p">,</span>
+        <span class="n">QBuffer</span><span class="p">,</span>
+        <span class="n">pyqtSignal</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="kn">from</span> <span class="nn">PyQt5.QtNetwork</span> <span class="k">import</span> <span class="p">(</span>
+        <span class="n">QNetworkRequest</span><span class="p">,</span>
+    <span class="p">)</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">PyQt4.QtCore</span> <span class="k">import</span> <span class="p">(</span>
+        <span class="n">QObject</span><span class="p">,</span>
+        <span class="n">QTimer</span><span class="p">,</span>
+        <span class="n">QUrl</span><span class="p">,</span>
+        <span class="n">QByteArray</span><span class="p">,</span>
+        <span class="n">QBuffer</span><span class="p">,</span>
+        <span class="n">pyqtSignal</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="kn">from</span> <span class="nn">PyQt4.QtNetwork</span> <span class="k">import</span> <span class="p">(</span>
+        <span class="n">QNetworkRequest</span><span class="p">,</span>
+    <span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="n">response</span> <span class="kn">import</span> <span class="nn">Response</span> 
+
+<span class="n">LOG</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+
+
+
+<div class="viewcode-block" id="unpack_q_reply"><a class="viewcode-back" href="../../../../reference/because.interfaces.qt.transfer.html#because.interfaces.qt.transfer.unpack_q_reply">[docs]</a><span class="k">def</span> <span class="nf">unpack_q_reply</span><span class="p">(</span><span class="n">q_reply</span><span class="p">):</span>
+    <span class="c1"># TODO: shouldn&#39;t all of the below be encapsulated by Transfer?</span>
+    <span class="n">error</span> <span class="o">=</span> <span class="n">q_reply</span><span class="o">.</span><span class="n">errorString</span><span class="p">()</span>
+    <span class="n">status</span> <span class="o">=</span> <span class="n">q_reply</span><span class="o">.</span><span class="n">attribute</span><span class="p">(</span><span class="n">QNetworkRequest</span><span class="o">.</span><span class="n">HttpStatusCodeAttribute</span><span class="p">)</span>
+    <span class="n">redirect</span> <span class="o">=</span> <span class="n">q_reply</span><span class="o">.</span><span class="n">attribute</span><span class="p">(</span><span class="n">QNetworkRequest</span><span class="o">.</span><span class="n">RedirectionTargetAttribute</span><span class="p">)</span>
+    <span class="n">headers</span> <span class="o">=</span> <span class="n">q_reply</span><span class="o">.</span><span class="n">rawHeaderPairs</span><span class="p">()</span>
+    <span class="n">headers</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="o">.</span><span class="n">data</span><span class="p">())</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">headers</span>
+    <span class="p">]</span>
+    <span class="c1"># Read out data.</span>
+    <span class="c1"># TODO: This method isn&#39;t great for big bodies...</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">q_reply</span><span class="o">.</span><span class="n">readAll</span><span class="p">()</span>
+    <span class="c1"># Convert from QByteArray</span>
+    <span class="n">body</span> <span class="o">=</span> <span class="nb">bytes</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+    <span class="n">response</span> <span class="o">=</span> <span class="n">Response</span><span class="p">(</span>
+        <span class="n">error</span><span class="o">=</span><span class="n">error</span><span class="p">,</span>
+        <span class="n">redirect</span><span class="o">=</span><span class="n">redirect</span><span class="p">,</span>
+        <span class="n">status</span><span class="o">=</span><span class="n">status</span><span class="p">,</span>
+        <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span>
+        <span class="n">body</span><span class="o">=</span><span class="nb">iter</span><span class="p">(</span><span class="n">body</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">response</span></div>
+
+
+
+
+
+
+<div class="viewcode-block" id="TransferError"><a class="viewcode-back" href="../../../../reference/because.interfaces.qt.transfer.html#because.interfaces.qt.transfer.TransferError">[docs]</a><span class="k">class</span> <span class="nc">TransferError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Represents error descriptions encoded as QNetworkReply::NetworkError.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># TODO: why not HTTP also? As long as the two aren&#39;t confused, that is.</span>
+    <span class="c1"># I suppose the HTTP one is a property of the response instead.</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">code</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">text</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">code</span> <span class="o">=</span> <span class="n">code</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">TransferError</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">text</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="TransferWorker"><a class="viewcode-back" href="../../../../reference/because.interfaces.qt.transfer.html#because.interfaces.qt.transfer.TransferWorker">[docs]</a><span class="k">class</span> <span class="nc">TransferWorker</span><span class="p">(</span><span class="n">QObject</span><span class="p">):</span>
+    <span class="n">finished</span> <span class="o">=</span> <span class="n">pyqtSignal</span><span class="p">()</span>
+    <span class="n">pulse</span> <span class="o">=</span> <span class="n">pyqtSignal</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">parent</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">TransferWorker</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Transfer"><a class="viewcode-back" href="../../../../reference/because.interfaces.qt.transfer.html#because.interfaces.qt.transfer.Transfer">[docs]</a><span class="k">class</span> <span class="nc">Transfer</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Hold per-request state for one ongoing HTTP request cycle.</span>
+
+<span class="sd">    This is also used as a device for bundling up multiple descriptions of a</span>
+<span class="sd">    transfer&#39;s state to be handled by one callback, instead of requiring many</span>
+<span class="sd">    separate callbacks to handle many different state notifications.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># n.b.: can&#39;t define signals here since this is not a QObject. The</span>
+    <span class="c1"># workaround would be to have this instantiate a QObject subclass that</span>
+    <span class="c1"># defines your signals. But the QNetworkReply already defines all the</span>
+    <span class="c1"># signals we need here.</span>
+
+    <span class="n">log</span> <span class="o">=</span> <span class="n">LOG</span><span class="o">.</span><span class="n">getChild</span><span class="p">(</span><span class="s2">&quot;Transfer&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">request</span><span class="p">,</span>
+            <span class="n">on_finished</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">on_progress</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">send</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">log</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :arg request:</span>
+<span class="sd">            Request object describing the HTTP request to be performed.</span>
+<span class="sd">        :arg on_finished:</span>
+<span class="sd">            Callback for receiving notification that this transfer is over,</span>
+<span class="sd">            whether successfully or unsuccessfully. Should take no arguments.</span>
+<span class="sd">        :arg on_progress:</span>
+<span class="sd">            Callback for receiving notification that this transfer has</span>
+<span class="sd">            progressed. Must take one argument, being the transfer object that</span>
+<span class="sd">            can be used to inspect progress if desired.</span>
+<span class="sd">        :arg timeout:</span>
+<span class="sd">            An integer representing the number of milliseconds to wait before</span>
+<span class="sd">            canceling the whole transfer as &quot;timed out.&quot;</span>
+<span class="sd">        :arg log:</span>
+<span class="sd">            logger instance to use for logging messages.</span>
+<span class="sd">        :arg send:</span>
+<span class="sd">            Callable which should be called, passing a QBuffer of body data, to</span>
+<span class="sd">            send the request body.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Store passed parameters</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">request</span> <span class="o">=</span> <span class="n">request</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_on_finished</span> <span class="o">=</span> <span class="n">on_finished</span>
+        <span class="c1"># assert on_finished</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_on_progress</span> <span class="o">=</span> <span class="n">on_progress</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span> <span class="o">=</span> <span class="n">timeout</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_send</span> <span class="o">=</span> <span class="n">send</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">=</span> <span class="n">log</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">log</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_started</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stopped</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Define attributes to hold underlying Qt objects</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">q_reply</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_q_array</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_q_buffer</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_q_timer</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># self._q_thread = </span>
+
+        <span class="c1"># For ensuring we only ran on_finished once. </span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ran_on_finished</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="c1"># What events do we need to handle, and which callbacks should we take?</span>
+        <span class="c1">#</span>
+        <span class="c1"># * We don&#39;t need much handling of the &quot;finished&quot; event because we</span>
+        <span class="c1">#   have isRunning() and isFinished().</span>
+        <span class="c1">#</span>
+        <span class="c1"># * We don&#39;t need to handle &quot;redirection&quot; because we can use</span>
+        <span class="c1">#   RedirectionTargetAttribute.</span>
+        <span class="c1">#</span>
+        <span class="c1"># * No known need for metaDataChanged.</span>
+        <span class="c1">#</span>
+        <span class="c1"># * No known need for SSL signals:</span>
+        <span class="c1">#   encrypted, sslErrors, presharedKeyAuthenticationRequired.</span>
+        <span class="c1">#</span>
+        <span class="c1"># * Docs say that finished &quot;will probably follow&quot; signal error,</span>
+        <span class="c1">#   but &quot;probably&quot; isn&#39;t really good enough, and it&#39;s otherwise unclear</span>
+        <span class="c1">#   how to get the code instead of just errorString, so we want to</span>
+        <span class="c1">#   handle that. But we can do that internally.</span>
+        <span class="c1">#</span>
+        <span class="c1"># * We need to handle uploadProgress and downloadProgress for UI,</span>
+        <span class="c1">#   but it&#39;s a pain for users to define two different callbacks, when</span>
+        <span class="c1">#   they can just define one that takes the transfer.</span>
+        <span class="c1">#</span>
+        <span class="c1"># * We need to handle internally generated timeouts, but it isn&#39;t clear</span>
+        <span class="c1">#   that users should specify a separate callback for this, when it can</span>
+        <span class="c1">#   reasonably be merged with whatever callback processes errors.</span>
+        <span class="c1">#</span>
+        <span class="c1"># * We can either use one big callback for all response-terminations,</span>
+        <span class="c1">#   or we can separate out success and error streams. It&#39;s a tradeoff</span>
+        <span class="c1">#   of whether our interface or their callback does the dispatch.</span>
+        <span class="c1">#   but keeping them together makes it easy to use one namespace</span>
+        <span class="c1">#   and one set of invariants regardless of how transfer ended.</span>
+        <span class="c1">#</span>
+        <span class="c1"># * Anything that doesn&#39;t vary frequently across transfers/sends is</span>
+        <span class="c1">#   fair game for class changes rather than callback parameters.</span>
+
+        <span class="c1"># These attributes collect state from uploadProgress and</span>
+        <span class="c1"># downloadProgress signals, so that the user can give just one progress</span>
+        <span class="c1"># callback instead of two with slightly different contracts.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">upload_sent</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">upload_total</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">download_received</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">download_total</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># error</span>
+        <span class="c1"># The kind of error is indicated per QNetworkReply::NetworkError, here</span>
+        <span class="c1"># represented as a TransferError if not None.</span>
+        <span class="c1"># (Not to be confused with an HTTP error, or an application-level error</span>
+        <span class="c1"># message delivered over HTTP.)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">error</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># internally generated timeout from timer</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timed_out</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="c1"># TODO: also monitor for QNetworkReply::TimeoutError and</span>
+        <span class="c1"># ProxyTimeoutError? only if these aren&#39;t actually http errors.</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_start_timer</span><span class="p">()</span>
+
+        <span class="c1"># TODO: UGH</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">response</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">_start_timer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create and start a timer to enforce timeouts.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Starting timer for +</span><span class="si">%s</span><span class="s2">ms&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="p">)</span>
+            <span class="n">q_timer</span> <span class="o">=</span> <span class="n">QTimer</span><span class="p">()</span>
+            <span class="n">q_timer</span><span class="o">.</span><span class="n">timeout</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">on_timeout</span><span class="p">)</span>
+            <span class="n">q_timer</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timeout</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_q_timer</span> <span class="o">=</span> <span class="n">q_timer</span>
+
+    <span class="k">def</span> <span class="nf">_stop_timer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Stop and remove any timer.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">timer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_q_timer</span>
+        <span class="k">if</span> <span class="n">timer</span> <span class="ow">and</span> <span class="n">timer</span><span class="o">.</span><span class="n">isActive</span><span class="p">():</span>
+            <span class="n">timer</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_q_timer</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">upload_percent</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Property to compute percent completion of upload.</span>
+
+<span class="sd">        This is based on uploadProgress.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">upload_total</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">upload_sent</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">upload_total</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">upload_sent</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">upload_total</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mf">100.0</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">upload_sent</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">upload_total</span><span class="p">)</span> <span class="o">*</span> <span class="mf">100.0</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">upload_finished</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Property to check whether the response portion was completed.</span>
+
+<span class="sd">        This is based on uploadProgress.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">all</span><span class="p">([</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">upload_sent</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">upload_total</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">upload_sent</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">upload_total</span><span class="p">,</span>
+        <span class="p">]):</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">download_percent</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Property to compute percent completion of upload.</span>
+
+<span class="sd">        This is based on downloadProgress.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">download_total</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">download_received</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">download_total</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">download_received</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">download_total</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mf">100.0</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">download_received</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">download_total</span><span class="p">)</span> <span class="o">*</span> <span class="mf">100.0</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">download_finished</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Property to check whether the response portion was completed.</span>
+
+<span class="sd">        This is based on downloadProgress.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">all</span><span class="p">([</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">download_received</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">download_total</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">download_received</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">download_total</span><span class="p">,</span>
+        <span class="p">]):</span>
+            <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+<div class="viewcode-block" id="Transfer.on_progress"><a class="viewcode-back" href="../../../../reference/because.interfaces.qt.transfer.html#because.interfaces.qt.transfer.Transfer.on_progress">[docs]</a>    <span class="k">def</span> <span class="nf">on_progress</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Notify consumer of a progress update.</span>
+
+<span class="sd">        Passes self to the callback so the consumer can inspect the transfer</span>
+<span class="sd">        instance to see any status it finds pertinent.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_on_progress</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_on_progress</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_on_upload_progress</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sent</span><span class="p">,</span> <span class="n">total</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Handle uploadProgress from the QNetworkReply.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">upload_sent</span> <span class="o">=</span> <span class="n">sent</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">upload_total</span> <span class="o">=</span> <span class="n">total</span> <span class="k">if</span> <span class="n">total</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">on_progress</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_on_download_progress</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">received</span><span class="p">,</span> <span class="n">total</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Handle downloadProgress from the QNetworkReply.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">download_received</span> <span class="o">=</span> <span class="n">received</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">download_total</span> <span class="o">=</span> <span class="n">total</span> <span class="k">if</span> <span class="n">total</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">on_progress</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Transfer.on_error"><a class="viewcode-back" href="../../../../reference/because.interfaces.qt.transfer.html#because.interfaces.qt.transfer.Transfer.on_error">[docs]</a>    <span class="k">def</span> <span class="nf">on_error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">code</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Handle an error detected during response processing.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">error_code</span> <span class="o">=</span> <span class="n">code</span>
+        <span class="n">error_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">q_reply</span><span class="o">.</span><span class="n">errorString</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">error</span> <span class="o">=</span> <span class="n">TransferError</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="n">error_code</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="n">error_text</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Transfer.on_timeout"><a class="viewcode-back" href="../../../../reference/because.interfaces.qt.transfer.html#because.interfaces.qt.transfer.Transfer.on_timeout">[docs]</a>    <span class="k">def</span> <span class="nf">on_timeout</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Handle the expiration of the deadline timer.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Flag what happened</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">timed_out</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="c1"># Time roughly when the request stopped for logging</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stopped</span> <span class="o">=</span> <span class="n">Datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Timing out after </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">elapsed</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stop_timer</span><span class="p">()</span>
+
+        <span class="c1"># Attempt to halt any ongoing activity</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">q_reply</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">q_reply</span><span class="o">.</span><span class="n">abort</span><span class="p">()</span></div>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">elapsed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stopped</span><span class="p">:</span>
+            <span class="n">timedelta</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_stopped</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_started</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">timedelta</span> <span class="o">=</span> <span class="n">Datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_started</span>
+        <span class="k">return</span> <span class="n">timedelta</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Transfer.on_finished"><a class="viewcode-back" href="../../../../reference/because.interfaces.qt.transfer.html#because.interfaces.qt.transfer.Transfer.on_finished">[docs]</a>    <span class="k">def</span> <span class="nf">on_finished</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Handle completion of reply processing.</span>
+
+<span class="sd">        This means that the end of the transfer is ready to be handled,</span>
+<span class="sd">        response read, etc. whether or not there was an error.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">td</span> <span class="o">=</span> <span class="n">Datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_started</span>
+        <span class="c1"># Ensure this only runs once.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ran_on_finished</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;already ran _on_finished&quot;</span><span class="p">)</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ran_on_finished</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;finished in </span><span class="si">{0}</span><span class="s2">s&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">td</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stop_timer</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_on_finished</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;running _on_finished=</span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_on_finished</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">response</span> <span class="o">=</span> <span class="n">unpack_q_reply</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">q_reply</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;HTTP response</span><span class="se">\n</span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">pretty</span><span class="p">()))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_on_finished</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;no _on_finished to run&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Transfer.on_redirected"><a class="viewcode-back" href="../../../../reference/because.interfaces.qt.transfer.html#because.interfaces.qt.transfer.Transfer.on_redirected">[docs]</a>    <span class="k">def</span> <span class="nf">on_redirected</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">redirected</span> <span class="o">=</span> <span class="n">url</span></div>
+
+<div class="viewcode-block" id="Transfer.start"><a class="viewcode-back" href="../../../../reference/because.interfaces.qt.transfer.html#because.interfaces.qt.transfer.Transfer.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_started</span> <span class="o">=</span> <span class="n">Datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span>
+
+        <span class="n">request</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span>
+        <span class="c1"># Pack the request body for Qt.</span>
+        <span class="c1"># * sendCustomRequest needs a QIODevice.</span>
+        <span class="c1"># * We can get one using QBuffer.</span>
+        <span class="c1"># * QBuffer needs a QByteArray.</span>
+        <span class="c1"># * TODO: extra copy and double memory usage?</span>
+        <span class="c1"># * TODO: can QBuffer parent solve some problems? maybe use q_request?</span>
+        <span class="c1"># * TODO: can we just pass q_array intending const QByteArray &amp;data? or</span>
+        <span class="c1">#   even just a python bytes? possible??</span>
+        <span class="n">q_array</span> <span class="o">=</span> <span class="n">QByteArray</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">body</span><span class="p">)</span> <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">body</span> <span class="k">else</span> <span class="n">QByteArray</span><span class="p">()</span>
+        <span class="n">q_buffer</span> <span class="o">=</span> <span class="n">QBuffer</span><span class="p">(</span><span class="n">q_array</span><span class="p">)</span>
+
+        <span class="c1"># Call the function provided by Client to send the request body.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_started</span> <span class="o">=</span> <span class="n">Datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span>
+        <span class="n">q_reply</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_send</span><span class="p">(</span><span class="n">q_buffer</span><span class="p">)</span>
+
+        <span class="c1"># Connect QNetworkReply signals directly to callbacks on self.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_connect</span><span class="p">(</span><span class="n">q_reply</span><span class="p">)</span>
+
+        <span class="c1"># # TODO: it still feels stupid to call into a client method once with</span>
+        <span class="c1"># # request, then do very little work, then call into it with other</span>
+        <span class="c1"># # representations of same request</span>
+        <span class="c1"># # q_request = self.client.q_request(self.request)</span>
+        <span class="c1"># q_reply = self.client.send_q_request(</span>
+        <span class="c1">#     self.request,</span>
+        <span class="c1">#     # q_request,</span>
+        <span class="c1">#     # self.request.method,</span>
+        <span class="c1">#     q_buffer,</span>
+        <span class="c1"># )</span>
+
+        <span class="c1"># Hold references to underlying Qt objects involved in response read.</span>
+        <span class="c1"># If there is no reference to the QBuffer after this method exits, QGIS</span>
+        <span class="c1"># will crash in short order. If there is no reference to the QArray</span>
+        <span class="c1"># after this method exits, the result will be flaky; it may work, or</span>
+        <span class="c1"># silently fail, or crash QGIS.</span>
+        <span class="c1"># Likely explanation: when the refcount goes to 0, Python collects the</span>
+        <span class="c1"># object, and then Qt reads inappropriately from the freed pointer,</span>
+        <span class="c1"># causing a SEGFAULT.</span>
+        <span class="c1"># The read doesn&#39;t seem to be caused by the finished signal or any of</span>
+        <span class="c1"># our callbacks, because the crash happens even if those ar eall</span>
+        <span class="c1"># removed.</span>
+        <span class="c1"># Ideally, sendCustomRequest would keep its own buffers alive long</span>
+        <span class="c1"># enough to complete the send, and then Qt wouldn&#39;t read them after...</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_q_buffer</span> <span class="o">=</span> <span class="n">q_buffer</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_q_array</span> <span class="o">=</span> <span class="n">q_array</span></div>
+
+    <span class="c1"># Kicking off the request requires access to the QNAM and SSL config.</span>
+    <span class="c1"># To keep these encapsulated in client, those details are handled in</span>
+    <span class="c1"># Client.send before this is called.</span>
+    <span class="c1"># However, this means that connect has to be public API, passing</span>
+    <span class="c1"># q_reply/q_array/q_buffer. :(</span>
+    <span class="c1"># otherwise, client has to put per-transfer state/refs somewhere else.</span>
+
+    <span class="k">def</span> <span class="nf">_connect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">q_reply</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Associate this transfer to the given QNetworkReply.</span>
+
+<span class="sd">        This is for internal use because it exposes Qt API.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Make this method idempotent; don&#39;t double up on signal subscriptions</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">q_reply</span> <span class="o">==</span> <span class="n">q_reply</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="c1"># A Transfer should map to a QNetworkReply 1:1, assuming it maps at</span>
+        <span class="c1"># all. If this Transfer has already been connected to a QNetworkReply,</span>
+        <span class="c1"># we don&#39;t want it handling signals from another QNetworkReply as well.</span>
+        <span class="c1"># We could avoid that by disconnecting all the old signals, but it</span>
+        <span class="c1"># would be a confusing contract violation to silently cause those old</span>
+        <span class="c1"># signal subscriptions to stop firing.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">q_reply</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">TransferError</span><span class="p">(</span>
+                <span class="s2">&quot;Transfer instance is already associated with a QReply&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Hang on to the QReply we just got</span>
+        <span class="c1"># * so we can ensure this transfer instance isn&#39;t associated to another</span>
+        <span class="c1"># * to ensure it&#39;s not collected prematurely, since nothing else has it</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">q_reply</span> <span class="o">=</span> <span class="n">q_reply</span>
+
+        <span class="c1"># In order of importance, for what little it&#39;s worth; since there is a</span>
+        <span class="c1"># period after Qt request sent and before QReply signals are connected</span>
+        <span class="n">signal_mapping</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span><span class="s2">&quot;finished&quot;</span><span class="p">,</span> <span class="s2">&quot;on_finished&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;error&quot;</span><span class="p">,</span> <span class="s2">&quot;on_error&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;uploadProgress&quot;</span><span class="p">,</span> <span class="s2">&quot;_on_upload_progress&quot;</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;downloadProgress&quot;</span><span class="p">,</span> <span class="s2">&quot;_on_download_progress&quot;</span><span class="p">),</span>
+        <span class="p">]</span>
+        <span class="k">for</span> <span class="n">signal_name</span><span class="p">,</span> <span class="n">method_name</span> <span class="ow">in</span> <span class="n">signal_mapping</span><span class="p">:</span>
+            <span class="n">signal</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">q_reply</span><span class="p">,</span> <span class="n">signal_name</span><span class="p">)</span>
+            <span class="n">method</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method_name</span><span class="p">)</span>
+            <span class="n">signal</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">method</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Connected signals&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Transfer.close"><a class="viewcode-back" href="../../../../reference/because.interfaces.qt.transfer.html#because.interfaces.qt.transfer.Transfer.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;close&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Prevent timeout callback firing</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_stop_timer</span><span class="p">()</span>
+
+        <span class="c1"># If we close while still running, intent is abort.</span>
+        <span class="c1"># Yes, this is different from the Qt API!</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">q_reply</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">q_reply</span><span class="o">.</span><span class="n">isRunning</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">q_reply</span><span class="o">.</span><span class="n">abort</span><span class="p">()</span>
+
+        <span class="c1"># Prevent further callback access through self</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_on_finished</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_on_progress</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Close the QBuffer</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_q_buffer</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_q_buffer</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="c1"># Empty the QByteArray to prevent further access</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_q_array</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_q_array</span><span class="o">.</span><span class="n">truncate</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="c1"># Prevent further reads from the QNetworkReply</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">q_reply</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">q_reply</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="c1"># Break references to ensure Qt objects can be collected</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_q_array</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_q_buffer</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_q_timer</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">q_reply</span> <span class="o">=</span> <span class="kc">None</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Boundless.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

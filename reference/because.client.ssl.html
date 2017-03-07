@@ -1,0 +1,148 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>because.client.ssl module &#8212; because 0.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="because.client.transfer module" href="because.client.transfer.html" />
+    <link rel="prev" title="because.client.service module" href="because.client.service.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-because.client.ssl">
+<span id="because-client-ssl-module"></span><h1>because.client.ssl module<a class="headerlink" href="#module-because.client.ssl" title="Permalink to this headline">¶</a></h1>
+<p>Helpers for doing HTTP using SSL.</p>
+<p>This really only arises as a way of mitigating the huge number of parameters
+that some HTTP APIs offer for customizing the behavior of TLS/SSL. Instead of
+passing 43 arguments to Client, you can just pass whichever ones apply to your
+implementation to your implementation&#8217;s flavor of SSLConfig, and pass that to
+the Client so I can pretend that Client is simpler than it is.</p>
+<dl class="exception">
+<dt id="because.client.ssl.InvalidSSLConfig">
+<em class="property">exception </em><code class="descclassname">because.client.ssl.</code><code class="descname">InvalidSSLConfig</code><span class="sig-paren">(</span><em>message</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/client/ssl.html#InvalidSSLConfig"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.client.ssl.InvalidSSLConfig" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="because.base.errors.html#because.base.errors.InvalidObject" title="because.base.errors.InvalidObject"><code class="xref py py-class docutils literal"><span class="pre">because.base.errors.InvalidObject</span></code></a></p>
+<p>Raised when SSL configuration was specified that won&#8217;t be understood.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="because.client.ssl.SSLConfig">
+<em class="property">class </em><code class="descclassname">because.client.ssl.</code><code class="descname">SSLConfig</code><span class="sig-paren">(</span><em>protocol=None</em>, <em>private_key=None</em>, <em>private_key_algorithm=None</em>, <em>private_key_encoding=None</em>, <em>private_key_pass_phrase=None</em>, <em>ssl_options=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/client/ssl.html#SSLConfig"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.client.ssl.SSLConfig" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<p>Automates QSslConfiguration.set* calls and ensure that they happen up
+front, which is important when some may have no effect later.</p>
+<p>Hides the dance of creating a QSslKey.</p>
+<p>Makes it easier to set SSL options, and sets defaults marked in Qt docs as
+more secure, so that less secure options must be explicitly specified.</p>
+<dl class="attribute">
+<dt id="because.client.ssl.SSLConfig.default_ssl_options">
+<code class="descname">default_ssl_options</code><em class="property"> = {'legacy_renegotiation': False, 'empty_fragments': False, 'compression': False}</em><a class="headerlink" href="#because.client.ssl.SSLConfig.default_ssl_options" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="because.client.ssl.SSLKey">
+<em class="property">class </em><code class="descclassname">because.client.ssl.</code><code class="descname">SSLKey</code><span class="sig-paren">(</span><em>data</em>, <em>pass_phrase=b''</em>, <em>algorithm='dsa'</em>, <em>encoding='pem'</em>, <em>key_type='private'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/client/ssl.html#SSLKey"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.client.ssl.SSLKey" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<p>TBD.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="because.client.ssl.SSLProtocol">
+<em class="property">class </em><code class="descclassname">because.client.ssl.</code><code class="descname">SSLProtocol</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/client/ssl.html#SSLProtocol"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.client.ssl.SSLProtocol" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<p>TBD.</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="because.html">Because API Reference</a><ul>
+  <li><a href="because.client.html">because.client package</a><ul>
+      <li>Previous: <a href="because.client.service.html" title="previous chapter">because.client.service module</a></li>
+      <li>Next: <a href="because.client.transfer.html" title="next chapter">because.client.transfer module</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/reference/because.client.ssl.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Boundless.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+      |
+      <a href="../_sources/reference/because.client.ssl.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
