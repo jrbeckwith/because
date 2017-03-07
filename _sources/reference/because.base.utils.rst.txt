@@ -1,0 +1,7 @@
+because.base.utils module
+=========================
+
+.. automodule:: because.base.utils
+    :members:
+    :undoc-members:
+    :show-inheritance:

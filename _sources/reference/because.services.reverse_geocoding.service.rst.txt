@@ -1,0 +1,7 @@
+because.services.reverse_geocoding.service module
+=================================================
+
+.. automodule:: because.services.reverse_geocoding.service
+    :members:
+    :undoc-members:
+    :show-inheritance:

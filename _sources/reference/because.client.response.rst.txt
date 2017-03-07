@@ -1,0 +1,7 @@
+because.client.response module
+==============================
+
+.. automodule:: because.client.response
+    :members:
+    :undoc-members:
+    :show-inheritance:

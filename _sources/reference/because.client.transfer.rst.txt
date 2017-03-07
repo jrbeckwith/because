@@ -1,0 +1,7 @@
+because.client.transfer module
+==============================
+
+.. automodule:: because.client.transfer
+    :members:
+    :undoc-members:
+    :show-inheritance:

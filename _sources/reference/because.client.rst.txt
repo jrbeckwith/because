@@ -1,0 +1,21 @@
+because.client package
+======================
+
+.. automodule:: because.client
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+Submodules
+----------
+
+.. toctree::
+
+   because.client.client
+   because.client.headers
+   because.client.request
+   because.client.response
+   because.client.service
+   because.client.ssl
+   because.client.transfer
+

@@ -1,0 +1,7 @@
+because.services.routing.route_parser module
+============================================
+
+.. automodule:: because.services.routing.route_parser
+    :members:
+    :undoc-members:
+    :show-inheritance:

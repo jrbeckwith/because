@@ -1,0 +1,7 @@
+because.base.point module
+=========================
+
+.. automodule:: because.base.point
+    :members:
+    :undoc-members:
+    :show-inheritance:

@@ -1,0 +1,7 @@
+because.base.errors module
+==========================
+
+.. automodule:: because.base.errors
+    :members:
+    :undoc-members:
+    :show-inheritance:

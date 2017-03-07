@@ -1,0 +1,7 @@
+because.client.headers module
+=============================
+
+.. automodule:: because.client.headers
+    :members:
+    :undoc-members:
+    :show-inheritance:

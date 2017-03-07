@@ -1,0 +1,7 @@
+because.boundless.services module
+=================================
+
+.. automodule:: because.boundless.services
+    :members:
+    :undoc-members:
+    :show-inheritance:

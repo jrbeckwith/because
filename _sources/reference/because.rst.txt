@@ -1,0 +1,20 @@
+because package
+===============
+
+.. automodule:: because
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+Subpackages
+-----------
+
+.. toctree::
+
+    because.base
+    because.boundless
+    because.client
+    because.interfaces
+    because.services
+    because.tests
+

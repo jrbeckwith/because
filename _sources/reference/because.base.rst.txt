@@ -1,0 +1,17 @@
+because.base package
+====================
+
+.. automodule:: because.base
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+Submodules
+----------
+
+.. toctree::
+
+   because.base.errors
+   because.base.point
+   because.base.utils
+

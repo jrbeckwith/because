@@ -6,23 +6,27 @@
 because
 =======
 
-``because`` is a library for consuming Boundless HTTP services including 
-:doc:`routing <routing>`,
-:doc:`geocoding <geocoding>`,
-:doc:`reverse geocoding <reverse_geocoding>`,
-and :doc:`basemaps <basemaps>`.
-``because`` wraps these services in high-level interfaces that abstract
-away many of the ugly details, so GIS professionals and programmers can get
-started quickly and focus on how they want to use the data.
+``because`` is a library for using 
+Boundless HTTP services including 
+
+..
+    :doc:`routing <services/routing>`,
+    :doc:`geocoding <services/geocoding>`,
+    :doc:`reverse geocoding <services/reverse_geocoding>`,
+    and :doc:`basemaps <services/basemaps>`.
+
+``because`` wraps these :doc:`services <services>` in high-level interfaces that
+abstract away many of the ugly details, so GIS professionals and programmers
+can get started quickly and focus on how they want to use the data.
 
 If you want to dive right in, feel free to check out the 
 :doc:`Installation Instructions <installation>` 
 and :doc:`Quickstart Tutorial <quickstart>`.
 
-Several interfaces are provided, each tailored to a different environment. For
-example, one interface is tailored for use in most ordinary Python programs and
-adheres to PEP 8, but there is also an interface tailored for use from QGIS
-plugins or other Qt programs which expect to use camelCase,
+Several `interfaces <interfaces>` are provided, each tailored to a different
+environment. For example, one interface is tailored for use in most ordinary
+Python programs and adheres to PEP 8, but there is also an interface tailored
+for use from QGIS plugins or other Qt programs which expect to use camelCase,
 QNetworkAccessManager, QObjects and signals. 
 
 The library provides a "layered API": the core, lower-level components used to
@@ -38,17 +42,29 @@ you need.
     <https://connect.boundlessgeo.com/>`_.
 
 
+`API Reference <reference/modules>`
+
+
 .. toctree::
    :hidden:
-   :maxdepth: 2
+   :maxdepth: 1
    :caption: Contents:
 
    installation
    quickstart
-   routing
-   geocoding
-   reverse_geocoding
-   basemaps
+
+   interfaces
+
+   services/index
+   services
+
+   reference/modules
+
+..
+   services/routing
+   services/geocoding
+   services/reverse_geocoding
+   services/basemaps
 
 ..
     models

@@ -1,0 +1,7 @@
+because.boundless.hosts module
+==============================
+
+.. automodule:: because.boundless.hosts
+    :members:
+    :undoc-members:
+    :show-inheritance:

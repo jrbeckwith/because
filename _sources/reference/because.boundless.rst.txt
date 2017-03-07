@@ -1,0 +1,16 @@
+because.boundless package
+=========================
+
+.. automodule:: because.boundless
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+Submodules
+----------
+
+.. toctree::
+
+   because.boundless.hosts
+   because.boundless.services
+
