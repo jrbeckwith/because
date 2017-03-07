@@ -25,5 +25,14 @@ How can I use it?
 TODO
 
 
+Reference
+---------
 
-.. automodule:: because.services.routing
+.. toctree::
+   :hidden:
+   :maxdepth: 1
+   :caption: Contents:
+
+   ../reference/because.services.routing
+
+:doc:`because.services.routing`

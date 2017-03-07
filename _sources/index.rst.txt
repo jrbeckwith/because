@@ -6,34 +6,24 @@
 because
 =======
 
-``because`` is a library for using 
-Boundless HTTP services including 
 
-..
-    :doc:`routing <services/routing>`,
-    :doc:`geocoding <services/geocoding>`,
-    :doc:`reverse geocoding <services/reverse_geocoding>`,
-    and :doc:`basemaps <services/basemaps>`.
+``because`` is a Python library for using 
+:doc:`BCS HTTP services <services>` including 
+:doc:`routing <services/routing>`,
+:doc:`geocoding <services/geocoding>`,
+:doc:`reverse geocoding <services/reverse_geocoding>`,
+and :doc:`basemaps <services/basemaps>`.
+It wraps these services in high-level interfaces that abstract away
+many of the ugly details, so you can get started quickly and focus on how you
+want to use the data.
 
-``because`` wraps these :doc:`services <services>` in high-level interfaces that
-abstract away many of the ugly details, so GIS professionals and programmers
-can get started quickly and focus on how they want to use the data.
+
+Getting Started
+---------------
 
 If you want to dive right in, feel free to check out the 
 :doc:`Installation Instructions <installation>` 
 and :doc:`Quickstart Tutorial <quickstart>`.
-
-Several `interfaces <interfaces>` are provided, each tailored to a different
-environment. For example, one interface is tailored for use in most ordinary
-Python programs and adheres to PEP 8, but there is also an interface tailored
-for use from QGIS plugins or other Qt programs which expect to use camelCase,
-QNetworkAccessManager, QObjects and signals. 
-
-The library provides a "layered API": the core, lower-level components used to
-make the high-level interfaces are also exposed, for reuse in cases where the
-provided interfaces do not suit your needs. For example, if you just want to
-know how to parse responses from the routing API, you can just use the part
-you need.
 
 .. note::
 
@@ -42,7 +32,28 @@ you need.
     <https://connect.boundlessgeo.com/>`_.
 
 
-`API Reference <reference/modules>`
+Interfaces
+----------
+
+Several :doc:`interfaces <interfaces>` are provided, each tailored to a different
+environment. For example, there is an interface for plain Python, one for
+general use with PyQt, and another tailored for QGIS plugins.
+
+
+Layered API
+-----------
+
+``because`` provides a "layered API": the core, lower-level components used to
+make the high-level interfaces are also exposed, for reuse in cases where the
+high-level interfaces do not suit your needs.
+
+
+API Reference
+-------------
+
+If you are looking for more technical detail on how ``because`` is put
+together, you may be interested in the :doc:`API Reference
+<reference/because>`.
 
 
 .. toctree::
@@ -58,7 +69,7 @@ you need.
    services/index
    services
 
-   reference/modules
+   reference/because
 
 ..
    services/routing
