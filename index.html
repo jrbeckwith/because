@@ -44,31 +44,44 @@
             
   <div class="section" id="because">
 <h1>because<a class="headerlink" href="#because" title="Permalink to this headline">¶</a></h1>
-<p><code class="docutils literal"><span class="pre">because</span></code> is a library for using
-Boundless HTTP services including</p>
-<p><code class="docutils literal"><span class="pre">because</span></code> wraps these <a class="reference internal" href="services.html"><span class="doc">services</span></a> in high-level interfaces that
-abstract away many of the ugly details, so GIS professionals and programmers
-can get started quickly and focus on how they want to use the data.</p>
+<p><code class="docutils literal"><span class="pre">because</span></code> is a Python library for using
+<a class="reference internal" href="services.html"><span class="doc">BCS HTTP services</span></a> including
+<a class="reference internal" href="services/routing.html"><span class="doc">routing</span></a>,
+<a class="reference internal" href="services/geocoding.html"><span class="doc">geocoding</span></a>,
+<a class="reference internal" href="services/reverse_geocoding.html"><span class="doc">reverse geocoding</span></a>,
+and <a class="reference internal" href="services/basemaps.html"><span class="doc">basemaps</span></a>.
+It wraps these services in high-level interfaces that abstract away
+many of the ugly details, so you can get started quickly and focus on how you
+want to use the data.</p>
+<div class="section" id="getting-started">
+<h2>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h2>
 <p>If you want to dive right in, feel free to check out the
 <a class="reference internal" href="installation.html"><span class="doc">Installation Instructions</span></a>
 and <a class="reference internal" href="quickstart.html"><span class="doc">Quickstart Tutorial</span></a>.</p>
-<p>Several <cite>interfaces &lt;interfaces&gt;</cite> are provided, each tailored to a different
-environment. For example, one interface is tailored for use in most ordinary
-Python programs and adheres to PEP 8, but there is also an interface tailored
-for use from QGIS plugins or other Qt programs which expect to use camelCase,
-QNetworkAccessManager, QObjects and signals.</p>
-<p>The library provides a &#8220;layered API&#8221;: the core, lower-level components used to
-make the high-level interfaces are also exposed, for reuse in cases where the
-provided interfaces do not suit your needs. For example, if you just want to
-know how to parse responses from the routing API, you can just use the part
-you need.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">To use Boundless services you will need authentication credentials.
 You can sign up at <a class="reference external" href="https://connect.boundlessgeo.com/">Boundless Connect</a>.</p>
 </div>
-<p><cite>API Reference &lt;reference/modules&gt;</cite></p>
+</div>
+<div class="section" id="interfaces">
+<h2>Interfaces<a class="headerlink" href="#interfaces" title="Permalink to this headline">¶</a></h2>
+<p>Several <a class="reference internal" href="interfaces.html"><span class="doc">interfaces</span></a> are provided, each tailored to a different
+environment. For example, there is an interface for plain Python, one for
+general use with PyQt, and another tailored for QGIS plugins.</p>
+</div>
+<div class="section" id="layered-api">
+<h2>Layered API<a class="headerlink" href="#layered-api" title="Permalink to this headline">¶</a></h2>
+<p><code class="docutils literal"><span class="pre">because</span></code> provides a &#8220;layered API&#8221;: the core, lower-level components used to
+make the high-level interfaces are also exposed, for reuse in cases where the
+high-level interfaces do not suit your needs.</p>
+</div>
+<div class="section" id="api-reference">
+<h2>API Reference<a class="headerlink" href="#api-reference" title="Permalink to this headline">¶</a></h2>
+<p>If you are looking for more technical detail on how <code class="docutils literal"><span class="pre">because</span></code> is put
+together, you may be interested in the <a class="reference internal" href="reference/because.html"><span class="doc">API Reference</span></a>.</p>
 <div class="toctree-wrapper compound">
+</div>
 </div>
 </div>
 <div class="section" id="indices-and-tables">
@@ -88,7 +101,13 @@ You can sign up at <a class="reference external" href="https://connect.boundless
         <div class="sphinxsidebarwrapper">
   <h3><a href="#">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">because</a></li>
+<li><a class="reference internal" href="#">because</a><ul>
+<li><a class="reference internal" href="#getting-started">Getting Started</a></li>
+<li><a class="reference internal" href="#interfaces">Interfaces</a></li>
+<li><a class="reference internal" href="#layered-api">Layered API</a></li>
+<li><a class="reference internal" href="#api-reference">API Reference</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
 </ul>
 <div class="relations">
