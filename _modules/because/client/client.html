@@ -45,7 +45,11 @@
 <span></span><span class="sd">&quot;&quot;&quot;Hold parameters and state for making any number of HTTP requests.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="p">(</span>
+    <span class="n">Any</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="n">ssl</span> <span class="kn">import</span> <span class="nn">SSLConfig</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="n">request</span> <span class="kn">import</span> <span class="nn">Request</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="n">transfer</span> <span class="kn">import</span> <span class="nn">Transfer</span>
 
 
@@ -76,18 +80,16 @@
 
     <span class="c1">#: Class called to make an SSLConfig if none was specified.</span>
     <span class="c1">#: Overriding this is a way of changing how SSL parameters are represented.</span>
-    <span class="n">ssl_config_cls</span> <span class="o">=</span> <span class="n">SSLConfig</span>
+    <span class="n">ssl_config_cls</span> <span class="o">=</span> <span class="n">SSLConfig</span>  <span class="c1"># type: type</span>
+
     <span class="c1"># TODO: if an SSLConfig is passed that is of a different type from this, we</span>
     <span class="c1"># should convert to this to benefit from our own implementation.</span>
 
     <span class="c1">#: Class called to make a Transfer.</span>
     <span class="c1">#: Overriding this is a way of changing the implementation of how requests</span>
     <span class="c1">#: can be performed and managed asynchronously.</span>
-    <span class="n">transfer_cls</span> <span class="o">=</span> <span class="n">Transfer</span>
+    <span class="n">transfer_cls</span> <span class="o">=</span> <span class="n">Transfer</span>  <span class="c1"># type: type</span>
 
-    <span class="c1"># To avoid forcing users to retain their own representations of a policy</span>
-    <span class="c1"># for making requests to repeatedly pass in parameters from, each instance</span>
-    <span class="c1"># of Client is reusable.</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">ssl_config</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -108,6 +110,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">ssl_config</span> <span class="o">=</span> <span class="n">ssl_config</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">ssl_config_cls</span><span class="p">()</span>
 
 <div class="viewcode-block" id="Client.send"><a class="viewcode-back" href="../../../reference/because.client.client.html#because.client.client.Client.send">[docs]</a>    <span class="k">def</span> <span class="nf">send</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
+        <span class="c1"># type: (Request) -&gt; Any</span>
         <span class="sd">&quot;&quot;&quot;Start performing the given request and return a transfer.</span>
 
 <span class="sd">        Ideally, this method does not block on the complete response, so that</span>

@@ -44,12 +44,23 @@
   <h1>Source code for because.interfaces.python.transfer</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span> <span class="k">as</span> <span class="n">Datetime</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="p">(</span>
+    <span class="n">Any</span><span class="p">,</span>
+    <span class="n">Union</span><span class="p">,</span>
+    <span class="n">Optional</span><span class="p">,</span>
+    <span class="n">Tuple</span><span class="p">,</span>
+    <span class="n">List</span><span class="p">,</span>
+    <span class="n">Text</span><span class="p">,</span>
+<span class="p">)</span>
 
+<span class="kn">import</span> <span class="nn">ssl</span>
 <span class="k">try</span><span class="p">:</span>
     <span class="kn">import</span> <span class="nn">http.client</span> <span class="k">as</span> <span class="nn">httplib</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-    <span class="kn">import</span> <span class="nn">httplib</span>
+    <span class="kn">import</span> <span class="nn">httplib</span>  <span class="c1"># type: ignore</span>
 
+<span class="kn">from</span> <span class="nn">because.base.errors</span> <span class="k">import</span> <span class="n">InvalidObject</span>
+<span class="kn">from</span> <span class="nn">because.client.request</span> <span class="k">import</span> <span class="n">Request</span>
 <span class="kn">from</span> <span class="nn">because.client.response</span> <span class="k">import</span> <span class="n">Response</span>
 <span class="kn">from</span> <span class="nn">because.client.headers</span> <span class="k">import</span> <span class="n">Headers</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="n">ssl</span> <span class="kn">import</span> <span class="nn">SSLConfig</span>
@@ -64,9 +75,16 @@
 <span class="sd">    This does not represent HTTP errors, which are successful transfers.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">code</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="c1"># type: (Text, Optional[int]) -&gt; None</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">text</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">code</span> <span class="o">=</span> <span class="n">code</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">TransferError</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">text</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="InvalidTransfer"><a class="viewcode-back" href="../../../../reference/because.interfaces.python.transfer.html#because.interfaces.python.client.InvalidTransfer">[docs]</a><span class="k">class</span> <span class="nc">InvalidTransfer</span><span class="p">(</span><span class="n">InvalidObject</span><span class="p">):</span>
+    <span class="k">pass</span></div>
 
 
 <div class="viewcode-block" id="Transfer"><a class="viewcode-back" href="../../../../reference/because.interfaces.python.transfer.html#because.interfaces.python.client.Transfer">[docs]</a><span class="k">class</span> <span class="nc">Transfer</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -82,6 +100,7 @@
     <span class="n">log</span> <span class="o">=</span> <span class="n">LOG</span><span class="o">.</span><span class="n">getChild</span><span class="p">(</span><span class="s2">&quot;Transfer&quot;</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">ssl_config</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="c1"># type: (Request, Optional[SSLConfig], Optional[logging.Logger]) -&gt; None</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg request:</span>
 <span class="sd">            Request object describing the HTTP request to be performed.</span>
@@ -89,14 +108,15 @@
 <span class="sd">            logger instance to use for logging messages.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Store passed parameters</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">request</span> <span class="o">=</span> <span class="n">request</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ssl_config</span> <span class="o">=</span> <span class="n">ssl_config</span> <span class="ow">or</span> <span class="n">SSLConfig</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">=</span> <span class="n">log</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">log</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">request</span> <span class="o">=</span> <span class="n">request</span>                       <span class="c1"># type: Request</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ssl_config</span> <span class="o">=</span> <span class="n">ssl_config</span> <span class="ow">or</span> <span class="n">SSLConfig</span><span class="p">()</span>  <span class="c1"># type: SSLConfig</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">=</span> <span class="n">log</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">log</span>                   <span class="c1"># type: logging.Logger</span>
         
         <span class="c1"># Initialize internal state</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">response</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">response</span> <span class="o">=</span> <span class="kc">None</span>                         <span class="c1"># type: Optional[Response]</span>
 
 <div class="viewcode-block" id="Transfer.start"><a class="viewcode-back" href="../../../../reference/because.interfaces.python.transfer.html#because.interfaces.python.client.Transfer.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># type: () -&gt; None</span>
         <span class="sd">&quot;&quot;&quot;Begin the transfer.</span>
 
 <span class="sd">        This method allows execution of a transfer to be deferred after its</span>
@@ -110,6 +130,7 @@
         <span class="c1"># TODO: maybe don&#39;t decode, just always store as Text? :/</span>
 
         <span class="k">def</span> <span class="nf">coerce</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+            <span class="c1"># type: (Optional[Union[Text, bytes]]) -&gt; Optional[Text]</span>
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
                 <span class="k">return</span> <span class="n">value</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">value</span>
@@ -123,6 +144,8 @@
         <span class="p">)</span>
 
         <span class="c1"># httplib needs us to preparse the URL. awkward...</span>
+        <span class="k">if</span> <span class="n">url</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidTransfer</span><span class="p">(</span><span class="s2">&quot;falsy url&quot;</span><span class="p">)</span>
         <span class="n">scheme</span><span class="p">,</span> <span class="n">rest</span> <span class="o">=</span> <span class="n">url</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;://&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">prefix</span><span class="p">,</span> <span class="n">path</span> <span class="o">=</span> <span class="n">rest</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
@@ -132,7 +155,7 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="n">host</span><span class="p">,</span> <span class="n">port</span> <span class="o">=</span> <span class="n">prefix</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-            <span class="n">host</span><span class="p">,</span> <span class="n">port</span> <span class="o">=</span> <span class="n">prefix</span><span class="p">,</span> <span class="kc">None</span>
+            <span class="n">host</span><span class="p">,</span> <span class="n">port</span> <span class="o">=</span> <span class="n">prefix</span><span class="p">,</span> <span class="s2">&quot;&quot;</span>
         <span class="k">if</span> <span class="n">scheme</span> <span class="o">==</span> <span class="s2">&quot;http&quot;</span><span class="p">:</span>
             <span class="n">connection</span> <span class="o">=</span> <span class="n">httplib</span><span class="o">.</span><span class="n">HTTPConnection</span><span class="p">(</span>
                 <span class="n">host</span><span class="o">=</span><span class="n">host</span><span class="p">,</span>
@@ -169,7 +192,7 @@
         <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection</span><span class="o">.</span><span class="n">getresponse</span><span class="p">()</span>  <span class="c1"># type: httplib.HTTPResponse</span>
 
         <span class="n">headers_str</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">getheaders</span><span class="p">()</span>  <span class="c1"># type: List[Tuple[str, str]]</span>
-        <span class="k">if</span> <span class="n">headers_str</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">headers_str</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="nb">bytes</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">bool</span><span class="p">(</span><span class="n">headers_str</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">headers_str</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="nb">bytes</span><span class="p">):</span>
             <span class="n">encoding</span> <span class="o">=</span> <span class="s2">&quot;utf-8&quot;</span>
             <span class="n">headers_bytes</span> <span class="o">=</span> <span class="p">[</span>
                 <span class="p">(</span><span class="n">key</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">encoding</span><span class="p">),</span> <span class="n">value</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">encoding</span><span class="p">))</span>
@@ -191,6 +214,7 @@
         <span class="p">)</span>
 
 <div class="viewcode-block" id="Transfer.wait"><a class="viewcode-back" href="../../../../reference/because.interfaces.python.transfer.html#because.interfaces.python.client.Transfer.wait">[docs]</a>    <span class="k">def</span> <span class="nf">wait</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># type: () -&gt; Response</span>
         <span class="sd">&quot;&quot;&quot;Block until transfer is finished, then return a Response.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># No actual wait necessary here, since that already happened in start()</span>
@@ -198,6 +222,7 @@
         <span class="k">return</span> <span class="n">response</span></div>
 
 <div class="viewcode-block" id="Transfer.close"><a class="viewcode-back" href="../../../../reference/because.interfaces.python.transfer.html#because.interfaces.python.client.Transfer.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># type: () -&gt; None</span>
         <span class="sd">&quot;&quot;&quot;Abort the transfer.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div></div>

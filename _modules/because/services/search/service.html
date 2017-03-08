@@ -56,11 +56,11 @@
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># type: () -&gt; None</span>
         <span class="n">endpoints</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;opensearchdescription.xml&quot;</span><span class="p">:</span> <span class="n">Endpoint</span><span class="p">(</span>
+            <span class="s2">u&quot;opensearchdescription.xml&quot;</span><span class="p">:</span> <span class="n">Endpoint</span><span class="p">(</span>
                 <span class="s2">&quot;/search/opensearchdescription.xml&quot;</span><span class="p">,</span>
                 <span class="p">{},</span>
             <span class="p">),</span>
-            <span class="s2">&quot;open&quot;</span><span class="p">:</span> <span class="n">Endpoint</span><span class="p">(</span>
+            <span class="s2">u&quot;open&quot;</span><span class="p">:</span> <span class="n">Endpoint</span><span class="p">(</span>
                 <span class="s2">&quot;/search/open?q=</span><span class="si">{q}</span><span class="s2">&amp;si=</span><span class="si">{si}</span><span class="s2">&amp;c=</span><span class="si">{c}</span><span class="s2">&amp;cat=</span><span class="si">{cat}</span><span class="s2">&quot;</span><span class="p">,</span>
                 <span class="p">{</span>
                     <span class="s2">&quot;q&quot;</span><span class="p">:</span> <span class="n">Text</span><span class="p">,</span>
@@ -69,15 +69,15 @@
                     <span class="s2">&quot;cat&quot;</span><span class="p">:</span> <span class="n">Text</span><span class="p">,</span>
                 <span class="p">}</span>
             <span class="p">),</span>
-            <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="n">Endpoint</span><span class="p">(</span>
+            <span class="s2">u&quot;data&quot;</span><span class="p">:</span> <span class="n">Endpoint</span><span class="p">(</span>
                 <span class="s2">&quot;/search/data/&quot;</span><span class="p">,</span>
                 <span class="p">{},</span>
             <span class="p">),</span>
-            <span class="s2">&quot;categories&quot;</span><span class="p">:</span> <span class="n">Endpoint</span><span class="p">(</span>
+            <span class="s2">u&quot;categories&quot;</span><span class="p">:</span> <span class="n">Endpoint</span><span class="p">(</span>
                 <span class="s2">&quot;/search/categories&quot;</span><span class="p">,</span>
                 <span class="p">{},</span>
             <span class="p">),</span>
-            <span class="s2">&quot;category&quot;</span><span class="p">:</span> <span class="n">Endpoint</span><span class="p">(</span>
+            <span class="s2">u&quot;category&quot;</span><span class="p">:</span> <span class="n">Endpoint</span><span class="p">(</span>
                 <span class="s2">&quot;/search/categories/</span><span class="si">{category}</span><span class="s2">&quot;</span><span class="p">,</span>
                 <span class="p">{</span><span class="s2">&quot;category&quot;</span><span class="p">:</span> <span class="n">Text</span><span class="p">},</span>
             <span class="p">),</span>

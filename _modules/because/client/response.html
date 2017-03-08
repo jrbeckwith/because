@@ -43,7 +43,13 @@
             
   <h1>Source code for because.client.response</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span> <span class="nn">textwrap</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="p">(</span>
+    <span class="n">Any</span><span class="p">,</span>
+    <span class="n">Optional</span><span class="p">,</span>
+    <span class="n">Tuple</span><span class="p">,</span>
+    <span class="n">List</span><span class="p">,</span>
+    <span class="n">Text</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">because.base.utils</span> <span class="k">import</span> <span class="n">consistent_repr</span><span class="p">,</span> <span class="n">PrettyPrintable</span>
 <span class="kn">from</span> <span class="nn">because.base.errors</span> <span class="k">import</span> <span class="n">InvalidObject</span>
 <span class="kn">from</span> <span class="nn">because.client.headers</span> <span class="k">import</span> <span class="n">Headers</span>
@@ -64,7 +70,7 @@
 <span class="sd">    having to be duplicated with minor variations in it.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">body</span><span class="o">=</span><span class="n">b</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
-        <span class="c1"># type: (int, Optional[dict], Optional[bytes]) -&gt; None</span>
+        <span class="c1"># type: (int, Optional[Any], Optional[bytes]) -&gt; None</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg status:</span>
 <span class="sd">            HTTP response status code</span>
@@ -129,38 +135,38 @@
         <span class="p">)</span>
 
 <div class="viewcode-block" id="Response.pretty_tuples"><a class="viewcode-back" href="../../../reference/because.client.response.html#because.client.response.Response.pretty_tuples">[docs]</a>    <span class="k">def</span> <span class="nf">pretty_tuples</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1"># type: () -&gt; List[Tuple[str, Any]]</span>
+        <span class="c1"># type: () -&gt; List[Tuple[Text, Any]]</span>
         <span class="sd">&quot;&quot;&quot;Get a debug representation of attributes as a list of tuples.</span>
 
 <span class="sd">        This is really just used to customize the pretty_text() method provided</span>
 <span class="sd">        by PrettyPrintable.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="p">[</span>
-            <span class="p">(</span><span class="s2">&quot;status&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="p">),</span>
-            <span class="p">(</span><span class="s2">&quot;headers&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">),</span>
-            <span class="p">(</span><span class="s2">&quot;body&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">body</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">u&quot;status&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">status</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">u&quot;headers&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">u&quot;body&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">body</span><span class="p">),</span>
         <span class="p">]</span></div>
 
-<div class="viewcode-block" id="Response.pretty_lines"><a class="viewcode-back" href="../../../reference/because.client.response.html#because.client.response.Response.pretty_lines">[docs]</a>    <span class="k">def</span> <span class="nf">pretty_lines</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pair_sep</span><span class="o">=</span><span class="s2">&quot;: &quot;</span><span class="p">,</span> <span class="n">line_start</span><span class="o">=</span><span class="s2">&quot;  &quot;</span><span class="p">):</span>
-        <span class="c1"># type: (str, str) -&gt; str</span>
+<div class="viewcode-block" id="Response.pretty_lines"><a class="viewcode-back" href="../../../reference/because.client.response.html#because.client.response.Response.pretty_lines">[docs]</a>    <span class="k">def</span> <span class="nf">pretty_lines</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pair_sep</span><span class="o">=</span><span class="s2">u&quot;: &quot;</span><span class="p">,</span> <span class="n">line_start</span><span class="o">=</span><span class="s2">u&quot;  &quot;</span><span class="p">):</span>
+        <span class="c1"># type: (Text, Text) -&gt; List[Text]</span>
         <span class="sd">&quot;&quot;&quot;Get a debug representation of attributes as a list of strings.</span>
 
 <span class="sd">        This is really just used to customize the pretty_text() method provided</span>
 <span class="sd">        by PrettyPrintable, so that each header gets its own line.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pretty_dict</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;body&quot;</span><span class="p">,</span> <span class="s2">&quot;headers&quot;</span><span class="p">]:</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">u&quot;body&quot;</span><span class="p">,</span> <span class="s2">u&quot;headers&quot;</span><span class="p">]:</span>
             <span class="k">del</span> <span class="n">data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
         <span class="n">lines</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">line</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{0}{1}{2}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">pair_sep</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="s2">u&quot;</span><span class="si">{0}{1}{2}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">pair_sep</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
             <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
         <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;headers</span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pair_sep</span><span class="p">))</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">pairs</span><span class="p">():</span>
-            <span class="n">line</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{0}{1}{2}{3}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">line_start</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">pair_sep</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="s2">u&quot;</span><span class="si">{0}{1}{2}{3}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">line_start</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">pair_sep</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
             <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
-        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;body</span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pair_sep</span><span class="p">))</span>
-        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">{0}{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">line_start</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">body</span><span class="p">))</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">u&quot;body</span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pair_sep</span><span class="p">))</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">u&quot;</span><span class="si">{0}{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">line_start</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">body</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">lines</span></div></div>
 </pre></div>
 

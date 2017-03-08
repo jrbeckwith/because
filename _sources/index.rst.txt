@@ -11,7 +11,6 @@ because
 :doc:`BCS HTTP services <services>` including 
 :doc:`routing <services/routing>`,
 :doc:`geocoding <services/geocoding>`,
-:doc:`reverse geocoding <services/reverse_geocoding>`,
 and :doc:`basemaps <services/basemaps>`.
 It wraps these services in high-level interfaces that abstract away
 many of the ugly details, so you can get started quickly and focus on how you
@@ -70,19 +69,6 @@ together, you may be interested in the :doc:`API Reference
    services
 
    reference/because
-
-..
-   services/routing
-   services/geocoding
-   services/reverse_geocoding
-   services/basemaps
-
-..
-    models
-    services
-    qgis
-    qt
-
 
 
 Indices and tables

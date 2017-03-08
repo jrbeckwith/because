@@ -42,11 +42,11 @@
           <div class="body" role="main">
             
   <h1>Source code for because.client.ssl</h1><div class="highlight"><pre>
-<span></span><span class="sd">&quot;&quot;&quot;Helpers for doing HTTP using SSL.</span>
+<span></span><span class="sd">&quot;&quot;&quot;Base classes for interfaces offering HTTP over SSL or TLS.</span>
 
-<span class="sd">This really only arises as a way of mitigating the huge number of parameters</span>
-<span class="sd">that some HTTP APIs offer for customizing the behavior of TLS/SSL. Instead of</span>
-<span class="sd">passing 43 arguments to Client, you can just pass whichever ones apply to your</span>
+<span class="sd">This arises as a way of mitigating the huge number of parameters that some HTTP</span>
+<span class="sd">APIs offer for customizing the behavior of TLS/SSL. Instead of passing 43</span>
+<span class="sd">arguments to Client, you can just pass whichever ones apply to your</span>
 <span class="sd">implementation to your implementation&#39;s flavor of SSLConfig, and pass that to</span>
 <span class="sd">the Client so I can pretend that Client is simpler than it is.</span>
 <span class="sd">&quot;&quot;&quot;</span>
@@ -54,126 +54,60 @@
 <span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Text</span>
 
 
-<div class="viewcode-block" id="InvalidSSLConfig"><a class="viewcode-back" href="../../../reference/because.client.ssl.html#because.client.ssl.InvalidSSLConfig">[docs]</a><span class="k">class</span> <span class="nc">InvalidSSLConfig</span><span class="p">(</span><span class="n">InvalidObject</span><span class="p">):</span>
+<div class="viewcode-block" id="InvalidSSLConfig"><a class="viewcode-back" href="../../../reference/because.client.ssl.html#because.client.client.InvalidSSLConfig">[docs]</a><span class="k">class</span> <span class="nc">InvalidSSLConfig</span><span class="p">(</span><span class="n">InvalidObject</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Raised when SSL configuration was specified that won&#39;t be understood.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">pass</span></div>
 
 
-<span class="c1"># TODO: somehow generic and not just Qt</span>
-<span class="c1"># TODO: look at stdlib</span>
-<span class="c1"># TODO: look at requests</span>
-<span class="c1"># these can probably be strings as-is, but we need tables somewhere for them</span>
-<span class="c1"># Protocols, e.g. SSLV3, SSLV2, TLSV1</span>
-<span class="c1"># Algorithms, e.g. RSA, DSA</span>
-<span class="c1"># Encodings, e.g. PEM, DER</span>
-<span class="c1"># Key types, e.g. private, public</span>
-<span class="c1"># Options</span>
-<span class="c1"># - empty fragments</span>
-<span class="c1"># - session tickets</span>
-<span class="c1"># - compression</span>
-<span class="c1"># - server name indication</span>
-<span class="c1"># - legacy renegotiation</span>
+<div class="viewcode-block" id="SSLKey"><a class="viewcode-back" href="../../../reference/because.client.ssl.html#because.client.client.SSLKey">[docs]</a><span class="k">class</span> <span class="nc">SSLKey</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Represent a key used in an SSL or TLS configuration.</span>
 
-
-
-<div class="viewcode-block" id="SSLProtocol"><a class="viewcode-back" href="../../../reference/because.client.ssl.html#because.client.ssl.SSLProtocol">[docs]</a><span class="k">class</span> <span class="nc">SSLProtocol</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;TBD.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
-        <span class="k">pass</span></div>
-
-
-<div class="viewcode-block" id="SSLKey"><a class="viewcode-back" href="../../../reference/because.client.ssl.html#because.client.ssl.SSLKey">[docs]</a><span class="k">class</span> <span class="nc">SSLKey</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;TBD.</span>
+<span class="sd">    This is partly here to provide a place to put parameters like algorithm,</span>
+<span class="sd">    key encoding, and key type, if they are ever needed by a particular</span>
+<span class="sd">    implementation.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> 
-            <span class="n">pass_phrase</span><span class="o">=</span><span class="n">b</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">algorithm</span><span class="o">=</span><span class="s2">u&quot;dsa&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">u&quot;pem&quot;</span><span class="p">,</span>
-            <span class="n">key_type</span><span class="o">=</span><span class="s2">u&quot;private&quot;</span><span class="p">,</span>
-    <span class="p">):</span>
-        <span class="c1"># type: (bytes, bytes, Text, Text, Text) -&gt; None</span>
-        <span class="c1"># Don&#39;t pass duck types that are likely to be misunderstood</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="n">InvalidSSLConfig</span><span class="p">(</span>
-                <span class="s2">u&quot;encoded key data must be bytes&quot;</span>
-            <span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pass_phrase</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="n">InvalidSSLConfig</span><span class="p">(</span>
-                <span class="s2">u&quot;pass phrase must be bytes&quot;</span>
-            <span class="p">)</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">pass_phrase</span><span class="o">=</span><span class="n">b</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+        <span class="c1"># type: (bytes, bytes) -&gt; None</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">pass_phrase</span> <span class="o">=</span> <span class="n">pass_phrase</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">algorithm</span> <span class="o">=</span> <span class="n">algorithm</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">encoding</span> <span class="o">=</span> <span class="n">encoding</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">key_type</span> <span class="o">=</span> <span class="n">key_type</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pass_phrase</span> <span class="o">=</span> <span class="n">pass_phrase</span></div>
 
 
-<div class="viewcode-block" id="SSLConfig"><a class="viewcode-back" href="../../../reference/because.client.ssl.html#because.client.ssl.SSLConfig">[docs]</a><span class="k">class</span> <span class="nc">SSLConfig</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
+<div class="viewcode-block" id="SSLConfig"><a class="viewcode-back" href="../../../reference/because.client.ssl.html#because.client.client.SSLConfig">[docs]</a><span class="k">class</span> <span class="nc">SSLConfig</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Parameters for setting up whatever SSL configuration is needed.</span>
 
-<span class="sd">    Automates QSslConfiguration.set* calls and ensure that they happen up</span>
-<span class="sd">    front, which is important when some may have no effect later.</span>
-
-<span class="sd">    Hides the dance of creating a QSslKey.</span>
-
-<span class="sd">    Makes it easier to set SSL options, and sets defaults marked in Qt docs as</span>
-<span class="sd">    more secure, so that less secure options must be explicitly specified.</span>
+<span class="sd">    Each implementation offers its own SSLConfig to take care of the details,</span>
+<span class="sd">    hide the dance of working with keys, make it easier to set options,</span>
+<span class="sd">    and use secure defaults.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># TODO:</span>
-    <span class="c1"># setCaCertificates</span>
-    <span class="c1"># setCiphers</span>
-    <span class="c1"># setLocalCertificate</span>
-    <span class="c1"># setDefaultConfiguration?</span>
 
-    <span class="n">default_ssl_options</span> <span class="o">=</span> <span class="p">{</span>
-        <span class="c1"># Prevents BEAST, but &quot;causes problems with a large number of servers&quot;</span>
-        <span class="s2">&quot;empty_fragments&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
-
-        <span class="c1"># Prevents injection of plaintext into SSL session</span>
-        <span class="s2">&quot;legacy_renegotiation&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
-
-        <span class="c1"># Disable compression to prevent CRIME attack</span>
+    <span class="c1">#: Default options to set in this implementation.</span>
+    <span class="c1">#: These should be plain Python types, not implementation-specific types,</span>
+    <span class="c1">#: but otherwise can be arbitrary.</span>
+    <span class="n">default_options</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="c1"># Disable TLS compression to prevent CRIME session hijacking.</span>
+        <span class="c1"># Many browsers never supported it anyway, new FF/Chrome disable it</span>
+        <span class="c1"># e.g. ssl.OP_NO_COMPRESSION, QSsl.SslOptionDisableCompression</span>
         <span class="s2">&quot;compression&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">}</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
-            <span class="n">protocol</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-            <span class="n">private_key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-            <span class="n">private_key_algorithm</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-            <span class="n">private_key_encoding</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-            <span class="n">private_key_pass_phrase</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-            <span class="n">ssl_options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">protocol</span><span class="o">=</span><span class="s2">&quot;default&quot;</span><span class="p">,</span>
+            <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span> <span class="o">=</span> <span class="n">protocol</span> <span class="ow">or</span> <span class="s2">&quot;secureprotocols&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">private_key</span> <span class="o">=</span> <span class="n">private_key</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">private_key_algorithm</span> <span class="o">=</span> <span class="n">private_key_algorithm</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">private_key_encoding</span> <span class="o">=</span> <span class="n">private_key_encoding</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">private_key_pass_phrase</span> <span class="o">=</span> <span class="n">private_key_pass_phrase</span>
+        <span class="c1"># type: (Text, SSLKey, dict) -&gt; None</span>
 
-        <span class="c1"># Start from the defaults, then override them</span>
-        <span class="c1"># This also ensures we are not munging the passed dict</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ssl_options</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_ssl_options</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-        <span class="k">if</span> <span class="n">ssl_options</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">ssl_options</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">ssl_options</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span> <span class="o">=</span> <span class="n">protocol</span> <span class="ow">or</span> <span class="s2">&quot;default&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">key</span>
 
-        <span class="c1"># These internal-use methods just populate q_ssl_config.</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_set_ssl_protocol</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_set_private_key</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_set_ssl_options</span><span class="p">()</span>
-
-    <span class="k">def</span> <span class="nf">_set_private_key</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1"># type: () -&gt; None</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">private_key</span><span class="p">:</span>
-            <span class="n">ssl_key</span> <span class="o">=</span> <span class="n">SSLKey</span><span class="p">(</span>
-                <span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">private_key</span><span class="p">,</span>
-                <span class="n">algorithm</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">private_key_algorithm</span><span class="p">,</span>
-                <span class="n">encoding</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">private_key_encoding</span><span class="p">,</span>
-                <span class="n">pass_phrase</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">private_key_pass_phrase</span><span class="p">,</span>
-            <span class="p">)</span></div>
+        <span class="c1"># Make a defensive copy of defaults, then override them from the arg</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">options</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_options</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">options</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">options</span><span class="p">)</span></div>
 </pre></div>
 
           </div>

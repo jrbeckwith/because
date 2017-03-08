@@ -64,19 +64,50 @@
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># type: () -&gt; None</span>
         <span class="n">endpoints</span> <span class="o">=</span> <span class="p">{</span>
+
+            <span class="c1"># Trailing slash needed if no auth</span>
+            <span class="c1"># Refers to wrapped versions of services</span>
+            <span class="s2">u&quot;metadata&quot;</span><span class="p">:</span> <span class="n">Endpoint</span><span class="p">(</span>
+                <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/routings/&quot;</span><span class="p">,</span>
+            <span class="p">),</span>
             
-            <span class="s2">&quot;latlon&quot;</span><span class="p">:</span> <span class="n">Endpoint</span><span class="p">(</span>
-                <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/route/</span><span class="si">{service}</span><span class="s2">/originx/</span><span class="si">{originx}</span><span class="s2">/originy/</span><span class="si">{originy}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="s2">u&quot;latlon&quot;</span><span class="p">:</span> <span class="n">Endpoint</span><span class="p">(</span>
+                <span class="n">path</span><span class="o">=</span><span class="p">(</span>
+                    <span class="s2">&quot;/route/</span><span class="si">{service}</span><span class="s2">&quot;</span>
+                    <span class="s2">&quot;/originx/</span><span class="si">{origin_x}</span><span class="s2">&quot;</span>
+                    <span class="s2">&quot;/originy/</span><span class="si">{origin_y}</span><span class="s2">&quot;</span>
+                    <span class="s2">&quot;/destinationx/</span><span class="si">{destination_x}</span><span class="s2">&quot;</span>
+                    <span class="s2">&quot;/destinationy/</span><span class="si">{destination_y}</span><span class="s2">&quot;</span>
+                <span class="p">),</span>
                 <span class="n">parameters</span><span class="o">=</span><span class="p">{</span>
                     <span class="s2">&quot;service&quot;</span><span class="p">:</span> <span class="n">WRAPPED_SERVICES</span><span class="p">,</span>
-                    <span class="s2">&quot;originx&quot;</span><span class="p">:</span> <span class="n">Decimal</span><span class="p">,</span>  <span class="c1"># ??</span>
-                    <span class="s2">&quot;originy&quot;</span><span class="p">:</span> <span class="n">Decimal</span><span class="p">,</span>  <span class="c1"># ??</span>
+                    <span class="c1"># not yet sure if Decimal is the right way</span>
+                    <span class="s2">&quot;origin_x&quot;</span><span class="p">:</span> <span class="n">Decimal</span><span class="p">,</span>
+                    <span class="s2">&quot;origin_y&quot;</span><span class="p">:</span> <span class="n">Decimal</span><span class="p">,</span>
+                    <span class="s2">&quot;destination_x&quot;</span><span class="p">:</span> <span class="n">Decimal</span><span class="p">,</span>
+                    <span class="s2">&quot;destination_y&quot;</span><span class="p">:</span> <span class="n">Decimal</span><span class="p">,</span>
+                <span class="p">}</span>
+            <span class="p">),</span>
+
+            <span class="s2">u&quot;address&quot;</span><span class="p">:</span> <span class="n">Endpoint</span><span class="p">(</span>
+                <span class="n">path</span><span class="o">=</span><span class="p">(</span>
+                    <span class="s2">&quot;/route/</span><span class="si">{service}</span><span class="s2">&quot;</span>
+                    <span class="s2">&quot;/originaddress/</span><span class="si">{origin}</span><span class="s2">&quot;</span>
+                    <span class="s2">&quot;/destinationaddress/</span><span class="si">{destination}</span><span class="s2">&quot;</span>
+                <span class="p">),</span>
+                <span class="n">parameters</span><span class="o">=</span><span class="p">{</span>
+                    <span class="s2">&quot;service&quot;</span><span class="p">:</span> <span class="n">WRAPPED_SERVICES</span><span class="p">,</span>
+                    <span class="s2">&quot;origin&quot;</span><span class="p">:</span> <span class="n">Text</span><span class="p">,</span>
+                    <span class="s2">&quot;destination&quot;</span><span class="p">:</span> <span class="n">Text</span><span class="p">,</span>
                 <span class="p">}</span>
             <span class="p">),</span>
 
             <span class="c1"># give origin/destination addresses, get route</span>
-            <span class="s2">&quot;origin_destination&quot;</span><span class="p">:</span> <span class="n">Endpoint</span><span class="p">(</span>
-                <span class="c1"># TODO: ensure urlencoding</span>
+            <span class="s2">u&quot;waypoints&quot;</span><span class="p">:</span> <span class="n">Endpoint</span><span class="p">(</span>
+                <span class="c1"># TODO: ensure urlencoding for the pipes, not just as one off</span>
+                <span class="c1"># TODO: how to encode unlimited waypoints?</span>
+                <span class="c1"># can map &quot;addresses&quot; to Sequence[Text], but have to also</span>
+                <span class="c1"># specify how that is serialized into a URL, kind of gross</span>
                 <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/route/</span><span class="si">{service}</span><span class="s2">/?waypoints=</span><span class="si">{origin}</span><span class="s2">|</span><span class="si">{destination}</span><span class="s2">&quot;</span><span class="p">,</span>
                 <span class="n">parameters</span><span class="o">=</span><span class="p">{</span>
                     <span class="s2">&quot;service&quot;</span><span class="p">:</span> <span class="n">WRAPPED_SERVICES</span><span class="p">,</span>
@@ -85,16 +116,12 @@
                 <span class="p">},</span>
             <span class="p">),</span>
 
-            <span class="c1"># give any number of addresses.</span>
-            <span class="c1"># This isn&#39;t yet encodable because we have to build in the</span>
-            <span class="c1"># join by pipes.</span>
-            <span class="c1"># &quot;addresses&quot;: Endpoint(</span>
-            <span class="c1">#     &quot;/route/{service}/???&quot;,</span>
-            <span class="c1">#     {</span>
-            <span class="c1">#         &quot;service&quot;: WRAPPED_SERVICES,</span>
-            <span class="c1">#         &quot;addresses&quot;: Sequence[Text],</span>
-            <span class="c1">#     },</span>
-            <span class="c1"># )</span>
+            <span class="c1"># Coming soon</span>
+            <span class="s2">u&quot;batch&quot;</span><span class="p">:</span> <span class="n">Endpoint</span><span class="p">(</span>
+                <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/route/</span><span class="si">{service}</span><span class="s2">/batch&quot;</span><span class="p">,</span>
+                <span class="n">parameters</span><span class="o">=</span><span class="p">{</span>
+                <span class="p">},</span>
+            <span class="p">),</span>
         <span class="p">}</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">RoutingService</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span>
             <span class="n">endpoints</span><span class="p">,</span>

@@ -46,26 +46,51 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Text</span>
+<span class="kn">from</span> <span class="nn">decimal</span> <span class="k">import</span> <span class="n">Decimal</span>
 <span class="kn">from</span> <span class="nn">because.services.headers</span> <span class="k">import</span> <span class="n">DEFAULT_HEADERS</span>
 <span class="kn">from</span> <span class="nn">because.client.service</span> <span class="k">import</span> <span class="n">Service</span><span class="p">,</span> <span class="n">Endpoint</span>
 
 
+<span class="n">WRAPPED_SERVICES</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span>
+    <span class="s2">&quot;mapbox&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;mapzen&quot;</span><span class="p">,</span>
+<span class="p">])</span>
+
+
 <div class="viewcode-block" id="GeocodingService"><a class="viewcode-back" href="../../../../reference/because.services.geocoding.service.html#because.services.geocoding.service.GeocodingService">[docs]</a><span class="k">class</span> <span class="nc">GeocodingService</span><span class="p">(</span><span class="n">Service</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Define endpoints for BCS geocoding service.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># type: () -&gt; None</span>
         <span class="n">endpoints</span> <span class="o">=</span> <span class="p">{</span>
 
             <span class="c1"># Give address, get candidate lat/lons</span>
-            <span class="s2">&quot;geocode&quot;</span><span class="p">:</span> <span class="n">Endpoint</span><span class="p">(</span>
+            <span class="s2">u&quot;forward&quot;</span><span class="p">:</span> <span class="n">Endpoint</span><span class="p">(</span>
                 <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/geocode/</span><span class="si">{service}</span><span class="s2">/address/</span><span class="si">{address}</span><span class="s2">&quot;</span><span class="p">,</span>
                 <span class="n">parameters</span><span class="o">=</span><span class="p">{</span>
-                    <span class="s2">&quot;service&quot;</span><span class="p">:</span> <span class="nb">set</span><span class="p">([</span>
-                        <span class="s2">&quot;mapbox&quot;</span><span class="p">,</span>
-                        <span class="s2">&quot;mapzen&quot;</span><span class="p">,</span>
-                    <span class="p">]),</span>
+                    <span class="s2">&quot;service&quot;</span><span class="p">:</span> <span class="n">WRAPPED_SERVICES</span><span class="p">,</span>
                     <span class="s2">&quot;address&quot;</span><span class="p">:</span> <span class="n">Text</span><span class="p">,</span>
                 <span class="p">}</span>
-            <span class="p">)</span>
+            <span class="p">),</span>
+
+            <span class="c1"># Give WGS84 lat/lon, get address</span>
+            <span class="s2">u&quot;reverse&quot;</span><span class="p">:</span> <span class="n">Endpoint</span><span class="p">(</span>
+                <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/geocode/</span><span class="si">{service}</span><span class="s2">/address/x/</span><span class="si">{x}</span><span class="s2">/y/</span><span class="si">{y}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">parameters</span><span class="o">=</span><span class="p">{</span>
+                    <span class="s2">&quot;service&quot;</span><span class="p">:</span> <span class="n">WRAPPED_SERVICES</span><span class="p">,</span>
+                    <span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">Decimal</span><span class="p">,</span>
+                    <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="n">Decimal</span><span class="p">,</span>
+                <span class="p">},</span>
+            <span class="p">),</span>
+
+            <span class="c1"># Coming soon</span>
+            <span class="s2">u&quot;batch&quot;</span><span class="p">:</span> <span class="n">Endpoint</span><span class="p">(</span>
+                <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/geocode/</span><span class="si">{service}</span><span class="s2">/batch&quot;</span><span class="p">,</span>
+                <span class="n">parameters</span><span class="o">=</span><span class="p">{</span>
+                <span class="p">},</span>
+            <span class="p">),</span>
+
         <span class="p">}</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">GeocodingService</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span>
             <span class="n">endpoints</span><span class="p">,</span>

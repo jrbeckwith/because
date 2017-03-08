@@ -15,7 +15,6 @@ the library, check the :doc:`Services API Reference
 
    services/basemaps
    services/geocoding
-   services/reverse_geocoding
    services/routing
    services/search
    services/token

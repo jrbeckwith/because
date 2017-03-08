@@ -149,6 +149,7 @@
             <span class="n">send</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
             <span class="n">log</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
+        <span class="c1"># type: (Request, Any, Any, Any, Any, logging.Logger) -&gt; None</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg request:</span>
 <span class="sd">            Request object describing the HTTP request to be performed.</span>
@@ -404,6 +405,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">redirected</span> <span class="o">=</span> <span class="n">url</span></div>
 
 <div class="viewcode-block" id="Transfer.start"><a class="viewcode-back" href="../../../../reference/because.interfaces.qt.transfer.html#because.interfaces.qt.transfer.Transfer.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># type: () -&gt; None</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">_started</span> <span class="o">=</span> <span class="n">Datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span>
 
         <span class="n">request</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span>

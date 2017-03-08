@@ -44,7 +44,12 @@
   <h1>Source code for because.client.service</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Store specifications of how to access services.</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Text</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="p">(</span>
+    <span class="n">Optional</span><span class="p">,</span>
+    <span class="n">Sequence</span><span class="p">,</span>
+    <span class="n">List</span><span class="p">,</span>
+    <span class="n">Text</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">because.base.errors</span> <span class="k">import</span> <span class="n">InvalidObject</span>
 <span class="kn">from</span> <span class="nn">because.client.headers</span> <span class="k">import</span> <span class="n">Headers</span>
 <span class="kn">from</span> <span class="nn">because.client.request</span> <span class="k">import</span> <span class="n">Request</span>
@@ -114,7 +119,7 @@
         <span class="k">return</span> <span class="n">new</span></div>
     
 <div class="viewcode-block" id="Service.request"><a class="viewcode-back" href="../../../reference/because.client.service.html#because.client.service.Service.request">[docs]</a>    <span class="k">def</span> <span class="nf">request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">endpoint_name</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">body</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="c1"># type: (Text, Text, Text, Optional[dict]) -&gt; Request</span>
+        <span class="c1"># type: (Text, Text, Text, Optional[dict], Optional[bytes]) -&gt; Request</span>
         <span class="sd">&quot;&quot;&quot;Generate a description of an HTTP request.</span>
 
 <span class="sd">        This method can be overridden to customize generated requests for a</span>
@@ -141,7 +146,7 @@
 <span class="sd">    to be used against different deployments, e.g. test vs. prod.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="c1"># type: (Text, Optional[dict], Optional[dict], Optional[Headers]) -&gt; None</span>
+        <span class="c1"># type: (Text, Optional[dict], Optional[List[Text]], Optional[Headers]) -&gt; None</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg path:</span>
 <span class="sd">            A template for constructing relative URIs, as a format string</span>
@@ -205,7 +210,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_headers</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="Endpoint.request"><a class="viewcode-back" href="../../../reference/because.client.service.html#because.client.service.Endpoint.request">[docs]</a>    <span class="k">def</span> <span class="nf">request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">body</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="c1"># type: (Text, Text, Optional[dict[Text, Text]], Optional[Headers]) -&gt; Request</span>
+        <span class="c1"># type: (Text, Text, Optional[dict[Text, Text]], Optional[Headers], Optional[bytes]) -&gt; Request</span>
         <span class="sd">&quot;&quot;&quot;Generate a description of an HTTP request.</span>
 
 <span class="sd">        This method can be overridden to customize generated requests for a</span>
