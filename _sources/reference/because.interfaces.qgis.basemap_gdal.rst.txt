@@ -1,5 +1,5 @@
-because.interfaces.qgis.basemap_gdal module
-===========================================
+because.interfaces.qgis.basemap_gdal
+====================================
 
 .. automodule:: because.interfaces.qgis.basemap_gdal
     :members:

@@ -1,5 +1,5 @@
-because.interfaces.qt.client module
-===================================
+because.interfaces.qt.client
+============================
 
 .. automodule:: because.interfaces.qt.client
     :members:

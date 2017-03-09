@@ -122,6 +122,13 @@
                 <span class="n">parameters</span><span class="o">=</span><span class="p">{</span>
                 <span class="p">},</span>
             <span class="p">),</span>
+
+            <span class="s2">u&quot;batch_status&quot;</span><span class="p">:</span> <span class="n">Endpoint</span><span class="p">(</span>
+                <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/route/</span><span class="si">{service}</span><span class="s2">/batch/</span><span class="si">{uuid}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">parameters</span><span class="o">=</span><span class="p">{</span>
+                    <span class="s2">&quot;uuid&quot;</span><span class="p">:</span> <span class="n">Text</span><span class="p">,</span>
+                <span class="p">},</span>
+            <span class="p">),</span>
         <span class="p">}</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">RoutingService</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span>
             <span class="n">endpoints</span><span class="p">,</span>

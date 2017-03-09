@@ -1,13 +1,10 @@
-because.boundless package
-=========================
+because.boundless
+=================
 
 .. automodule:: because.boundless
     :members:
     :undoc-members:
     :show-inheritance:
-
-Submodules
-----------
 
 .. toctree::
 

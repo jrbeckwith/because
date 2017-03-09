@@ -1,5 +1,5 @@
-because.base.utils module
-=========================
+because.base.utils
+==================
 
 .. automodule:: because.base.utils
     :members:

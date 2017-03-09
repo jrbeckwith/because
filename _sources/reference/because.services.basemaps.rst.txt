@@ -1,13 +1,10 @@
-because.services.basemaps package
-=================================
+because.services.basemaps
+=========================
 
 .. automodule:: because.services.basemaps
     :members:
     :undoc-members:
     :show-inheritance:
-
-Submodules
-----------
 
 .. toctree::
 

@@ -1,13 +1,10 @@
-because.interfaces.qt package
-=============================
+because.interfaces.qt
+=====================
 
 .. automodule:: because.interfaces.qt
     :members:
     :undoc-members:
     :show-inheritance:
-
-Submodules
-----------
 
 .. toctree::
 

@@ -1,13 +1,10 @@
-because.services.geocoding package
-==================================
+because.services.geocoding
+==========================
 
 .. automodule:: because.services.geocoding
     :members:
     :undoc-members:
     :show-inheritance:
-
-Submodules
-----------
 
 .. toctree::
 

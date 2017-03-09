@@ -1,5 +1,5 @@
-because.client.transfer module
-==============================
+because.client.transfer
+=======================
 
 .. automodule:: because.client.transfer
     :members:

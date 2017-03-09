@@ -1,13 +1,10 @@
-because.services.token package
-==============================
+because.services.token
+======================
 
 .. automodule:: because.services.token
     :members:
     :undoc-members:
     :show-inheritance:
-
-Submodules
-----------
 
 .. toctree::
 

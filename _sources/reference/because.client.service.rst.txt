@@ -1,5 +1,5 @@
-because.client.service module
-=============================
+because.client.service
+======================
 
 .. automodule:: because.client.service
     :members:

@@ -1,5 +1,5 @@
-because.services.search.service module
-======================================
+because.services.search.service
+===============================
 
 .. automodule:: because.services.search.service
     :members:

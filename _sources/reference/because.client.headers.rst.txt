@@ -1,5 +1,5 @@
-because.client.headers module
-=============================
+because.client.headers
+======================
 
 .. automodule:: because.client.headers
     :members:

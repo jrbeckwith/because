@@ -1,5 +1,5 @@
-because.services.routing.route_parser module
-============================================
+because.services.routing.route_parser
+=====================================
 
 .. automodule:: because.services.routing.route_parser
     :members:

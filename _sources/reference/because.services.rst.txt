@@ -1,27 +1,17 @@
-because.services package
-========================
+because.services
+================
 
 .. automodule:: because.services
     :members:
     :undoc-members:
     :show-inheritance:
 
-Subpackages
------------
-
 .. toctree::
 
     because.services.basemaps
     because.services.geocoding
-    because.services.reverse_geocoding
     because.services.routing
     because.services.search
     because.services.token
-
-Submodules
-----------
-
-.. toctree::
-
-   because.services.headers
+    because.services.headers
 

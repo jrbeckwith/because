@@ -1,5 +1,5 @@
-because.services.routing.route module
-=====================================
+because.services.routing.route
+==============================
 
 .. automodule:: because.services.routing.route
     :members:

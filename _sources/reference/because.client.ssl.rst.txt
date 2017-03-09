@@ -1,5 +1,5 @@
-because.client.ssl module
-=========================
+because.client.ssl
+==================
 
 .. automodule:: because.client.ssl
     :members:

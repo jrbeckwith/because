@@ -1,5 +1,5 @@
-because.interfaces.qt.transfer module
-=====================================
+because.interfaces.qt.transfer
+==============================
 
 .. automodule:: because.interfaces.qt.transfer
     :members:

@@ -1,13 +1,10 @@
-because.client package
-======================
+because.client
+==============
 
 .. automodule:: because.client
     :members:
     :undoc-members:
     :show-inheritance:
-
-Submodules
-----------
 
 .. toctree::
 

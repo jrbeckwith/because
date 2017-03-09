@@ -1,13 +1,10 @@
-because.interfaces.python package
-=================================
+because.interfaces.python
+=========================
 
 .. automodule:: because.interfaces.python
     :members:
     :undoc-members:
     :show-inheritance:
-
-Submodules
-----------
 
 .. toctree::
 

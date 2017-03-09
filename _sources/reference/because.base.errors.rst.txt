@@ -1,5 +1,5 @@
-because.base.errors module
-==========================
+because.base.errors
+===================
 
 .. automodule:: because.base.errors
     :members:

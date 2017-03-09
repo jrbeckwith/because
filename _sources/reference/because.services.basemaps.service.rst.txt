@@ -1,5 +1,5 @@
-because.services.basemaps.service module
-========================================
+because.services.basemaps.service
+=================================
 
 .. automodule:: because.services.basemaps.service
     :members:

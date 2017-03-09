@@ -1,5 +1,5 @@
-because.interfaces.python.ssl module
-====================================
+because.interfaces.python.ssl
+=============================
 
 .. automodule:: because.interfaces.python.ssl
     :members:

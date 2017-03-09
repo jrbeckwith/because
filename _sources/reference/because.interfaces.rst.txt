@@ -1,13 +1,10 @@
-because.interfaces package
-==========================
+because.interfaces
+==================
 
 .. automodule:: because.interfaces
     :members:
     :undoc-members:
     :show-inheritance:
-
-Subpackages
------------
 
 .. toctree::
 

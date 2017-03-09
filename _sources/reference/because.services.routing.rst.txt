@@ -1,13 +1,10 @@
-because.services.routing package
-================================
+because.services.routing
+========================
 
 .. automodule:: because.services.routing
     :members:
     :undoc-members:
     :show-inheritance:
-
-Submodules
-----------
 
 .. toctree::
 

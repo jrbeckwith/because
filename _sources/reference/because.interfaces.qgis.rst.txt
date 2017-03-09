@@ -1,13 +1,10 @@
-because.interfaces.qgis package
-===============================
+because.interfaces.qgis
+=======================
 
 .. automodule:: because.interfaces.qgis
     :members:
     :undoc-members:
     :show-inheritance:
-
-Submodules
-----------
 
 .. toctree::
 

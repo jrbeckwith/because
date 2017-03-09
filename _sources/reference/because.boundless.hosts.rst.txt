@@ -1,5 +1,5 @@
-because.boundless.hosts module
-==============================
+because.boundless.hosts
+=======================
 
 .. automodule:: because.boundless.hosts
     :members:

@@ -1,5 +1,5 @@
-because.interfaces.qt.ssl module
-================================
+because.interfaces.qt.ssl
+=========================
 
 .. automodule:: because.interfaces.qt.ssl
     :members:

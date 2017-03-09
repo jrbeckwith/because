@@ -1,5 +1,5 @@
-because.boundless.services module
-=================================
+because.boundless.services
+==========================
 
 .. automodule:: because.boundless.services
     :members:

@@ -1,5 +1,5 @@
-because.services.geocoding.geocode module
-=========================================
+because.services.geocoding.geocode
+==================================
 
 .. automodule:: because.services.geocoding.geocode
     :members:
