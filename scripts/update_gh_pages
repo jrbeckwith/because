@@ -1,0 +1,269 @@
+#!/usr/bin/env python
+import os
+import sys
+import shutil
+import tempfile
+import textwrap
+import subprocess
+
+
+DEBUG = True
+
+
+class Error(Exception):
+    """Raised when run() detects something didn't go perfectly.
+    """
+    def __init__(self, command, returncode, stderr):
+        self.command = command
+        self.returncode = returncode
+        self.stderr = stderr
+
+
+class Oops(Exception):
+    """Raised when a wrong condition was detected on a specific check.
+    """
+    def __init__(self, message, explanation=None):
+        self.message = message
+        self.explanation = explanation
+
+
+def run(command, php=False):
+    """Simple wrapper to run commands for this script
+    """
+    if DEBUG:
+        print("Run: {0!r}".format(command))
+    process = subprocess.run(
+        command, 
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE
+    )
+    if process.returncode != 0 or process.stderr and not php:
+        raise Error(command, process.returncode, process.stderr)
+    return process
+
+
+def good(message):
+    """Used to trace progress for the user.
+    """
+    print("Good: {0}".format(message))
+
+
+def _main():
+    """Actual implementation, without exception handling or OS stuff
+    """
+    # Compute base directories
+    here = os.path.join(os.path.dirname(__file__))
+    parent = os.path.abspath(os.path.join(here, os.pardir))
+
+    # Ensure we are in the repo, for the benefit of git
+    os.chdir(parent)
+
+    # Sanity check there are no untracked changes
+    command = ["git", "status", "--porcelain"]
+    process = run(command)
+    lines = [line.strip() for line in process.stdout.split(b"\n")]
+    if any(line.startswith(b"?? ") for line in lines):
+        raise Oops(
+            "git has untracked changes",
+            """
+            It isn't safe for this script to continue, because it may cause you
+            to lose files or changes in your git repo that you have not staged
+            or committed in git. Please take care of the untracked changes
+            before running this, by either committing or discarding all
+            untracked changes.
+            """
+        )
+    good("No untracked changes")
+
+    # Sanity check there are no staged uncommitted changes
+    command = ["git", "diff-index", "--quiet", "HEAD", "--"]
+    try:
+        run(command)
+    except Error as error:
+        # don't know what stderr means or codes other than 1
+        if error.stderr or error.returncode != 1:
+            raise
+        raise Oops(
+            "git has uncommitted changes",
+            """
+            It isn't safe for this script to continue, because it may cause you
+            to lose files or changes in your git repo that you have not
+            committed in git. Please take care of the staged changes by
+            committing them or discarding them before you run this script.
+            """
+        )
+    good("No staged uncommitted changes")
+
+    # Store whichever branch we're currently on
+    command = ["git", "rev-parse", "--abbrev-ref", "HEAD"]
+    process = subprocess.run(command, stdout=subprocess.PIPE)
+    branch = process.stdout.strip()
+    if branch != b"master":
+        raise Oops(
+            "not on branch master",
+            """
+            This script doesn't yet know how to switch back to your original
+            branch safely. At least for now, make sure you start from branch
+            master.
+            """
+        )
+    good("On branch master")
+
+    # Have Sphinx build the docs
+    docs = os.path.join(parent, "docs")
+    build = os.path.join(docs, "_build")
+    html = os.path.join(build, "html")
+    # I'd guess make needs ${PWD} to be set particularly
+    os.chdir(docs)
+    command = ["make", "html"]
+    run(command, php=True)
+    index = os.path.join(html, "index.html")
+    if not os.path.isfile(index):
+        raise Oops(
+            "Couldn't find built index.html",
+            """
+            Maybe Sphinx isn't configured correctly?
+            Check this out:
+            {0}
+            """.format(os.listdir(build))
+        )
+    good("Sphinx build succeeded")
+
+    # Copy to a temporary directory so we can copy it back over
+    # after we've checked out gh-pages
+    tempdir = tempfile.mkdtemp()
+    shutil.move(html, tempdir)
+    index2 = os.path.join(tempdir, "html", "index.html")
+    if not os.path.isfile(index2):
+        raise Oops(
+            "Couldn't find copied index.html",
+            "This script messed up the copy step. Sorry."
+        )
+    good("Moved build files to {0!r}".format(tempdir))
+
+    # Check out gh-pages to work on it
+    command = ["git", "checkout", "-q", "gh-pages"]
+    run(command)
+    good("Now on branch gh-pages")
+
+    # Pull in changes from the tempdir using rsync
+    # gotta have the slash or rsync won't use the contents of source
+    temphtml = os.path.join(tempdir, "html")
+    if not temphtml.endswith("/"):
+        temphtml += "/"
+    if parent.endswith("/"):
+        parent = parent.rstrip("/")
+    command = ["rsync", "-av", temphtml, parent]
+    process = run(command)
+    good("Rsync succeeded")
+    print(process.stdout.decode("utf-8"))
+
+    # Clean up the tempdir now that we're done with it
+    shutil.rmtree(tempdir)
+    good("Cleaned up tempdir{0!r}".format(tempdir))
+
+    # Commit the changes to gh-pages
+    os.chdir(parent)
+
+    # for filename in [
+    #         ".nojekyll",
+    #         ".buildinfo",
+    #         "index.html", 
+    #         "genindex.html", 
+    #         "search.html",
+    #         "searchindex.js",
+    #         "objects.inv",
+
+    #         "installation.html",
+    #         "quickstart.html",
+    #         "routing.html",
+    #         "geocoding.html",
+    #         "reverse_geocoding.html",
+    #         "basemaps.html",
+    # ]:
+    forbidden = [".tox", ".git", ".cache", "__pycache__", ".pyc", ".gitignore",
+                 "_build"]
+    special = [".nojekyll", ".buildinfo"]
+    magic = ["modules", "reference", "services"]
+    added = []
+    for path, dirnames, filenames in os.walk("."): 
+        for dirname in dirnames:
+            path = os.path.join(path, dirname)
+            if any(item in path for item in forbidden):
+                continue
+            if os.path.isdir(path):
+                command = ["git", "add", path]
+                run(command)
+
+        for filename in filenames:
+            path = os.path.join(path, filename)
+            if any(item in path for item in forbidden):
+                continue
+            if not path.endswith(("html", "js", "inv")) \
+                    and path not in special \
+                    and not any(m in path for m in magic):
+                continue
+            if os.path.isfile(path):
+                added.append(path)
+                command = ["git", "add", path]
+                run(command)
+
+    # These always change
+    for filename in ["objects.inv", "searchindex.js", "genindex.html",
+                     "py-modindex.html"]:
+        if os.path.isfile(filename):
+            run(["git", "add", filename])
+    
+    for subdir in ["_static", "_sources", "_modules", "reference", "services"]:
+        command = ["git", "add", subdir]
+        run(command)
+
+    good("files staged to git index")
+    command = ["git", "commit", "--allow-empty", "-m", "automated update to gh-pages"]
+    run(command)
+    good("new files committed in gh-pages")
+
+    # Push to GitHub
+    command = ["git", "push", "-q", "origin", "gh-pages"]
+    try:
+        run(command)
+    except Error as error:
+        if error.returncode != 0:
+            raise
+    good("updates pushed to GitHub")
+
+    # Check out the original branch
+    command = ["git", "checkout", "-q", branch]
+    run(command)
+    good("Back in branch {0!r}".format(branch))
+
+
+
+def main():
+    """Isolate exception handling and OS interaction
+    """
+    returncode = 0
+    try:
+        _main()
+    except Oops as error:
+        line = "Oops: {0}".format(error.message)
+        sys.stderr.write(line)
+        if error.explanation:
+            explanation = textwrap.dedent(error.explanation).strip()
+            line = "\n\n{0}\n".format(explanation)
+            sys.stderr.write(line)
+        returncode = 1
+    except Error as error:
+        message = textwrap.dedent(
+            """
+            Command failed: {0!r}
+            status = {1!r}
+            stderr = {2!r}
+            """.format(error.command, error.returncode, error.stderr)
+        )
+        sys.stderr.write(message)
+        returncode = 1
+    sys.exit(returncode)
+
+
+main()
