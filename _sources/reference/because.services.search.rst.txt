@@ -1,10 +1,13 @@
-because.services.search
-=======================
+because.services.search package
+===============================
 
 .. automodule:: because.services.search
     :members:
     :undoc-members:
     :show-inheritance:
+
+Submodules
+----------
 
 .. toctree::
 

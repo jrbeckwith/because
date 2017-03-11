@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>because.client &#8212; because 0.0.0 documentation</title>
+    <title>because.client module &#8212; because 0.0.0 documentation</title>
     
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -26,8 +26,8 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="because.client.client" href="because.client.client.html" />
-    <link rel="prev" title="because.boundless.services" href="because.boundless.services.html" />
+    <link rel="next" title="because.errors module" href="because.errors.html" />
+    <link rel="prev" title="because.bbox module" href="because.bbox.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -44,27 +44,64 @@
           <div class="body" role="main">
             
   <div class="section" id="module-because.client">
-<span id="because-client"></span><h1>because.client<a class="headerlink" href="#module-because.client" title="Permalink to this headline">¶</a></h1>
-<p>Base components for implementing HTTP clients.</p>
-<p>Each subpackage in because.interfaces, like &#8220;qt&#8221; or &#8220;python&#8221;, offers its own
-flavor of Client (which may need its own flavor of SSLConfig, returns its own
-flavor of Transfer, etc.) This package contains base classes that are reused
-across those flavors.</p>
-<p>If you just want to use services to get data, you probably don&#8217;t need anything
-from this subpackage, and may find it confusing.</p>
-<p>If you are implementing a flavor or trying to understand how existing things
-work, you will find this subpackage to be important.</p>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="because.client.client.html">because.client.client</a></li>
-<li class="toctree-l1"><a class="reference internal" href="because.client.headers.html">because.client.headers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="because.client.request.html">because.client.request</a></li>
-<li class="toctree-l1"><a class="reference internal" href="because.client.response.html">because.client.response</a></li>
-<li class="toctree-l1"><a class="reference internal" href="because.client.service.html">because.client.service</a></li>
-<li class="toctree-l1"><a class="reference internal" href="because.client.ssl.html">because.client.ssl</a></li>
-<li class="toctree-l1"><a class="reference internal" href="because.client.transfer.html">because.client.transfer</a></li>
-</ul>
-</div>
+<span id="because-client-module"></span><h1>because.client module<a class="headerlink" href="#module-because.client" title="Permalink to this headline">¶</a></h1>
+<p>Hold parameters and state for making any number of HTTP requests.</p>
+<dl class="class">
+<dt id="because.client.Client">
+<em class="property">class </em><code class="descclassname">because.client.</code><code class="descname">Client</code><span class="sig-paren">(</span><em>ssl_config=None</em>, <em>log=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/client.html#Client"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.client.Client" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<p>Perform HTTP requests according to a described policy.</p>
+<p>Each instance of this class is effectively a bundle of parameters
+describing a policy for making HTTP requests, with methods for making
+requests according to that policy.</p>
+<p>Client collects a lot of parameters so that they can be passed and checked
+just once, as opposed to forcing users to save different things in a bunch
+of variables and repeatedly pass them all in different calls.</p>
+<p>A corollary of this is that, since an instance is meant to be reused any
+number of times, the state on a Client instance should generally be kept to
+a minimum, to avoid undesirable interference between requests (not to
+mention issues for concurrent implementations).</p>
+<p>Client should only contain data pertaining to performance of requests, but
+which are not individual to each request. Specifically, prospectively
+represented requests yet to be performed should be Requests, while
+per-connection state should be in Transfer.</p>
+<p>Client should encapsulate network I/O so that other code can be written in
+a way that is more deterministic and does not couple to the details of that
+I/O. For this reason, it is best if Client implementations are made small
+by extensive reuse of I/O-less components that are easier to test fully.</p>
+<dl class="attribute">
+<dt id="because.client.Client.log">
+<code class="descname">log</code><em class="property"> = &lt;logging.Logger object&gt;</em><a class="headerlink" href="#because.client.Client.log" title="Permalink to this definition">¶</a></dt>
+<dd><p>Default logger, used if no logger is passed for the log parameter.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="because.client.Client.send">
+<code class="descname">send</code><span class="sig-paren">(</span><em>request</em>, <em>subscriber=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/client.html#Client.send"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.client.Client.send" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start performing the given request and return a transfer.</p>
+<p>Ideally, this method does not block on the complete response, so that
+other work can be done, progress can be monitored, etc.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="because.client.Client.ssl_config_cls">
+<code class="descname">ssl_config_cls</code><a class="headerlink" href="#because.client.Client.ssl_config_cls" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class called to make an SSLConfig if none was specified.
+Overriding this is a way of changing how SSL parameters are represented.</p>
+<p>alias of <code class="xref py py-class docutils literal"><span class="pre">SSLConfig</span></code></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="because.client.Client.transfer_cls">
+<code class="descname">transfer_cls</code><a class="headerlink" href="#because.client.Client.transfer_cls" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class called to make a Transfer.
+Overriding this is a way of changing the implementation of how requests
+can be performed and managed asynchronously.</p>
+<p>alias of <code class="xref py py-class docutils literal"><span class="pre">Transfer</span></code></p>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 
 
@@ -76,9 +113,9 @@ work, you will find this subpackage to be important.</p>
 <h3>Related Topics</h3>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
-  <li><a href="because.html">Because API Reference</a><ul>
-      <li>Previous: <a href="because.boundless.services.html" title="previous chapter">because.boundless.services</a></li>
-      <li>Next: <a href="because.client.client.html" title="next chapter">because.client.client</a></li>
+  <li><a href="because.html">because package</a><ul>
+      <li>Previous: <a href="because.bbox.html" title="previous chapter">because.bbox module</a></li>
+      <li>Next: <a href="because.errors.html" title="next chapter">because.errors module</a></li>
   </ul></li>
   </ul></li>
 </ul>

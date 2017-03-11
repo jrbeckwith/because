@@ -43,31 +43,8 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="module-because.boundless.services">
-<span id="because-boundless-services"></span><h1>because.boundless.services<a class="headerlink" href="#module-because.boundless.services" title="Permalink to this headline">¶</a></h1>
-<p>Service interface definitions for services hosted by BCS.</p>
-<p>This module contains only a dictionary called SERVICES.
-Each key is a short alias for a service describing what it&#8217;s about, e.g.
-&#8220;routing&#8221; or &#8220;token&#8221;. Each value is an instance of a subclass of
-because.client.service.Service which defines the endpoint interfaces for that
-service. The description of each endpoint includes details such as path
-templates, path or URL parameter types, and available HTTP methods.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">note:</th><td class="field-body">Service descriptions do not hard-code base URLs, which must be provided</td>
-</tr>
-</tbody>
-</table>
-<p>separately to produce a complete Request. This allows the same service
-definitions to be used across different hosts, and for hosts to be specifiable
-e.g. in local config files.</p>
-<dl class="data">
-<dt id="because.boundless.services.SERVICES">
-<code class="descclassname">because.boundless.services.</code><code class="descname">SERVICES</code><em class="property"> = {'routing': &lt;because.services.routing.service.RoutingService object&gt;, 'search': &lt;because.services.search.service.SearchService object&gt;, 'basemaps': &lt;because.services.basemaps.service.BasemapsService object&gt;, 'geocoding': &lt;because.services.geocoding.service.GeocodingService object&gt;, 'token': &lt;because.services.token.service.TokenService object&gt;}</em><a class="headerlink" href="#because.boundless.services.SERVICES" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
+  <div class="section" id="because-boundless-services">
+<h1>because.boundless.services<a class="headerlink" href="#because-boundless-services" title="Permalink to this headline">¶</a></h1>
 </div>
 
 

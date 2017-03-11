@@ -1,0 +1,404 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>because.headers &#8212; because 0.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for because.headers</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Storage for HTTP request and response headers.</span>
+
+<span class="sd">This storage does not &quot;know&quot; anything about HTTP, it just preserves all the</span>
+<span class="sd">information that may be needed per HTTP standards.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="p">(</span>
+    <span class="n">Any</span><span class="p">,</span>
+    <span class="n">DefaultDict</span><span class="p">,</span>
+    <span class="n">List</span><span class="p">,</span>
+    <span class="n">Optional</span><span class="p">,</span>
+    <span class="n">Sequence</span><span class="p">,</span>
+    <span class="n">Iterator</span><span class="p">,</span>
+    <span class="n">Text</span><span class="p">,</span>
+    <span class="n">Tuple</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">import</span> <span class="nn">collections</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="n">reprs</span> <span class="kn">import</span> <span class="nn">ReprMixin</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="n">pretty</span> <span class="kn">import</span> <span class="nn">PrettyMixin</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="n">utils</span> <span class="kn">import</span> <span class="nn">is_iterable</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="n">errors</span> <span class="kn">import</span> <span class="nn">InvalidObject</span>
+
+
+<div class="viewcode-block" id="InvalidHeaders"><a class="viewcode-back" href="../../reference/because.headers.html#because.headers.InvalidHeaders">[docs]</a><span class="k">class</span> <span class="nc">InvalidHeaders</span><span class="p">(</span><span class="n">InvalidObject</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Raised instead of making a headers object with invalid state.</span>
+
+<span class="sd">    The distinction of this from InvalidHeader is that this is generally raised</span>
+<span class="sd">    when creating a Headers instance, but since InvalidHeader is an instance of</span>
+<span class="sd">    InvalidHeaders the distinction is not so important.</span>
+<span class="sd">    &quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="InvalidHeader"><a class="viewcode-back" href="../../reference/because.headers.html#because.headers.InvalidHeader">[docs]</a><span class="k">class</span> <span class="nc">InvalidHeader</span><span class="p">(</span><span class="n">InvalidHeaders</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Raised instead of modifying a header in an invalid way.</span>
+
+<span class="sd">    This implies that the current operation, if allowed to continue, would make</span>
+<span class="sd">    a headers object with invalid state.</span>
+
+<span class="sd">    This exception subclasses InvalidHeaders so that you can catch problems</span>
+<span class="sd">    with just one header, or catch all problems relating to headers.</span>
+<span class="sd">    &quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="Headers"><a class="viewcode-back" href="../../reference/because.headers.html#because.headers.Headers">[docs]</a><span class="k">class</span> <span class="nc">Headers</span><span class="p">(</span><span class="n">ReprMixin</span><span class="p">,</span> <span class="n">PrettyMixin</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Storage for HTTP headers.</span>
+
+<span class="sd">    This is basically a mutable collection of (name, value) bytestrings,</span>
+<span class="sd">    but it must also satisfy a few special considerations that make it</span>
+<span class="sd">    unsatisfying to use a list of tuples.</span>
+
+<span class="sd">    For efficiency, values must be indexed by header name. Otherwise a list</span>
+<span class="sd">    would have to be traversed, e.g., to find the values of a particular</span>
+<span class="sd">    header, to delete a particular header, to ensure a header is not</span>
+<span class="sd">    duplicated, etc.</span>
+<span class="sd">    </span>
+<span class="sd">    Header names are case-insensitive, so keys have to be internally</span>
+<span class="sd">    normalized.</span>
+
+<span class="sd">    When there are multiple headers of the same name, all the values must be</span>
+<span class="sd">    stored instead of just one. So if you just use a dict, you are eventually</span>
+<span class="sd">    going to find cases where that doesn&#39;t work.</span>
+
+<span class="sd">    Header ordering does not generally matter -- *except* for ordering among</span>
+<span class="sd">    headers with the same name, which must be preserved. So one can&#39;t use sets.</span>
+
+<span class="sd">    Both of those considerations are handled by storing a list for each header</span>
+<span class="sd">    name.</span>
+
+<span class="sd">    This list is exposed to allow operations like insert, append and remove</span>
+<span class="sd">    without writing a lot of new methods on this class.</span>
+
+<span class="sd">    Lastly, it&#39;s not a big deal, but when the same complex kind of list or dict</span>
+<span class="sd">    gets passed around a lot, there tend to be a lot of exposed interfaces</span>
+<span class="sd">    which each have the same largish set of ways to choke on degenerate</span>
+<span class="sd">    structures. If the standard interchange format for headers in your code is</span>
+<span class="sd">    List[Tuple[Text, List[Text]]] there are a lot of things that some code</span>
+<span class="sd">    somewhere could get wrong, so you might as well formalize the arrangement.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pairs</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="c1"># type: (Optional[Sequence[Tuple[Text, Text]]]) -&gt; None</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :arg pairs:</span>
+<span class="sd">            A sequence of (header_name, header_value) tuples, where both</span>
+<span class="sd">            header_name and header_value must be bytes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Set up internal state</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="n">collections</span><span class="o">.</span><span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>  <span class="c1"># type: DefaultDict[Text, list]</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">pairs</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="c1"># Python normally frowns on explicit type checks, but we literally need</span>
+        <span class="c1"># bytes to send over the wire here, or callers will pass stuff that</span>
+        <span class="c1"># needs to be serialized and/or encoded in ways we could only guess.</span>
+        <span class="c1"># The try/except noise is to ensure users get good feedback on errors</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="nb">iter</span><span class="p">(</span><span class="n">pairs</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidHeaders</span><span class="p">(</span>
+                <span class="s2">&quot;cannot initialize with value of type </span><span class="si">{0!r}</span><span class="s2">&quot;</span>
+                <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">pairs</span><span class="p">))</span>
+            <span class="p">)</span>
+        <span class="k">for</span> <span class="n">pair</span> <span class="ow">in</span> <span class="n">pairs</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">pair</span>
+            <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="n">InvalidHeader</span><span class="p">(</span>
+                    <span class="s2">&quot;cannot unpack as pair: </span><span class="si">{0!r}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pair</span><span class="p">)</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="n">InvalidHeader</span><span class="p">(</span><span class="s2">&quot;key is not bytes: </span><span class="si">{0!r}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">))</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="n">InvalidHeader</span><span class="p">(</span><span class="s2">&quot;key is not bytes: </span><span class="si">{0!r}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">))</span>
+            <span class="bp">self</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Headers.copy"><a class="viewcode-back" href="../../reference/because.headers.html#because.headers.Headers.copy">[docs]</a>    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># type: () -&gt; Headers</span>
+        <span class="sd">&quot;&quot;&quot;Create a new instance with the same contents.</span>
+
+<span class="sd">        The main use for this is to make defensive copies of a Headers instance</span>
+<span class="sd">        that you want to pass to another unit without allowing that unit to</span>
+<span class="sd">        make changes. Otherwise, there is normally no reason to use this.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)(</span><span class="n">pairs</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pairs</span><span class="p">()))</span></div>
+
+    <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+        <span class="c1"># type: (Any) -&gt; bool</span>
+        <span class="sd">&quot;&quot;&quot;Compare the contents of two instances, as in h1 == h2.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">bool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">==</span> <span class="n">other</span><span class="o">.</span><span class="n">_data</span><span class="p">)</span>
+
+    <span class="c1"># TODO: ensure defensive copy on all input</span>
+
+    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="c1"># type: (Text) -&gt; List[Text]</span>
+        <span class="sd">&quot;&quot;&quot;Fetch all values under the given key.</span>
+
+<span class="sd">        Always returns a list; if header is not set, this list is empty.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># No defensive copy - return the actual list.</span>
+        <span class="c1"># This means user can append, insert, etc. without having to</span>
+        <span class="c1"># reimplement that stuff.</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="n">key</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span>
+
+    <span class="k">def</span> <span class="nf">__setitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
+        <span class="c1"># type: (Text, List[Text]) -&gt; None</span>
+        <span class="sd">&quot;&quot;&quot;Write all values under the given key.</span>
+
+<span class="sd">        The provided values replace all values previously set.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">InvalidHeader</span><span class="p">(</span><span class="s2">&quot;key must be bytes&quot;</span><span class="p">)</span>
+        <span class="n">stringish</span> <span class="o">=</span> <span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="s2">u&quot;&quot;</span><span class="p">),</span> <span class="nb">type</span><span class="p">(</span><span class="n">b</span><span class="s2">&quot;&quot;</span><span class="p">))</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">stringish</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">InvalidHeader</span><span class="p">(</span><span class="s2">&quot;values cannot have a string type&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_iterable</span><span class="p">(</span><span class="n">values</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">InvalidHeader</span><span class="p">(</span><span class="s2">&quot;values must be iterable&quot;</span><span class="p">)</span>
+        <span class="c1"># Defensive copy/any sequence, order matters, allow duplicate values</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="n">key</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__contains__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="c1"># type: (Text) -&gt; bool</span>
+        <span class="k">return</span> <span class="n">key</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span>
+
+<div class="viewcode-block" id="Headers.set"><a class="viewcode-back" href="../../reference/because.headers.html#because.headers.Headers.set">[docs]</a>    <span class="k">def</span> <span class="nf">set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="c1"># type: (Text, Text) -&gt;  None</span>
+        <span class="sd">&quot;&quot;&quot;Set one value for the given name.</span>
+
+<span class="sd">        The provided value replaces all values previously set.</span>
+
+<span class="sd">        This shortcut simply avoids the need to check for other values and</span>
+<span class="sd">        supply a new list.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">InvalidHeader</span><span class="p">(</span><span class="s2">&quot;value can&#39;t be a list&quot;</span><span class="p">)</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="n">key</span><span class="p">][:]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">assert</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span>
+        <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">==</span> <span class="p">[]</span>
+        <span class="k">assert</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="n">value</span><span class="p">]</span>
+        <span class="k">assert</span> <span class="n">values</span> <span class="o">==</span> <span class="p">[</span><span class="n">value</span><span class="p">]</span>
+        <span class="c1"># assert value == 2, value</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">values</span></div>
+
+        <span class="c1"># assert self._data[key] == [value]</span>
+        <span class="c1"># self[key] = [value]</span>
+
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="Headers.merged"><a class="viewcode-back" href="../../reference/because.headers.html#because.headers.Headers.merged">[docs]</a>    <span class="k">def</span> <span class="nf">merged</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="o">*</span><span class="n">objs</span><span class="p">):</span>
+        <span class="c1"># type: (*Headers) -&gt; Headers</span>
+        <span class="sd">&quot;&quot;&quot;Make a copy with overrides from another object.</span>
+
+<span class="sd">        Where there are no key collisions, the result has keys from all the</span>
+<span class="sd">        passed objects. Otherwise, objects earlier in the list are overridden</span>
+<span class="sd">        from objects later in the list.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">instance</span> <span class="o">=</span> <span class="n">cls</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">objs</span><span class="p">:</span>
+            <span class="c1"># Allow e.g. {} to signify an empty headers list</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">obj</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">values</span> <span class="ow">in</span> <span class="n">obj</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">instance</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">values</span>
+
+        <span class="k">return</span> <span class="n">instance</span></div>
+
+<div class="viewcode-block" id="Headers.unset"><a class="viewcode-back" href="../../reference/because.headers.html#because.headers.Headers.unset">[docs]</a>    <span class="k">def</span> <span class="nf">unset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="c1"># type: (Text) -&gt; None</span>
+        <span class="sd">&quot;&quot;&quot;Remove all values for the given name.</span>
+
+<span class="sd">        If the name isn&#39;t set, this does nothing.</span>
+
+<span class="sd">        This is just a shortcut for a common need.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="n">key</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span></div>
+
+<div class="viewcode-block" id="Headers.add"><a class="viewcode-back" href="../../reference/because.headers.html#because.headers.Headers.add">[docs]</a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="c1"># type: (Text, Text) -&gt; None</span>
+        <span class="sd">&quot;&quot;&quot;Append the given value under the given key.</span>
+
+<span class="sd">        h.add(k, v) is just a nicer spelling for h[k].append(v).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="n">key</span><span class="o">.</span><span class="n">lower</span><span class="p">()]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Headers.keys"><a class="viewcode-back" href="../../reference/because.headers.html#because.headers.Headers.keys">[docs]</a>    <span class="k">def</span> <span class="nf">keys</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># type: () -&gt; Iterator[Text]</span>
+        <span class="sd">&quot;&quot;&quot;Give the keys set in this instance, as dict.keys().</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="n">key</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="Headers.values"><a class="viewcode-back" href="../../reference/because.headers.html#because.headers.Headers.values">[docs]</a>    <span class="k">def</span> <span class="nf">values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># type: () -&gt; List[List[Text]]</span>
+        <span class="sd">&quot;&quot;&quot;Give the values lists set in this instance, as dict.values().</span>
+
+<span class="sd">        Note the subtle distinction here that this gives a list of lists,</span>
+<span class="sd">        with one list for each key, rather than a flat list of values.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">values</span><span class="p">())</span></div>
+
+<div class="viewcode-block" id="Headers.items"><a class="viewcode-back" href="../../reference/because.headers.html#because.headers.Headers.items">[docs]</a>    <span class="k">def</span> <span class="nf">items</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># type: () -&gt; Iterator[Tuple[Text, List[Text]]]</span>
+        <span class="sd">&quot;&quot;&quot;Return (key, values) pairs, as in dict.items.</span>
+
+<span class="sd">        Note the subtle distinction of this from pairs(). items() returns</span>
+<span class="sd">        (key, values) tuples: Tuple[Text, List[Text]]. pairs() returns</span>
+<span class="sd">        (key, value) tuples: Tuple[Text, Text].</span>
+
+<span class="sd">        The capitalization of the keys is normalized on the way out.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="p">(</span><span class="n">key</span><span class="o">.</span><span class="n">capitalize</span><span class="p">(),</span> <span class="n">value</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="Headers.pairs"><a class="viewcode-back" href="../../reference/because.headers.html#because.headers.Headers.pairs">[docs]</a>    <span class="k">def</span> <span class="nf">pairs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># type: () -&gt; Iterator[Tuple[Text, Text]]</span>
+        <span class="sd">&quot;&quot;&quot;Get all of the items in this instance as pairs.</span>
+
+<span class="sd">        Note the subtle distinction of this from items(). items() returns (key,</span>
+<span class="sd">        values) tuples: Tuple[Text, List[Text]]. pairs() returns (key, value)</span>
+<span class="sd">        tuples: Tuple[Text, Text].</span>
+
+<span class="sd">        Returns an iterator of (header_name, header_value) pairs.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">values</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">values</span><span class="p">:</span>
+                <span class="k">yield</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Headers.repr_data"><a class="viewcode-back" href="../../reference/because.headers.html#because.headers.Headers.repr_data">[docs]</a>    <span class="k">def</span> <span class="nf">repr_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="p">([</span>
+            <span class="p">(</span><span class="s2">&quot;pairs&quot;</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pairs</span><span class="p">()))</span>
+        <span class="p">])</span></div>
+
+    <span class="nd">@classmethod</span>
+<div class="viewcode-block" id="Headers.coerce"><a class="viewcode-back" href="../../reference/because.headers.html#because.headers.Headers.coerce">[docs]</a>    <span class="k">def</span> <span class="nf">coerce</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
+        <span class="c1"># type: (Any) -&gt; Headers</span>
+        <span class="sd">&quot;&quot;&quot;Turn the given object into an instance, if it&#39;s obvious how to.</span>
+
+<span class="sd">        Putting this into a separate classmethod/constructor allows the</span>
+<span class="sd">        constructor not to be crazily polymorphic but also allows all kinds of</span>
+<span class="sd">        conceivably sensible conversions in a way that is explicitly marked.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># type: Sequence[Tuple[Text, Text]]</span>
+
+        <span class="c1"># For ordered types, preserve the existing ordering</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">cls</span><span class="p">):</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">pairs</span><span class="p">())</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">collections</span><span class="o">.</span><span class="n">OrderedDict</span><span class="p">):</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">collections</span><span class="o">.</span><span class="n">Sequence</span><span class="p">):</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">obj</span>
+
+        <span class="c1"># Otherwise, sort on ingestion for determinism</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">collections</span><span class="o">.</span><span class="n">Mapping</span><span class="p">):</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">obj</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">collections</span><span class="o">.</span><span class="n">Set</span><span class="p">):</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+
+        <span class="c1"># If all else fails, just complain</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidHeaders</span><span class="p">(</span><span class="s2">&quot;cannot coerce from </span><span class="si">{0!r}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">obj</span><span class="p">)))</span>
+
+        <span class="k">return</span> <span class="n">cls</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Headers.pretty_tuples"><a class="viewcode-back" href="../../reference/because.headers.html#because.headers.Headers.pretty_tuples">[docs]</a>    <span class="k">def</span> <span class="nf">pretty_tuples</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># type: () -&gt; List[Tuple[Text, Any]]</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pairs</span><span class="p">())</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  <li><a href="../because.html">because</a><ul>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Boundless.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

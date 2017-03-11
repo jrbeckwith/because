@@ -1,0 +1,136 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>because.reprs module &#8212; because 0.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="because.request module" href="because.request.html" />
+    <link rel="prev" title="because.pretty module" href="because.pretty.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-because.reprs">
+<span id="because-reprs-module"></span><h1>because.reprs module<a class="headerlink" href="#module-because.reprs" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="because.reprs.consistent_repr">
+<code class="descclassname">because.reprs.</code><code class="descname">consistent_repr</code><span class="sig-paren">(</span><em>obj</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/reprs.html#consistent_repr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.reprs.consistent_repr" title="Permalink to this definition">¶</a></dt>
+<dd><p>repr() which uses the b&#8221;&#8221; prefix on Python2</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="because.reprs.ReprMixin">
+<em class="property">class </em><code class="descclassname">because.reprs.</code><code class="descname">ReprMixin</code><a class="reference internal" href="../_modules/because/reprs.html#ReprMixin"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.reprs.ReprMixin" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<p>Mixin for creating nice __repr__ methods.</p>
+<ol class="arabic simple">
+<li>Define a repr_data() method to return a dict of the attributes you
+want in the repr. If you care about ordering, have this return an
+OrderedDict.</li>
+<li>Inherit this class to get a __repr__ method.</li>
+</ol>
+<p>The provided __repr__ has the following useful properties:</p>
+<ul class="simple">
+<li>It shows important attributes instead of a memory address</li>
+<li>It always orders attributes consistently</li>
+<li>It shows the names of attributes instead of just listing values</li>
+<li>It consistently uses the b&#8221;&#8221; prefix across Python versions</li>
+<li>It resembles a constructor call</li>
+</ul>
+<dl class="method">
+<dt id="because.reprs.ReprMixin.repr_data">
+<code class="descname">repr_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/reprs.html#ReprMixin.repr_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.reprs.ReprMixin.repr_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Override this to specify what data to show in __repr__ returns.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="because.html">because package</a><ul>
+      <li>Previous: <a href="because.pretty.html" title="previous chapter">because.pretty module</a></li>
+      <li>Next: <a href="because.request.html" title="next chapter">because.request module</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/reference/because.reprs.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Boundless.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+      |
+      <a href="../_sources/reference/because.reprs.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

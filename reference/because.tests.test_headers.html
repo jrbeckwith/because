@@ -1,0 +1,211 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>because.tests.test_headers module &#8212; because 0.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="because.tests.test_request module" href="because.tests.test_request.html" />
+    <link rel="prev" title="because.tests.test_frontend module" href="because.tests.test_frontend.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-because.tests.test_headers">
+<span id="because-tests-test-headers-module"></span><h1>because.tests.test_headers module<a class="headerlink" href="#module-because.tests.test_headers" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="because.tests.test_headers.TestHeaders">
+<em class="property">class </em><code class="descclassname">because.tests.test_headers.</code><code class="descname">TestHeaders</code><a class="reference internal" href="../_modules/because/tests/test_headers.html#TestHeaders"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.tests.test_headers.TestHeaders" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<dl class="method">
+<dt id="because.tests.test_headers.TestHeaders.test_add_duplicate">
+<code class="descname">test_add_duplicate</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/tests/test_headers.html#TestHeaders.test_add_duplicate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.tests.test_headers.TestHeaders.test_add_duplicate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="because.tests.test_headers.TestHeaders.test_add_simple">
+<code class="descname">test_add_simple</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/tests/test_headers.html#TestHeaders.test_add_simple"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.tests.test_headers.TestHeaders.test_add_simple" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="because.tests.test_headers.TestHeaders.test_coerce_reasonable">
+<code class="descname">test_coerce_reasonable</code><span class="sig-paren">(</span><em>given</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/tests/test_headers.html#TestHeaders.test_coerce_reasonable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.tests.test_headers.TestHeaders.test_coerce_reasonable" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="because.tests.test_headers.TestHeaders.test_eq">
+<code class="descname">test_eq</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/tests/test_headers.html#TestHeaders.test_eq"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.tests.test_headers.TestHeaders.test_eq" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="because.tests.test_headers.TestHeaders.test_init_empty">
+<code class="descname">test_init_empty</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/tests/test_headers.html#TestHeaders.test_init_empty"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.tests.test_headers.TestHeaders.test_init_empty" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test behavior of an empty instance.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="because.tests.test_headers.TestHeaders.test_init_foolish">
+<code class="descname">test_init_foolish</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/tests/test_headers.html#TestHeaders.test_init_foolish"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.tests.test_headers.TestHeaders.test_init_foolish" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test the result of passing foolish things to the constructor.</p>
+<p>This means things that couldn&#8217;t possibly work.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="because.tests.test_headers.TestHeaders.test_init_nonbytes_key">
+<code class="descname">test_init_nonbytes_key</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/tests/test_headers.html#TestHeaders.test_init_nonbytes_key"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.tests.test_headers.TestHeaders.test_init_nonbytes_key" title="Permalink to this definition">¶</a></dt>
+<dd><p>Verify that headers rejects keys and values that are not bytes.</p>
+<p>Otherwise problems may tend to occur down the line, when the culprit is
+no longer on the call stack.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="because.tests.test_headers.TestHeaders.test_init_nonbytes_value">
+<code class="descname">test_init_nonbytes_value</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/tests/test_headers.html#TestHeaders.test_init_nonbytes_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.tests.test_headers.TestHeaders.test_init_nonbytes_value" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="because.tests.test_headers.TestHeaders.test_init_questionable">
+<code class="descname">test_init_questionable</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/tests/test_headers.html#TestHeaders.test_init_questionable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.tests.test_headers.TestHeaders.test_init_questionable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test the result of passing questionable things to the constructor.</p>
+<p>This means things that people might suppose to work, except we&#8217;re
+intentionally shunting all of the polymorphism into coerce().</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="because.tests.test_headers.TestHeaders.test_init_simple">
+<code class="descname">test_init_simple</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/tests/test_headers.html#TestHeaders.test_init_simple"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.tests.test_headers.TestHeaders.test_init_simple" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test behavior of a simple instance.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="because.tests.test_headers.TestHeaders.test_repr">
+<code class="descname">test_repr</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/tests/test_headers.html#TestHeaders.test_repr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.tests.test_headers.TestHeaders.test_repr" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="because.tests.test_headers.TestHeaders.test_set_overwrite">
+<code class="descname">test_set_overwrite</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/tests/test_headers.html#TestHeaders.test_set_overwrite"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.tests.test_headers.TestHeaders.test_set_overwrite" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="because.tests.test_headers.TestHeaders.test_set_simple">
+<code class="descname">test_set_simple</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/tests/test_headers.html#TestHeaders.test_set_simple"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.tests.test_headers.TestHeaders.test_set_simple" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="because.tests.test_headers.TestHeaders.test_setitem_getitem">
+<code class="descname">test_setitem_getitem</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/tests/test_headers.html#TestHeaders.test_setitem_getitem"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.tests.test_headers.TestHeaders.test_setitem_getitem" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="because.tests.test_headers.TestHeaders.test_setitem_key_foolish">
+<code class="descname">test_setitem_key_foolish</code><span class="sig-paren">(</span><em>key</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/tests/test_headers.html#TestHeaders.test_setitem_key_foolish"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.tests.test_headers.TestHeaders.test_setitem_key_foolish" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="because.tests.test_headers.TestHeaders.test_setitem_multiple">
+<code class="descname">test_setitem_multiple</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/tests/test_headers.html#TestHeaders.test_setitem_multiple"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.tests.test_headers.TestHeaders.test_setitem_multiple" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="because.tests.test_headers.TestHeaders.test_setitem_value_foolish">
+<code class="descname">test_setitem_value_foolish</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/tests/test_headers.html#TestHeaders.test_setitem_value_foolish"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.tests.test_headers.TestHeaders.test_setitem_value_foolish" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="because.tests.test_headers.TestHeaders.test_unset_simple">
+<code class="descname">test_unset_simple</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/tests/test_headers.html#TestHeaders.test_unset_simple"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.tests.test_headers.TestHeaders.test_unset_simple" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="because.html">because package</a><ul>
+  <li><a href="because.tests.html">because.tests package</a><ul>
+      <li>Previous: <a href="because.tests.test_frontend.html" title="previous chapter">because.tests.test_frontend module</a></li>
+      <li>Next: <a href="because.tests.test_request.html" title="next chapter">because.tests.test_request module</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/reference/because.tests.test_headers.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Boundless.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+      |
+      <a href="../_sources/reference/because.tests.test_headers.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -48,7 +48,8 @@
 <span class="kn">from</span> <span class="nn">decimal</span> <span class="k">import</span> <span class="n">Decimal</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Text</span>
 <span class="kn">from</span> <span class="nn">because.services.headers</span> <span class="k">import</span> <span class="n">DEFAULT_HEADERS</span>
-<span class="kn">from</span> <span class="nn">because.client.service</span> <span class="k">import</span> <span class="n">Service</span><span class="p">,</span> <span class="n">Endpoint</span>
+<span class="kn">from</span> <span class="nn">because.service</span> <span class="k">import</span> <span class="n">Service</span><span class="p">,</span> <span class="n">Endpoint</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="n">parse</span> <span class="kn">import</span> <span class="nn">parse</span>
 
 
 <span class="n">WRAPPED_SERVICES</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span>
@@ -108,11 +109,10 @@
                 <span class="c1"># TODO: how to encode unlimited waypoints?</span>
                 <span class="c1"># can map &quot;addresses&quot; to Sequence[Text], but have to also</span>
                 <span class="c1"># specify how that is serialized into a URL, kind of gross</span>
-                <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/route/</span><span class="si">{service}</span><span class="s2">/?waypoints=</span><span class="si">{origin}</span><span class="s2">|</span><span class="si">{destination}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/route/</span><span class="si">{service}</span><span class="s2">/?waypoints=</span><span class="si">{waypoints}</span><span class="s2">&quot;</span><span class="p">,</span>
                 <span class="n">parameters</span><span class="o">=</span><span class="p">{</span>
                     <span class="s2">&quot;service&quot;</span><span class="p">:</span> <span class="n">WRAPPED_SERVICES</span><span class="p">,</span>
-                    <span class="s2">&quot;origin&quot;</span><span class="p">:</span> <span class="n">Text</span><span class="p">,</span>
-                    <span class="s2">&quot;destination&quot;</span><span class="p">:</span> <span class="n">Text</span><span class="p">,</span>
+                    <span class="s2">&quot;waypoints&quot;</span><span class="p">:</span> <span class="n">Text</span><span class="p">,</span>
                 <span class="p">},</span>
             <span class="p">),</span>
 
@@ -133,7 +133,10 @@
         <span class="nb">super</span><span class="p">(</span><span class="n">RoutingService</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span>
             <span class="n">endpoints</span><span class="p">,</span>
             <span class="n">headers</span><span class="o">=</span><span class="n">DEFAULT_HEADERS</span><span class="p">,</span>
-        <span class="p">)</span></div>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="RoutingService.parse"><a class="viewcode-back" href="../../../../reference/because.services.routing.service.html#because.services.routing.service.RoutingService.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">parse</span><span class="p">(</span><span class="n">response</span><span class="p">)</span></div></div>
 </pre></div>
 
           </div>
@@ -145,6 +148,8 @@
 <ul>
   <li><a href="../../../../index.html">Documentation overview</a><ul>
   <li><a href="../../../index.html">Module code</a><ul>
+  <li><a href="../../../because.html">because</a><ul>
+  </ul></li>
   </ul></li>
   </ul></li>
 </ul>

@@ -1,0 +1,163 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>because.frontend module &#8212; because 0.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="because.headers module" href="because.headers.html" />
+    <link rel="prev" title="because.errors module" href="because.errors.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-because.frontend">
+<span id="because-frontend-module"></span><h1>because.frontend module<a class="headerlink" href="#module-because.frontend" title="Permalink to this headline">¶</a></h1>
+<p>Combine boundless service definitions with host definitions to provide a
+very high-level, all-in-one interface for quickstarts.</p>
+<dl class="class">
+<dt id="because.frontend.Frontend">
+<em class="property">class </em><code class="descclassname">because.frontend.</code><code class="descname">Frontend</code><span class="sig-paren">(</span><em>interface='python'</em>, <em>env='dev'</em>, <em>ssl_config=None</em>, <em>log=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/frontend.html#Frontend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.frontend.Frontend" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<dl class="method">
+<dt id="because.frontend.Frontend.basemap">
+<code class="descname">basemap</code><span class="sig-paren">(</span><em>name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/frontend.html#Frontend.basemap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.frontend.Frontend.basemap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the basemap of the specified name.</p>
+<p>If there is no such basemap, returns None.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="because.frontend.Frontend.geocode">
+<code class="descname">geocode</code><span class="sig-paren">(</span><em>address</em>, <em>service='mapbox'</em>, <em>subscriber=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/frontend.html#Frontend.geocode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.frontend.Frontend.geocode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use the geocoding service to geocode an address.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="because.frontend.Frontend.get_basemaps">
+<code class="descname">get_basemaps</code><span class="sig-paren">(</span><em>subscriber=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/frontend.html#Frontend.get_basemaps"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.frontend.Frontend.get_basemaps" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use the basemaps service to enumerate available basemaps.</p>
+<p>For now this has to be called and waited on before doing basemap
+stuff... :(</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="because.frontend.Frontend.headers">
+<code class="descname">headers</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/frontend.html#Frontend.headers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.frontend.Frontend.headers" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="because.frontend.Frontend.login">
+<code class="descname">login</code><span class="sig-paren">(</span><em>username</em>, <em>password</em>, <em>subscriber=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/frontend.html#Frontend.login"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.frontend.Frontend.login" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use the token service to grab an auth token.</p>
+<p>This should be run before other methods.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="because.frontend.Frontend.reverse_geocode">
+<code class="descname">reverse_geocode</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>service='mapbox'</em>, <em>subscriber=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/frontend.html#Frontend.reverse_geocode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.frontend.Frontend.reverse_geocode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use the geocoding service to reverse-geocode a location.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="because.frontend.Frontend.route">
+<code class="descname">route</code><span class="sig-paren">(</span><em>origin</em>, <em>*waypoints</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/frontend.html#Frontend.route"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.frontend.Frontend.route" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use the routing service to get a route through locations/addresses.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="because.frontend.NotLoggedIn">
+<em class="property">exception </em><code class="descclassname">because.frontend.</code><code class="descname">NotLoggedIn</code><a class="reference internal" href="../_modules/because/frontend.html#NotLoggedIn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.frontend.NotLoggedIn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">Exception</span></code></p>
+<p>Raised when non-token requests are made without logging in first.</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="because.html">because package</a><ul>
+      <li>Previous: <a href="because.errors.html" title="previous chapter">because.errors module</a></li>
+      <li>Next: <a href="because.headers.html" title="next chapter">because.headers module</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/reference/because.frontend.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Boundless.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+      |
+      <a href="../_sources/reference/because.frontend.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,5 +1,5 @@
-because.services.headers
-========================
+because.services.headers module
+===============================
 
 .. automodule:: because.services.headers
     :members:

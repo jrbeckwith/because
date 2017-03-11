@@ -1,0 +1,306 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>because.service module &#8212; because 0.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="because.ssl_config module" href="because.ssl_config.html" />
+    <link rel="prev" title="because.result module" href="because.result.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-because.service">
+<span id="because-service-module"></span><h1>because.service module<a class="headerlink" href="#module-because.service" title="Permalink to this headline">¶</a></h1>
+<p>Store specifications of how to access services.</p>
+<dl class="class">
+<dt id="because.service.Endpoint">
+<em class="property">class </em><code class="descclassname">because.service.</code><code class="descname">Endpoint</code><span class="sig-paren">(</span><em>path</em>, <em>parameters=None</em>, <em>methods=None</em>, <em>headers=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/service.html#Endpoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.service.Endpoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<p>Describe how to interact with a single endpoint.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Note:</th><td class="field-body">This interface is still in flux and still has some wrinkles.</td>
+</tr>
+</tbody>
+</table>
+<p>Here, an endpoint is defined as a consistent form for relative URIs,
+representable as a template containing placeholders. This is associated
+with information on how to compose requests against those relative URIs.</p>
+<p>Base URLs are specified separately, allowing the same endpoint definition
+to be used against different deployments, e.g. test vs. prod.</p>
+<dl class="method">
+<dt id="because.service.Endpoint.headers">
+<code class="descname">headers</code><span class="sig-paren">(</span><em>values</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/service.html#Endpoint.headers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.service.Endpoint.headers" title="Permalink to this definition">¶</a></dt>
+<dd><p>This can be overridden to specify headres as a function of passed
+parameters.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="because.service.Endpoint.request">
+<code class="descname">request</code><span class="sig-paren">(</span><em>method</em>, <em>base</em>, <em>values=None</em>, <em>headers=None</em>, <em>body=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/service.html#Endpoint.request"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.service.Endpoint.request" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a description of an HTTP request.</p>
+<p>This method can be overridden to customize generated requests for a
+particular kind of service.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>method</strong> &#8211; </li>
+<li><strong>base</strong> &#8211; Base URL</li>
+<li><strong>values</strong> &#8211; Dictionary of arguments, if any are needed</li>
+<li><strong>headers</strong> &#8211; Optional. Headers that will override any others specified.</li>
+<li><strong>body</strong> &#8211; </li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="because.service.Endpoint.uri">
+<code class="descname">uri</code><span class="sig-paren">(</span><em>values=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/service.html#Endpoint.uri"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.service.Endpoint.uri" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a relative URI that can be appended to a base URL.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>values</strong> &#8211; Dictionary of values for the template.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="because.service.Endpoint.url">
+<code class="descname">url</code><span class="sig-paren">(</span><em>base</em>, <em>values</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/service.html#Endpoint.url"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.service.Endpoint.url" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate an absolute URL for this endpoint.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>url</strong> &#8211; Base URL to append the endpoint&#8217;s relative URI to.</li>
+<li><strong>values</strong> &#8211; Dictionary of arguments.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="because.service.Host">
+<em class="property">class </em><code class="descclassname">because.service.</code><code class="descname">Host</code><span class="sig-paren">(</span><em>url</em>, <em>headers=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/service.html#Host"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.service.Host" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<p>Store information associated with a specific host.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Note:</th><td class="field-body">This interface is still in flux and still has some wrinkles.</td>
+</tr>
+</tbody>
+</table>
+<p>Hosts are passed to methods of Service or Endpoint so that they can convert
+relative URIs into absolute URLs.</p>
+<dl class="method">
+<dt id="because.service.Host.headers">
+<code class="descname">headers</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/service.html#Host.headers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.service.Host.headers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a dict of headers for this host.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="because.service.Host.url">
+<code class="descname">url</code><a class="headerlink" href="#because.service.Host.url" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="because.service.InvalidEndpoint">
+<em class="property">exception </em><code class="descclassname">because.service.</code><code class="descname">InvalidEndpoint</code><span class="sig-paren">(</span><em>message</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/service.html#InvalidEndpoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.service.InvalidEndpoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="because.errors.html#because.errors.InvalidObject" title="because.errors.InvalidObject"><code class="xref py py-class docutils literal"><span class="pre">because.errors.InvalidObject</span></code></a></p>
+</dd></dl>
+
+<dl class="class">
+<dt id="because.service.Parameter">
+<em class="property">class </em><code class="descclassname">because.service.</code><code class="descname">Parameter</code><span class="sig-paren">(</span><em>options=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/service.html#Parameter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.service.Parameter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<p>One parameter, and how to validate it</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Note:</th><td class="field-body">this is completely TBD for now.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="class">
+<dt id="because.service.Service">
+<em class="property">class </em><code class="descclassname">because.service.</code><code class="descname">Service</code><span class="sig-paren">(</span><em>endpoints</em>, <em>headers=None</em>, <em>base=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/service.html#Service"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.service.Service" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<p>Describe how to interact with a collection of related endpoints.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Note:</th><td class="field-body">This interface is still in flux and still has some wrinkles.</td>
+</tr>
+</tbody>
+</table>
+<p>Instances of this class store invariant parameters that are not expected to
+change. It doesn&#8217;t matter if arguments are loaded from config files,
+specified in Python modules, discovered by other requests, etc.</p>
+<p>Base URLs are specified separately at the time URLs or requests are
+generated. This allows the same service definition to be used against
+different deployments, e.g. test vs. prod.</p>
+<p>Associate and hold information on a collection of related endpoints.</p>
+<dl class="method">
+<dt id="because.service.Service.endpoint">
+<code class="descname">endpoint</code><span class="sig-paren">(</span><em>endpoint_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/service.html#Service.endpoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.service.Service.endpoint" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="because.service.Service.headers">
+<code class="descname">headers</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/service.html#Service.headers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.service.Service.headers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate headers to be used in a request to this service.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="because.service.Service.request">
+<code class="descname">request</code><span class="sig-paren">(</span><em>endpoint_name</em>, <em>method</em>, <em>base</em>, <em>values=None</em>, <em>body=None</em>, <em>headers=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/service.html#Service.request"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.service.Service.request" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a description of an HTTP request.</p>
+<p>This method can be overridden to customize generated requests for a
+particular kind of service.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="because.service.Service.url">
+<code class="descname">url</code><span class="sig-paren">(</span><em>endpoint_name</em>, <em>base=None</em>, <em>values=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/service.html#Service.url"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.service.Service.url" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a URL to be used in a request to this service.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>base</strong> &#8211; Base URL to use. If a base URL was supplied to the service
+instance, this parameter overrides that. Otherwise, this
+parameters supplies it.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="because.service.URLError">
+<em class="property">exception </em><code class="descclassname">because.service.</code><code class="descname">URLError</code><a class="reference internal" href="../_modules/because/service.html#URLError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.service.URLError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">Exception</span></code></p>
+<p>Insufficient information to build a URL.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="because.service.UnknownEndpoint">
+<em class="property">exception </em><code class="descclassname">because.service.</code><code class="descname">UnknownEndpoint</code><a class="reference internal" href="../_modules/because/service.html#UnknownEndpoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.service.UnknownEndpoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">Exception</span></code></p>
+<p>The given endpoint name is not known, preventing construction of a URL.</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="because.html">because package</a><ul>
+      <li>Previous: <a href="because.result.html" title="previous chapter">because.result module</a></li>
+      <li>Next: <a href="because.ssl_config.html" title="next chapter">because.ssl_config module</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/reference/because.service.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Boundless.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+      |
+      <a href="../_sources/reference/because.service.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

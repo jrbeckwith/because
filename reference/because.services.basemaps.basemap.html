@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>because.services.basemaps.basemap &#8212; because 0.0.0 documentation</title>
+    <title>because.services.basemaps.basemap module &#8212; because 0.0.0 documentation</title>
     
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -26,8 +26,8 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="because.services.basemaps.service" href="because.services.basemaps.service.html" />
-    <link rel="prev" title="because.services.basemaps" href="because.services.basemaps.html" />
+    <link rel="next" title="because.services.basemaps.parse module" href="because.services.basemaps.parse.html" />
+    <link rel="prev" title="because.services.basemaps package" href="because.services.basemaps.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -44,25 +44,19 @@
           <div class="body" role="main">
             
   <div class="section" id="module-because.services.basemaps.basemap">
-<span id="because-services-basemaps-basemap"></span><h1>because.services.basemaps.basemap<a class="headerlink" href="#module-because.services.basemaps.basemap" title="Permalink to this headline">¶</a></h1>
+<span id="because-services-basemaps-basemap-module"></span><h1>because.services.basemaps.basemap module<a class="headerlink" href="#module-because.services.basemaps.basemap" title="Permalink to this headline">¶</a></h1>
 <p>Represent results from the basemap discovery endpoint.</p>
 <dl class="class">
 <dt id="because.services.basemaps.basemap.Basemap">
-<em class="property">class </em><code class="descclassname">because.services.basemaps.basemap.</code><code class="descname">Basemap</code><span class="sig-paren">(</span><em>path</em>, <em>standard='XYZ'</em>, <em>tile_format='PNG'</em>, <em>title=None</em>, <em>attribution='Boundless'</em>, <em>access_list=None</em>, <em>description=''</em>, <em>thumbnail=None</em>, <em>headers=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/services/basemaps/basemap.html#Basemap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.services.basemaps.basemap.Basemap" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">because.services.basemaps.basemap.</code><code class="descname">Basemap</code><span class="sig-paren">(</span><em>url</em>, <em>standard='XYZ'</em>, <em>tile_format='PNG'</em>, <em>title=None</em>, <em>attribution='Boundless'</em>, <em>access_list=None</em>, <em>description=''</em>, <em>thumbnail=None</em>, <em>headers=None</em>, <em>style_url=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/services/basemaps/basemap.html#Basemap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.services.basemaps.basemap.Basemap" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
 <p>Describes a basemap result from the basemaps discovery endpoint.</p>
-<dl class="classmethod">
-<dt id="because.services.basemaps.basemap.Basemap.from_dict">
-<em class="property">classmethod </em><code class="descname">from_dict</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/services/basemaps/basemap.html#Basemap.from_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.services.basemaps.basemap.Basemap.from_dict" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convert from dict representing JSON object from basemap discovery</p>
-</dd></dl>
-
 </dd></dl>
 
 <dl class="exception">
 <dt id="because.services.basemaps.basemap.InvalidBasemap">
 <em class="property">exception </em><code class="descclassname">because.services.basemaps.basemap.</code><code class="descname">InvalidBasemap</code><span class="sig-paren">(</span><em>message</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/services/basemaps/basemap.html#InvalidBasemap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.services.basemaps.basemap.InvalidBasemap" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="because.base.errors.html#because.base.errors.InvalidObject" title="because.base.errors.InvalidObject"><code class="xref py py-class docutils literal"><span class="pre">because.base.errors.InvalidObject</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="because.errors.html#because.errors.InvalidObject" title="because.errors.InvalidObject"><code class="xref py py-class docutils literal"><span class="pre">because.errors.InvalidObject</span></code></a></p>
 <p>Raised when the state of a Basemap instance would be invalid.</p>
 </dd></dl>
 
@@ -77,11 +71,11 @@
 <h3>Related Topics</h3>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
-  <li><a href="because.html">Because API Reference</a><ul>
-  <li><a href="because.services.html">because.services</a><ul>
-  <li><a href="because.services.basemaps.html">because.services.basemaps</a><ul>
-      <li>Previous: <a href="because.services.basemaps.html" title="previous chapter">because.services.basemaps</a></li>
-      <li>Next: <a href="because.services.basemaps.service.html" title="next chapter">because.services.basemaps.service</a></li>
+  <li><a href="../services.html">Services</a><ul>
+  <li><a href="../services/basemaps.html">Basemaps Service</a><ul>
+  <li><a href="because.services.basemaps.html">because.services.basemaps package</a><ul>
+      <li>Previous: <a href="because.services.basemaps.html" title="previous chapter">because.services.basemaps package</a></li>
+      <li>Next: <a href="because.services.basemaps.parse.html" title="next chapter">because.services.basemaps.parse module</a></li>
   </ul></li>
   </ul></li>
   </ul></li>

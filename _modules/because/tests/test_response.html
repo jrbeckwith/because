@@ -1,0 +1,159 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>because.tests.test_response &#8212; because 0.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../',
+        VERSION:     '0.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for because.tests.test_response</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">pytest</span>
+<span class="kn">from</span> <span class="nn">because.response</span> <span class="k">import</span> <span class="p">(</span>
+    <span class="n">Response</span><span class="p">,</span>
+    <span class="n">InvalidResponse</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">because.headers</span> <span class="k">import</span> <span class="p">(</span>
+    <span class="n">InvalidHeaders</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<div class="viewcode-block" id="TestResponse"><a class="viewcode-back" href="../../../reference/because.tests.test_response.html#because.tests.test_response.TestResponse">[docs]</a><span class="k">class</span> <span class="nc">TestResponse</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s2">&quot;value&quot;</span><span class="p">,</span> <span class="p">[</span>
+        <span class="kc">None</span><span class="p">,</span>
+        <span class="mf">3.14</span><span class="p">,</span>
+        <span class="p">[],</span>
+    <span class="p">])</span>
+<div class="viewcode-block" id="TestResponse.test_init_status_unexpected"><a class="viewcode-back" href="../../../reference/because.tests.test_response.html#because.tests.test_response.TestResponse.test_init_status_unexpected">[docs]</a>    <span class="k">def</span> <span class="nf">test_init_status_unexpected</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="n">InvalidResponse</span><span class="p">):</span>
+            <span class="n">Response</span><span class="p">(</span><span class="n">status</span><span class="o">=</span><span class="n">value</span><span class="p">)</span></div>
+
+    <span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s2">&quot;value&quot;</span><span class="p">,</span> <span class="p">[</span>
+        <span class="mf">3.14</span><span class="p">,</span>
+        <span class="s2">u&quot;String&quot;</span><span class="p">,</span>
+    <span class="p">])</span>
+<div class="viewcode-block" id="TestResponse.test_init_headers_unexpected"><a class="viewcode-back" href="../../../reference/because.tests.test_response.html#because.tests.test_response.TestResponse.test_init_headers_unexpected">[docs]</a>    <span class="k">def</span> <span class="nf">test_init_headers_unexpected</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="n">InvalidHeaders</span><span class="p">):</span>
+            <span class="n">Response</span><span class="p">(</span><span class="mi">400</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">value</span><span class="p">)</span></div>
+
+    <span class="nd">@pytest</span><span class="o">.</span><span class="n">mark</span><span class="o">.</span><span class="n">parametrize</span><span class="p">(</span><span class="s2">&quot;value&quot;</span><span class="p">,</span> <span class="p">[</span>
+        <span class="s2">u&quot;this is text, not bytes&quot;</span><span class="p">,</span>
+        <span class="p">(</span><span class="n">b</span><span class="s2">&quot;what&quot;</span><span class="p">,</span> <span class="n">b</span><span class="s2">&quot;a tuple?&quot;</span><span class="p">),</span>
+        <span class="p">{</span><span class="n">b</span><span class="s2">&quot;maybe&quot;</span><span class="p">:</span> <span class="n">b</span><span class="s2">&quot;json?&quot;</span><span class="p">},</span>
+    <span class="p">])</span>
+<div class="viewcode-block" id="TestResponse.test_init_body_unexpected"><a class="viewcode-back" href="../../../reference/because.tests.test_response.html#because.tests.test_response.TestResponse.test_init_body_unexpected">[docs]</a>    <span class="k">def</span> <span class="nf">test_init_body_unexpected</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">pytest</span><span class="o">.</span><span class="n">raises</span><span class="p">(</span><span class="n">InvalidResponse</span><span class="p">):</span>
+            <span class="n">Response</span><span class="p">(</span><span class="n">b</span><span class="s2">&quot;GET&quot;</span><span class="p">,</span> <span class="n">b</span><span class="s2">&quot;/foo&quot;</span><span class="p">,</span> <span class="n">body</span><span class="o">=</span><span class="n">value</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestResponse.test_equal_true"><a class="viewcode-back" href="../../../reference/because.tests.test_response.html#because.tests.test_response.TestResponse.test_equal_true">[docs]</a>    <span class="k">def</span> <span class="nf">test_equal_true</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">requests</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">Response</span><span class="p">(</span><span class="mi">400</span><span class="p">),</span>
+            <span class="n">Response</span><span class="p">(</span><span class="mi">400</span><span class="p">),</span>
+        <span class="p">]</span>
+        <span class="k">assert</span> <span class="n">requests</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">requests</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="TestResponse.test_equal_false"><a class="viewcode-back" href="../../../reference/because.tests.test_response.html#because.tests.test_response.TestResponse.test_equal_false">[docs]</a>    <span class="k">def</span> <span class="nf">test_equal_false</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">requests</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">Response</span><span class="p">(</span><span class="mi">400</span><span class="p">),</span>
+            <span class="n">Response</span><span class="p">(</span><span class="mi">500</span><span class="p">),</span>
+        <span class="p">]</span>
+        <span class="k">assert</span> <span class="n">requests</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">requests</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="TestResponse.test_repr"><a class="viewcode-back" href="../../../reference/because.tests.test_response.html#because.tests.test_response.TestResponse.test_repr">[docs]</a>    <span class="k">def</span> <span class="nf">test_repr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">request</span> <span class="o">=</span> <span class="n">Response</span><span class="p">(</span><span class="mi">400</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="p">[</span>
+            <span class="p">(</span><span class="n">b</span><span class="s2">&quot;Wonky&quot;</span><span class="p">,</span> <span class="n">b</span><span class="s2">&quot;urgh&quot;</span><span class="p">),</span>
+        <span class="p">])</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="nb">repr</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">text</span> <span class="o">==</span> <span class="p">(</span>
+            <span class="s2">&quot;Response(status=400, &quot;</span>
+            <span class="s2">&quot;headers=[(b&#39;Wonky&#39;, b&#39;urgh&#39;)], &quot;</span>
+            <span class="s2">&quot;body=b&#39;&#39;)&quot;</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TestResponse.test_repr_round_trip"><a class="viewcode-back" href="../../../reference/because.tests.test_response.html#because.tests.test_response.TestResponse.test_repr_round_trip">[docs]</a>    <span class="k">def</span> <span class="nf">test_repr_round_trip</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">request</span> <span class="o">=</span> <span class="n">Response</span><span class="p">(</span><span class="mi">400</span><span class="p">,</span> <span class="n">body</span><span class="o">=</span><span class="n">b</span><span class="s2">&quot;fnar&quot;</span><span class="p">)</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="nb">repr</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;eval&#39;ing </span><span class="si">{0!r}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">text</span><span class="p">))</span>
+        <span class="n">clone</span> <span class="o">=</span> <span class="nb">eval</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+        <span class="k">assert</span> <span class="n">clone</span> <span class="o">==</span> <span class="n">request</span></div></div>
+
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  <li><a href="../../because.html">because</a><ul>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Boundless.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

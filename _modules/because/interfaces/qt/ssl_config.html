@@ -1,0 +1,269 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>because.interfaces.qt.ssl_config &#8212; because 0.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '0.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for because.interfaces.qt.ssl_config</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Helpers for doing HTTP using SSL using PyQt APIs.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Text</span>
+
+<span class="c1"># HTTP backend</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">PyQt5.QtNetwork</span> <span class="k">import</span> <span class="p">(</span>
+        <span class="n">QSsl</span><span class="p">,</span>
+        <span class="n">QSslKey</span><span class="p">,</span>
+        <span class="n">QSslConfiguration</span><span class="p">,</span>
+    <span class="p">)</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">PyQt4.QtNetwork</span> <span class="k">import</span> <span class="p">(</span>
+        <span class="n">QSsl</span><span class="p">,</span>
+        <span class="n">QSslKey</span><span class="p">,</span>
+        <span class="n">QSslConfiguration</span><span class="p">,</span>
+    <span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">because.ssl_config</span> <span class="k">import</span> <span class="p">(</span>
+    <span class="n">InvalidSSLConfig</span><span class="p">,</span>
+    <span class="n">SSLKey</span> <span class="k">as</span> <span class="n">_SSLKey</span><span class="p">,</span>
+    <span class="n">SSLConfig</span> <span class="k">as</span> <span class="n">_SSLConfig</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># SSL/TLS versions</span>
+<span class="c1"># (QSsl.SslProtocol)</span>
+<span class="c1"># For now, don&#39;t offer a choice, see if anything else is needed</span>
+<span class="n">_PROTOCOL_CHOICES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="c1"># Default option recommended in Qt docs</span>
+    <span class="s2">u&quot;default&quot;</span><span class="p">:</span> <span class="n">QSsl</span><span class="o">.</span><span class="n">SecureProtocols</span><span class="p">,</span>
+
+    <span class="c1"># Deprecated options for interop</span>
+    <span class="s2">u&quot;ssl v2&quot;</span><span class="p">:</span> <span class="n">QSsl</span><span class="o">.</span><span class="n">SslV2</span><span class="p">,</span>
+    <span class="s2">u&quot;ssl v3&quot;</span><span class="p">:</span> <span class="n">QSsl</span><span class="o">.</span><span class="n">SslV3</span><span class="p">,</span>
+    <span class="c1"># u&quot;tls v1.0&quot;: QSsl.TlsV1_0,</span>
+    <span class="c1"># u&quot;tls v1.1&quot;: QSsl.TlsV1_1,</span>
+    <span class="c1"># u&quot;tls v1.2&quot;: QSsl.TlsV1_2,</span>
+<span class="p">}</span>
+
+<span class="c1"># SSL Options</span>
+<span class="c1"># (QSsl.SslOption)</span>
+<span class="n">_PROTOCOL_OPTIONS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="c1"># n.b.: these are all inverted</span>
+    <span class="s2">u&quot;empty fragments&quot;</span><span class="p">:</span> <span class="n">QSsl</span><span class="o">.</span><span class="n">SslOptionDisableEmptyFragments</span><span class="p">,</span>
+    <span class="s2">u&quot;session tickets&quot;</span><span class="p">:</span> <span class="n">QSsl</span><span class="o">.</span><span class="n">SslOptionDisableSessionTickets</span><span class="p">,</span>
+    <span class="c1"># like ssl.OP_NO_COMPRESSION</span>
+    <span class="s2">u&quot;compression&quot;</span><span class="p">:</span> <span class="n">QSsl</span><span class="o">.</span><span class="n">SslOptionDisableCompression</span><span class="p">,</span>
+    <span class="s2">u&quot;server name indication&quot;</span><span class="p">:</span> <span class="n">QSsl</span><span class="o">.</span><span class="n">SslOptionDisableServerNameIndication</span><span class="p">,</span>
+    <span class="s2">u&quot;legacy renegotiation&quot;</span><span class="p">:</span> <span class="n">QSsl</span><span class="o">.</span><span class="n">SslOptionDisableLegacyRenegotiation</span><span class="p">,</span>
+<span class="p">}</span>
+
+
+<div class="viewcode-block" id="SSLKey"><a class="viewcode-back" href="../../../../reference/because.interfaces.qt.ssl_config.html#because.interfaces.qt.ssl_config.SSLKey">[docs]</a><span class="k">class</span> <span class="nc">SSLKey</span><span class="p">(</span><span class="n">_SSLKey</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Qt-convertable implementation of SSLKey.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">pass_phrase</span><span class="o">=</span><span class="n">b</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+        <span class="c1"># type: (bytes, bytes) -&gt; None</span>
+
+        <span class="c1"># While I&#39;m checking type annotations, callers might not be.</span>
+        <span class="c1"># While duck types are great, PyQt handles them very poorly.</span>
+        <span class="c1"># It&#39;s worth a couple isinstance checks to avoid the segfaults and</span>
+        <span class="c1"># provide diagnostic information.</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">InvalidSSLConfig</span><span class="p">(</span>
+                <span class="s2">u&quot;encoded key data must be bytes&quot;</span>
+            <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">pass_phrase</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">InvalidSSLConfig</span><span class="p">(</span>
+                <span class="s2">u&quot;pass phrase must be bytes&quot;</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pass_phrase</span> <span class="o">=</span> <span class="n">pass_phrase</span>
+
+<div class="viewcode-block" id="SSLKey.to_q_ssl_key"><a class="viewcode-back" href="../../../../reference/because.interfaces.qt.ssl_config.html#because.interfaces.qt.ssl_config.SSLKey.to_q_ssl_key">[docs]</a>    <span class="k">def</span> <span class="nf">to_q_ssl_key</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return a QSslKey.</span>
+
+<span class="sd">        This assumes certain defaults.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># DSA is rarely seen and has no equivalent in httplib.</span>
+        <span class="n">q_algorithm</span> <span class="o">=</span> <span class="n">QSsl</span><span class="o">.</span><span class="n">Rsa</span>  <span class="c1"># type: QSsl.KeyAlgorithm</span>
+
+        <span class="c1"># httplib only seems to use PEM and I haven&#39;t used DER</span>
+        <span class="n">q_encoding</span> <span class="o">=</span> <span class="n">QSsl</span><span class="o">.</span><span class="n">Pem</span>  <span class="c1"># type: QSsl.EncodingFormat</span>
+
+        <span class="n">q_key_type</span> <span class="o">=</span> <span class="n">QSsl</span><span class="o">.</span><span class="n">PrivateKey</span>  <span class="c1"># type: QSsl.KeyType</span>
+        <span class="c1"># q_key_type = QSsl.PublicKey  # type: QSsl.KeyType</span>
+
+        <span class="k">return</span> <span class="n">QSslKey</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">q_algorithm</span><span class="p">,</span> <span class="n">q_encoding</span><span class="p">,</span> <span class="n">q_key_type</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pass_phrase</span><span class="p">,</span>
+        <span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="SSLConfig"><a class="viewcode-back" href="../../../../reference/because.interfaces.qt.ssl_config.html#because.interfaces.qt.ssl_config.SSLConfig">[docs]</a><span class="k">class</span> <span class="nc">SSLConfig</span><span class="p">(</span><span class="n">_SSLConfig</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Qt-based implementation of SSLConfig.</span>
+
+<span class="sd">    This implementation does a few things to help:</span>
+
+<span class="sd">    * Automate QSslConfiguration.set* calls and ensure that they happen up</span>
+<span class="sd">      front, which is important when some may have no effect later.</span>
+
+<span class="sd">    * Hide the dance of creating a QSslKey.</span>
+
+<span class="sd">    * Makes it easier to set SSL options, and sets defaults marked in Qt docs</span>
+<span class="sd">      as more secure, so that less secure options must be explicitly specified.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">default_options</span> <span class="o">=</span> <span class="n">_SSLConfig</span><span class="o">.</span><span class="n">default_options</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">default_options</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
+        <span class="c1"># Prevent injection of plaintext into SSL sessions.</span>
+        <span class="c1"># This option isn&#39;t available for other backends.</span>
+        <span class="s2">&quot;legacy renegotiation&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+
+        <span class="c1"># Prevents BEAST, but &quot;causes problems with a large number of servers&quot;.</span>
+        <span class="c1"># Yet it works with BCS, so we should use it when it&#39;s available.</span>
+        <span class="s2">&quot;empty_fragments&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">})</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">protocol</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">SSLConfig</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span>
+            <span class="n">protocol</span><span class="o">=</span><span class="n">protocol</span><span class="p">,</span>
+            <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span>
+            <span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Set up implementation-specific state...</span>
+
+        <span class="c1"># QSslConfiguration is a bag of data we need to talk to Qt. Its</span>
+        <span class="c1"># attributes must be set using its various setWhatever methods.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_q_ssl_config</span> <span class="o">=</span> <span class="n">QSslConfiguration</span><span class="p">()</span>
+
+        <span class="c1"># Get a protocol constant Qt understands, or cry to the user.</span>
+        <span class="n">q_ssl_protocol</span> <span class="o">=</span> <span class="n">_PROTOCOL_CHOICES</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">q_ssl_protocol</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidSSLConfig</span><span class="p">(</span>
+                <span class="s2">&quot;unknown protocol for Qt: </span><span class="si">{0!r}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="c1"># Hang on to it just in case we possibly need it, e.g. debugger</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_q_ssl_protocol</span> <span class="o">=</span> <span class="n">q_ssl_protocol</span>
+    
+        <span class="c1"># Otherwise, tell Qt about the protocol.</span>
+        <span class="c1"># n.b.: setting this after connection starts has no effect, so we</span>
+        <span class="c1"># definitely want to do it here instead of deferring this.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_q_ssl_config</span><span class="o">.</span><span class="n">setProtocol</span><span class="p">(</span><span class="n">q_ssl_protocol</span><span class="p">)</span>
+
+        <span class="c1"># If we have an SSLKey, have it make a QSslKey and tell Qt about it.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="p">:</span>
+            <span class="n">q_ssl_key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">key</span><span class="o">.</span><span class="n">to_q_ssl_key</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">q_ssl_config</span><span class="o">.</span><span class="n">setPrivateKey</span><span class="p">(</span><span class="n">q_ssl_key</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">q_ssl_key</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_q_ssl_key</span> <span class="o">=</span> <span class="n">q_ssl_key</span>
+
+        <span class="c1"># Process self.options</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_options</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_set_options</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Internal: convert options to set QSSLConfiguration option flags.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+
+            <span class="c1"># Get the constant used by PyQt</span>
+            <span class="n">option</span> <span class="o">=</span> <span class="n">_PROTOCOL_OPTIONS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="s2">&quot; &quot;</span><span class="p">))</span>
+
+            <span class="c1"># Make sure we don&#39;t fail silently with unrecognized options</span>
+            <span class="k">if</span> <span class="n">option</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">InvalidSSLConfig</span><span class="p">(</span>
+                    <span class="s2">&quot;unknown option for Qt: </span><span class="si">{0!r}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+                <span class="p">)</span>
+
+            <span class="c1"># All the Qt options are &quot;Disable*&quot;, inverting the bools.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">q_ssl_config</span><span class="o">.</span><span class="n">setSslOption</span><span class="p">(</span><span class="n">option</span><span class="p">,</span> <span class="ow">not</span> <span class="n">value</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../index.html">Module code</a><ul>
+  <li><a href="../../../because.html">because</a><ul>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Boundless.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

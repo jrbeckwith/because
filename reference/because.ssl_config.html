@@ -1,0 +1,144 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>because.ssl_config module &#8212; because 0.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="because.transfer module" href="because.transfer.html" />
+    <link rel="prev" title="because.service module" href="because.service.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-because.ssl_config">
+<span id="because-ssl-config-module"></span><h1>because.ssl_config module<a class="headerlink" href="#module-because.ssl_config" title="Permalink to this headline">¶</a></h1>
+<p>Base classes for interfaces offering HTTP over SSL or TLS.</p>
+<p>This arises as a way of mitigating the huge number of parameters that some HTTP
+APIs offer for customizing the behavior of TLS/SSL. Instead of passing 43
+arguments to Client, you can just pass whichever ones apply to your
+implementation to your implementation&#8217;s flavor of SSLConfig, and pass that to
+the Client so I can pretend that Client is simpler than it is.</p>
+<dl class="exception">
+<dt id="because.ssl_config.InvalidSSLConfig">
+<em class="property">exception </em><code class="descclassname">because.ssl_config.</code><code class="descname">InvalidSSLConfig</code><span class="sig-paren">(</span><em>message</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/ssl_config.html#InvalidSSLConfig"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.ssl_config.InvalidSSLConfig" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="because.errors.html#because.errors.InvalidObject" title="because.errors.InvalidObject"><code class="xref py py-class docutils literal"><span class="pre">because.errors.InvalidObject</span></code></a></p>
+<p>Raised when SSL configuration was specified that won&#8217;t be understood.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="because.ssl_config.SSLConfig">
+<em class="property">class </em><code class="descclassname">because.ssl_config.</code><code class="descname">SSLConfig</code><span class="sig-paren">(</span><em>protocol='default'</em>, <em>key=None</em>, <em>options=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/ssl_config.html#SSLConfig"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.ssl_config.SSLConfig" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<p>Parameters for setting up whatever SSL configuration is needed.</p>
+<p>Each implementation offers its own SSLConfig to take care of the details,
+hide the dance of working with keys, make it easier to set options,
+and use secure defaults.</p>
+<dl class="attribute">
+<dt id="because.ssl_config.SSLConfig.default_options">
+<code class="descname">default_options</code><em class="property"> = {'compression': False}</em><a class="headerlink" href="#because.ssl_config.SSLConfig.default_options" title="Permalink to this definition">¶</a></dt>
+<dd><p>Default options to set in this implementation.
+These should be plain Python types, not implementation-specific types,
+but otherwise can be arbitrary.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="because.ssl_config.SSLKey">
+<em class="property">class </em><code class="descclassname">because.ssl_config.</code><code class="descname">SSLKey</code><span class="sig-paren">(</span><em>data</em>, <em>pass_phrase=b''</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/ssl_config.html#SSLKey"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.ssl_config.SSLKey" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<p>Represent a key used in an SSL or TLS configuration.</p>
+<p>This is partly here to provide a place to put parameters like algorithm,
+key encoding, and key type, if they are ever needed by a particular
+implementation.</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="because.html">because package</a><ul>
+      <li>Previous: <a href="because.service.html" title="previous chapter">because.service module</a></li>
+      <li>Next: <a href="because.transfer.html" title="next chapter">because.transfer module</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/reference/because.ssl_config.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Boundless.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+      |
+      <a href="../_sources/reference/because.ssl_config.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

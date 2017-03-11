@@ -1,5 +1,5 @@
-because.services.token.service
-==============================
+because.services.token.service module
+=====================================
 
 .. automodule:: because.services.token.service
     :members:

@@ -43,21 +43,8 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="module-because.base.errors">
-<span id="because-base-errors"></span><h1>because.base.errors<a class="headerlink" href="#module-because.base.errors" title="Permalink to this headline">¶</a></h1>
-<dl class="exception">
-<dt id="because.base.errors.InvalidObject">
-<em class="property">exception </em><code class="descclassname">because.base.errors.</code><code class="descname">InvalidObject</code><span class="sig-paren">(</span><em>message</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/base/errors.html#InvalidObject"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.base.errors.InvalidObject" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">Exception</span></code></p>
-<p>Base class for errors where a valid object could not be created.</p>
-<p>This is meant to be raised from __init__ to prevent instances with bizarre
-states from ever being exposed for use. When used in this way, the
-expression invoking the constructor does not return an object to bind a
-name to. So the silly instance does not cause downstream exceptions far
-from the cause of the problem. Also, code consuming instances can safely
-assume that the instances are not completely bizarre.</p>
-</dd></dl>
-
+  <div class="section" id="because-base-errors">
+<h1>because.base.errors<a class="headerlink" href="#because-base-errors" title="Permalink to this headline">¶</a></h1>
 </div>
 
 

@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Because API Reference &#8212; because 0.0.0 documentation</title>
+    <title>because package &#8212; because 0.0.0 documentation</title>
     
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -26,7 +26,7 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="because.base" href="because.base.html" />
+    <link rel="next" title="because.interfaces package" href="because.interfaces.html" />
     <link rel="prev" title="Token Service" href="../services/token.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
@@ -44,84 +44,146 @@
           <div class="body" role="main">
             
   <div class="section" id="module-because">
-<span id="because-api-reference"></span><h1>Because API Reference<a class="headerlink" href="#module-because" title="Permalink to this headline">¶</a></h1>
+<span id="because-package"></span><h1>because package<a class="headerlink" href="#module-because" title="Permalink to this headline">¶</a></h1>
 <p>Because is a Python interface to BCS services.</p>
 <p>The because package contains reusable implementations which can help you write
 Python scripts, QGIS plugins, etc.</p>
+<dl class="class">
+<dt id="because.Because">
+<em class="property">class </em><code class="descclassname">because.</code><code class="descname">Because</code><span class="sig-paren">(</span><em>interface='python'</em>, <em>env='dev'</em>, <em>ssl_config=None</em>, <em>log=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because.html#Because"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.Because" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="because.frontend.html#because.frontend.Frontend" title="because.frontend.Frontend"><code class="xref py py-class docutils literal"><span class="pre">because.frontend.Frontend</span></code></a></p>
+<p>High-level entry point for quickstart docs and examples.</p>
+</dd></dl>
+
+<div class="section" id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="because.base.html">because.base</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="because.base.errors.html">because.base.errors</a></li>
-<li class="toctree-l2"><a class="reference internal" href="because.base.point.html">because.base.point</a></li>
-<li class="toctree-l2"><a class="reference internal" href="because.base.utils.html">because.base.utils</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="because.boundless.html">because.boundless</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="because.boundless.hosts.html">because.boundless.hosts</a></li>
-<li class="toctree-l2"><a class="reference internal" href="because.boundless.services.html">because.boundless.services</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="because.client.html">because.client</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="because.client.client.html">because.client.client</a></li>
-<li class="toctree-l2"><a class="reference internal" href="because.client.headers.html">because.client.headers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="because.client.request.html">because.client.request</a></li>
-<li class="toctree-l2"><a class="reference internal" href="because.client.response.html">because.client.response</a></li>
-<li class="toctree-l2"><a class="reference internal" href="because.client.service.html">because.client.service</a></li>
-<li class="toctree-l2"><a class="reference internal" href="because.client.ssl.html">because.client.ssl</a></li>
-<li class="toctree-l2"><a class="reference internal" href="because.client.transfer.html">because.client.transfer</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="because.interfaces.html">because.interfaces</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="because.interfaces.python.html">because.interfaces.python</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="because.interfaces.python.client.html">because.interfaces.python.client</a></li>
-<li class="toctree-l3"><a class="reference internal" href="because.interfaces.python.ssl.html">because.interfaces.python.ssl</a></li>
-<li class="toctree-l3"><a class="reference internal" href="because.interfaces.python.transfer.html">because.interfaces.python.transfer</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="because.interfaces.qgis.html">because.interfaces.qgis</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="because.interfaces.qgis.basemap_gdal.html">because.interfaces.qgis.basemap_gdal</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="because.interfaces.qt.html">because.interfaces.qt</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="because.interfaces.qt.client.html">because.interfaces.qt.client</a></li>
-<li class="toctree-l3"><a class="reference internal" href="because.interfaces.qt.response.html">because.interfaces.qt.response</a></li>
-<li class="toctree-l3"><a class="reference internal" href="because.interfaces.qt.ssl.html">because.interfaces.qt.ssl</a></li>
-<li class="toctree-l3"><a class="reference internal" href="because.interfaces.qt.transfer.html">because.interfaces.qt.transfer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="because.interfaces.html">because.interfaces package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="because.interfaces.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="because.interfaces.python.html">because.interfaces.python package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="because.interfaces.python.html#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="because.interfaces.python.client.html">because.interfaces.python.client module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="because.interfaces.python.ssl_config.html">because.interfaces.python.ssl_config module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="because.interfaces.python.transfer.html">because.interfaces.python.transfer module</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="because.services.html">because.services</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="because.services.basemaps.html">because.services.basemaps</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="because.services.basemaps.basemap.html">because.services.basemaps.basemap</a></li>
-<li class="toctree-l3"><a class="reference internal" href="because.services.basemaps.service.html">because.services.basemaps.service</a></li>
+<li class="toctree-l3"><a class="reference internal" href="because.interfaces.qgis.html">because.interfaces.qgis package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="because.interfaces.qgis.html#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="because.interfaces.qgis.basemap_gdal.html">because.interfaces.qgis.basemap_gdal module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="because.interfaces.qgis.client.html">because.interfaces.qgis.client module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="because.interfaces.qgis.transfer.html">because.interfaces.qgis.transfer module</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="because.services.geocoding.html">because.services.geocoding</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="because.services.geocoding.geocode.html">because.services.geocoding.geocode</a></li>
-<li class="toctree-l3"><a class="reference internal" href="because.services.geocoding.service.html">because.services.geocoding.service</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="because.services.routing.html">because.services.routing</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="because.services.routing.route.html">because.services.routing.route</a></li>
-<li class="toctree-l3"><a class="reference internal" href="because.services.routing.route_parser.html">because.services.routing.route_parser</a></li>
-<li class="toctree-l3"><a class="reference internal" href="because.services.routing.service.html">because.services.routing.service</a></li>
+<li class="toctree-l3"><a class="reference internal" href="because.interfaces.qt.html">because.interfaces.qt package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="because.interfaces.qt.html#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="because.interfaces.qt.client.html">because.interfaces.qt.client module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="because.interfaces.qt.response.html">because.interfaces.qt.response module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="because.interfaces.qt.ssl_config.html">because.interfaces.qt.ssl_config module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="because.interfaces.qt.transfer.html">because.interfaces.qt.transfer module</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="because.services.search.html">because.services.search</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="because.services.search.search.html">because.services.search.search</a></li>
-<li class="toctree-l3"><a class="reference internal" href="because.services.search.service.html">because.services.search.service</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="because.services.token.html">because.services.token</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="because.services.token.service.html">because.services.token.service</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="because.services.headers.html">because.services.headers</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="because.tests.html">because.tests package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="because.services.html">because.services package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="because.services.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="because.services.basemaps.html">because.services.basemaps package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="because.services.basemaps.html#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="because.services.basemaps.basemap.html">because.services.basemaps.basemap module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="because.services.basemaps.parse.html">because.services.basemaps.parse module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="because.services.basemaps.service.html">because.services.basemaps.service module</a></li>
 </ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="because.services.geocoding.html">because.services.geocoding package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="because.services.geocoding.html#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="because.services.geocoding.candidate.html">because.services.geocoding.candidate module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="because.services.geocoding.geocode.html">because.services.geocoding.geocode module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="because.services.geocoding.service.html">because.services.geocoding.service module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="because.services.routing.html">because.services.routing package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="because.services.routing.html#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="because.services.routing.parse.html">because.services.routing.parse module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="because.services.routing.route.html">because.services.routing.route module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="because.services.routing.service.html">because.services.routing.service module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="because.services.search.html">because.services.search package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="because.services.search.html#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="because.services.search.search.html">because.services.search.search module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="because.services.search.service.html">because.services.search.service module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="because.services.token.html">because.services.token package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="because.services.token.html#submodules">Submodules</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="because.services.token.service.html">because.services.token.service module</a></li>
+<li class="toctree-l5"><a class="reference internal" href="because.services.token.user.html">because.services.token.user module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="because.services.html#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="because.services.headers.html">because.services.headers module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="because.tests.html">because.tests package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="because.tests.html#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="because.tests.test_errors.html">because.tests.test_errors module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="because.tests.test_frontend.html">because.tests.test_frontend module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="because.tests.test_headers.html">because.tests.test_headers module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="because.tests.test_request.html">because.tests.test_request module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="because.tests.test_response.html">because.tests.test_response module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="because.tests.test_service.html">because.tests.test_service module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="because.tests.test_services.html">because.tests.test_services module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="because.bbox.html">because.bbox module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="because.client.html">because.client module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="because.errors.html">because.errors module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="because.frontend.html">because.frontend module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="because.headers.html">because.headers module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="because.hosts.html">because.hosts module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="because.point.html">because.point module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="because.pretty.html">because.pretty module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="because.reprs.html">because.reprs module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="because.request.html">because.request module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="because.response.html">because.response module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="because.result.html">because.result module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="because.service.html">because.service module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="because.ssl_config.html">because.ssl_config module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="because.transfer.html">because.transfer module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="because.utils.html">because.utils module</a></li>
+</ul>
+</div>
 </div>
 </div>
 
@@ -130,12 +192,21 @@ Python scripts, QGIS plugins, etc.</p>
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper"><div class="relations">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">because package</a><ul>
+<li><a class="reference internal" href="#subpackages">Subpackages</a></li>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
       <li>Previous: <a href="../services/token.html" title="previous chapter">Token Service</a></li>
-      <li>Next: <a href="because.base.html" title="next chapter">because.base</a></li>
+      <li>Next: <a href="because.interfaces.html" title="next chapter">because.interfaces package</a></li>
   </ul></li>
 </ul>
 </div>

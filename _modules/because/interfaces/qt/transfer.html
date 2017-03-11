@@ -48,7 +48,6 @@
     <span class="kn">from</span> <span class="nn">PyQt5.QtCore</span> <span class="k">import</span> <span class="p">(</span>
         <span class="n">QObject</span><span class="p">,</span>
         <span class="n">QTimer</span><span class="p">,</span>
-        <span class="n">QUrl</span><span class="p">,</span>
         <span class="n">QByteArray</span><span class="p">,</span>
         <span class="n">QBuffer</span><span class="p">,</span>
         <span class="n">pyqtSignal</span><span class="p">,</span>
@@ -60,7 +59,6 @@
     <span class="kn">from</span> <span class="nn">PyQt4.QtCore</span> <span class="k">import</span> <span class="p">(</span>
         <span class="n">QObject</span><span class="p">,</span>
         <span class="n">QTimer</span><span class="p">,</span>
-        <span class="n">QUrl</span><span class="p">,</span>
         <span class="n">QByteArray</span><span class="p">,</span>
         <span class="n">QBuffer</span><span class="p">,</span>
         <span class="n">pyqtSignal</span><span class="p">,</span>
@@ -69,13 +67,13 @@
         <span class="n">QNetworkRequest</span><span class="p">,</span>
     <span class="p">)</span>
 
-<span class="kn">from</span> <span class="nn">.</span> <span class="n">response</span> <span class="kn">import</span> <span class="nn">Response</span> 
+<span class="kn">from</span> <span class="nn">.</span> <span class="n">response</span> <span class="kn">import</span> <span class="nn">Response</span>
 
 <span class="n">LOG</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
 
 
 
-<div class="viewcode-block" id="unpack_q_reply"><a class="viewcode-back" href="../../../../reference/because.interfaces.qt.transfer.html#because.interfaces.qt.transfer.unpack_q_reply">[docs]</a><span class="k">def</span> <span class="nf">unpack_q_reply</span><span class="p">(</span><span class="n">q_reply</span><span class="p">):</span>
+<div class="viewcode-block" id="unpackQreply"><a class="viewcode-back" href="../../../../reference/because.interfaces.qt.transfer.html#because.interfaces.qt.client.unpackQreply">[docs]</a><span class="k">def</span> <span class="nf">unpackQreply</span><span class="p">(</span><span class="n">q_reply</span><span class="p">):</span>
     <span class="c1"># TODO: shouldn&#39;t all of the below be encapsulated by Transfer?</span>
     <span class="n">error</span> <span class="o">=</span> <span class="n">q_reply</span><span class="o">.</span><span class="n">errorString</span><span class="p">()</span>
     <span class="n">status</span> <span class="o">=</span> <span class="n">q_reply</span><span class="o">.</span><span class="n">attribute</span><span class="p">(</span><span class="n">QNetworkRequest</span><span class="o">.</span><span class="n">HttpStatusCodeAttribute</span><span class="p">)</span>
@@ -101,11 +99,7 @@
     <span class="k">return</span> <span class="n">response</span></div>
 
 
-
-
-
-
-<div class="viewcode-block" id="TransferError"><a class="viewcode-back" href="../../../../reference/because.interfaces.qt.transfer.html#because.interfaces.qt.transfer.TransferError">[docs]</a><span class="k">class</span> <span class="nc">TransferError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<div class="viewcode-block" id="TransferError"><a class="viewcode-back" href="../../../../reference/because.interfaces.qt.transfer.html#because.interfaces.qt.client.TransferError">[docs]</a><span class="k">class</span> <span class="nc">TransferError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Represents error descriptions encoded as QNetworkReply::NetworkError.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -117,7 +111,7 @@
         <span class="nb">super</span><span class="p">(</span><span class="n">TransferError</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">text</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="TransferWorker"><a class="viewcode-back" href="../../../../reference/because.interfaces.qt.transfer.html#because.interfaces.qt.transfer.TransferWorker">[docs]</a><span class="k">class</span> <span class="nc">TransferWorker</span><span class="p">(</span><span class="n">QObject</span><span class="p">):</span>
+<div class="viewcode-block" id="TransferWorker"><a class="viewcode-back" href="../../../../reference/because.interfaces.qt.transfer.html#because.interfaces.qt.client.TransferWorker">[docs]</a><span class="k">class</span> <span class="nc">TransferWorker</span><span class="p">(</span><span class="n">QObject</span><span class="p">):</span>
     <span class="n">finished</span> <span class="o">=</span> <span class="n">pyqtSignal</span><span class="p">()</span>
     <span class="n">pulse</span> <span class="o">=</span> <span class="n">pyqtSignal</span><span class="p">()</span>
 
@@ -125,7 +119,7 @@
         <span class="nb">super</span><span class="p">(</span><span class="n">TransferWorker</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="Transfer"><a class="viewcode-back" href="../../../../reference/because.interfaces.qt.transfer.html#because.interfaces.qt.transfer.Transfer">[docs]</a><span class="k">class</span> <span class="nc">Transfer</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Transfer"><a class="viewcode-back" href="../../../../reference/because.interfaces.qt.transfer.html#because.interfaces.qt.client.Transfer">[docs]</a><span class="k">class</span> <span class="nc">Transfer</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Hold per-request state for one ongoing HTTP request cycle.</span>
 
 <span class="sd">    This is also used as a device for bundling up multiple descriptions of a</span>
@@ -181,7 +175,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_stopped</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="c1"># Define attributes to hold underlying Qt objects</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">q_reply</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_q_reply</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_q_array</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_q_buffer</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_q_timer</span> <span class="o">=</span> <span class="kc">None</span>
@@ -325,7 +319,7 @@
             <span class="k">return</span> <span class="kc">True</span>
         <span class="k">return</span> <span class="kc">False</span>
 
-<div class="viewcode-block" id="Transfer.on_progress"><a class="viewcode-back" href="../../../../reference/because.interfaces.qt.transfer.html#because.interfaces.qt.transfer.Transfer.on_progress">[docs]</a>    <span class="k">def</span> <span class="nf">on_progress</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Transfer.on_progress"><a class="viewcode-back" href="../../../../reference/because.interfaces.qt.transfer.html#because.interfaces.qt.client.Transfer.on_progress">[docs]</a>    <span class="k">def</span> <span class="nf">on_progress</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Notify consumer of a progress update.</span>
 
 <span class="sd">        Passes self to the callback so the consumer can inspect the transfer</span>
@@ -348,14 +342,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">download_total</span> <span class="o">=</span> <span class="n">total</span> <span class="k">if</span> <span class="n">total</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span> <span class="k">else</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">on_progress</span><span class="p">()</span>
 
-<div class="viewcode-block" id="Transfer.on_error"><a class="viewcode-back" href="../../../../reference/because.interfaces.qt.transfer.html#because.interfaces.qt.transfer.Transfer.on_error">[docs]</a>    <span class="k">def</span> <span class="nf">on_error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">code</span><span class="p">):</span>
+<div class="viewcode-block" id="Transfer.on_error"><a class="viewcode-back" href="../../../../reference/because.interfaces.qt.transfer.html#because.interfaces.qt.client.Transfer.on_error">[docs]</a>    <span class="k">def</span> <span class="nf">on_error</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">code</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Handle an error detected during response processing.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">error_code</span> <span class="o">=</span> <span class="n">code</span>
-        <span class="n">error_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">q_reply</span><span class="o">.</span><span class="n">errorString</span><span class="p">()</span>
+        <span class="n">error_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_q_reply</span><span class="o">.</span><span class="n">errorString</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">error</span> <span class="o">=</span> <span class="n">TransferError</span><span class="p">(</span><span class="n">code</span><span class="o">=</span><span class="n">error_code</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="n">error_text</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Transfer.on_timeout"><a class="viewcode-back" href="../../../../reference/because.interfaces.qt.transfer.html#because.interfaces.qt.transfer.Transfer.on_timeout">[docs]</a>    <span class="k">def</span> <span class="nf">on_timeout</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Transfer.on_timeout"><a class="viewcode-back" href="../../../../reference/because.interfaces.qt.transfer.html#because.interfaces.qt.client.Transfer.on_timeout">[docs]</a>    <span class="k">def</span> <span class="nf">on_timeout</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Handle the expiration of the deadline timer.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Flag what happened</span>
@@ -368,8 +362,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_stop_timer</span><span class="p">()</span>
 
         <span class="c1"># Attempt to halt any ongoing activity</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">q_reply</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">q_reply</span><span class="o">.</span><span class="n">abort</span><span class="p">()</span></div>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_q_reply</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_q_reply</span><span class="o">.</span><span class="n">abort</span><span class="p">()</span></div>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">elapsed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -379,7 +373,7 @@
             <span class="n">timedelta</span> <span class="o">=</span> <span class="n">Datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_started</span>
         <span class="k">return</span> <span class="n">timedelta</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span>
 
-<div class="viewcode-block" id="Transfer.on_finished"><a class="viewcode-back" href="../../../../reference/because.interfaces.qt.transfer.html#because.interfaces.qt.transfer.Transfer.on_finished">[docs]</a>    <span class="k">def</span> <span class="nf">on_finished</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Transfer.on_finished"><a class="viewcode-back" href="../../../../reference/because.interfaces.qt.transfer.html#because.interfaces.qt.client.Transfer.on_finished">[docs]</a>    <span class="k">def</span> <span class="nf">on_finished</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Handle completion of reply processing.</span>
 
 <span class="sd">        This means that the end of the transfer is ready to be handled,</span>
@@ -395,16 +389,16 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_stop_timer</span><span class="p">()</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_on_finished</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;running _on_finished=</span><span class="si">%r</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_on_finished</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">response</span> <span class="o">=</span> <span class="n">unpack_q_reply</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">q_reply</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">response</span> <span class="o">=</span> <span class="n">unpackQreply</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_q_reply</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;HTTP response</span><span class="se">\n</span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">pretty</span><span class="p">()))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_on_finished</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;no _on_finished to run&quot;</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Transfer.on_redirected"><a class="viewcode-back" href="../../../../reference/because.interfaces.qt.transfer.html#because.interfaces.qt.transfer.Transfer.on_redirected">[docs]</a>    <span class="k">def</span> <span class="nf">on_redirected</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">):</span>
+<div class="viewcode-block" id="Transfer.on_redirected"><a class="viewcode-back" href="../../../../reference/because.interfaces.qt.transfer.html#because.interfaces.qt.client.Transfer.on_redirected">[docs]</a>    <span class="k">def</span> <span class="nf">on_redirected</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">redirected</span> <span class="o">=</span> <span class="n">url</span></div>
 
-<div class="viewcode-block" id="Transfer.start"><a class="viewcode-back" href="../../../../reference/because.interfaces.qt.transfer.html#because.interfaces.qt.transfer.Transfer.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Transfer.start"><a class="viewcode-back" href="../../../../reference/because.interfaces.qt.transfer.html#because.interfaces.qt.client.Transfer.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># type: () -&gt; None</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_started</span> <span class="o">=</span> <span class="n">Datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span>
@@ -464,12 +458,10 @@
 
     <span class="k">def</span> <span class="nf">_connect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">q_reply</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Associate this transfer to the given QNetworkReply.</span>
-
-<span class="sd">        This is for internal use because it exposes Qt API.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="c1"># Make this method idempotent; don&#39;t double up on signal subscriptions</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">q_reply</span> <span class="o">==</span> <span class="n">q_reply</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_q_reply</span> <span class="o">==</span> <span class="n">q_reply</span><span class="p">:</span>
             <span class="k">return</span>
 
         <span class="c1"># A Transfer should map to a QNetworkReply 1:1, assuming it maps at</span>
@@ -478,7 +470,7 @@
         <span class="c1"># We could avoid that by disconnecting all the old signals, but it</span>
         <span class="c1"># would be a confusing contract violation to silently cause those old</span>
         <span class="c1"># signal subscriptions to stop firing.</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">q_reply</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_q_reply</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">TransferError</span><span class="p">(</span>
                 <span class="s2">&quot;Transfer instance is already associated with a QReply&quot;</span><span class="p">,</span>
             <span class="p">)</span>
@@ -486,7 +478,7 @@
         <span class="c1"># Hang on to the QReply we just got</span>
         <span class="c1"># * so we can ensure this transfer instance isn&#39;t associated to another</span>
         <span class="c1"># * to ensure it&#39;s not collected prematurely, since nothing else has it</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">q_reply</span> <span class="o">=</span> <span class="n">q_reply</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_q_reply</span> <span class="o">=</span> <span class="n">q_reply</span>
 
         <span class="c1"># In order of importance, for what little it&#39;s worth; since there is a</span>
         <span class="c1"># period after Qt request sent and before QReply signals are connected</span>
@@ -502,16 +494,26 @@
             <span class="n">signal</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">method</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Connected signals&quot;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="Transfer.close"><a class="viewcode-back" href="../../../../reference/because.interfaces.qt.transfer.html#because.interfaces.qt.transfer.Transfer.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;close&quot;</span><span class="p">)</span>
-
-        <span class="c1"># Prevent timeout callback firing</span>
+<div class="viewcode-block" id="Transfer.cancel"><a class="viewcode-back" href="../../../../reference/because.interfaces.qt.transfer.html#because.interfaces.qt.client.Transfer.cancel">[docs]</a>    <span class="k">def</span> <span class="nf">cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Atttempt to stop all pending timers and activity.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Prevent timeout callback firing ASAP</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_stop_timer</span><span class="p">()</span>
 
-        <span class="c1"># If we close while still running, intent is abort.</span>
-        <span class="c1"># Yes, this is different from the Qt API!</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">q_reply</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">q_reply</span><span class="o">.</span><span class="n">isRunning</span><span class="p">():</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">q_reply</span><span class="o">.</span><span class="n">abort</span><span class="p">()</span>
+        <span class="c1"># If we close while still running, we should abort any ongoing HTTP</span>
+        <span class="c1"># request process. Yes, this is different from the Qt API abort(),</span>
+        <span class="c1"># which is part of why we don&#39;t use that name for this operation.</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_q_reply</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_q_reply</span><span class="o">.</span><span class="n">isRunning</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_q_reply</span><span class="o">.</span><span class="n">abort</span><span class="p">()</span></div>
+
+        <span class="c1"># NOTE: Teardown is *intentionally* left to close() since someone may</span>
+        <span class="c1"># need to stop work and do a postmortem or restart somehow.</span>
+
+<div class="viewcode-block" id="Transfer.close"><a class="viewcode-back" href="../../../../reference/because.interfaces.qt.transfer.html#because.interfaces.qt.client.Transfer.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Cancel and disable the transfer and tear down state.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># If any work is ongoing, stop it</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
 
         <span class="c1"># Prevent further callback access through self</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_on_finished</span> <span class="o">=</span> <span class="kc">None</span>
@@ -526,14 +528,14 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_q_array</span><span class="o">.</span><span class="n">truncate</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 
         <span class="c1"># Prevent further reads from the QNetworkReply</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">q_reply</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">q_reply</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_q_reply</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_q_reply</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
 
         <span class="c1"># Break references to ensure Qt objects can be collected</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_q_array</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_q_buffer</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_q_timer</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">q_reply</span> <span class="o">=</span> <span class="kc">None</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_q_buffer</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_q_array</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_q_reply</span> <span class="o">=</span> <span class="kc">None</span></div></div>
 </pre></div>
 
           </div>
@@ -545,6 +547,8 @@
 <ul>
   <li><a href="../../../../index.html">Documentation overview</a><ul>
   <li><a href="../../../index.html">Module code</a><ul>
+  <li><a href="../../../because.html">because</a><ul>
+  </ul></li>
   </ul></li>
   </ul></li>
 </ul>

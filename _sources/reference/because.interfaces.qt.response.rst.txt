@@ -1,5 +1,5 @@
-because.interfaces.qt.response
-==============================
+because.interfaces.qt.response module
+=====================================
 
 .. automodule:: because.interfaces.qt.response
     :members:

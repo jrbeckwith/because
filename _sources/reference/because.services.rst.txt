@@ -1,10 +1,13 @@
-because.services
-================
+because.services package
+========================
 
 .. automodule:: because.services
     :members:
     :undoc-members:
     :show-inheritance:
+
+Subpackages
+-----------
 
 .. toctree::
 
@@ -13,5 +16,11 @@ because.services
     because.services.routing
     because.services.search
     because.services.token
-    because.services.headers
+
+Submodules
+----------
+
+.. toctree::
+
+   because.services.headers
 

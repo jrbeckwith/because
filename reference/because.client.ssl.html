@@ -43,49 +43,8 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="module-because.client.ssl">
-<span id="because-client-ssl"></span><h1>because.client.ssl<a class="headerlink" href="#module-because.client.ssl" title="Permalink to this headline">¶</a></h1>
-<p>Base classes for interfaces offering HTTP over SSL or TLS.</p>
-<p>This arises as a way of mitigating the huge number of parameters that some HTTP
-APIs offer for customizing the behavior of TLS/SSL. Instead of passing 43
-arguments to Client, you can just pass whichever ones apply to your
-implementation to your implementation&#8217;s flavor of SSLConfig, and pass that to
-the Client so I can pretend that Client is simpler than it is.</p>
-<dl class="exception">
-<dt id="because.client.ssl.InvalidSSLConfig">
-<em class="property">exception </em><code class="descclassname">because.client.ssl.</code><code class="descname">InvalidSSLConfig</code><span class="sig-paren">(</span><em>message</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/client/ssl.html#InvalidSSLConfig"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.client.ssl.InvalidSSLConfig" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="because.base.errors.html#because.base.errors.InvalidObject" title="because.base.errors.InvalidObject"><code class="xref py py-class docutils literal"><span class="pre">because.base.errors.InvalidObject</span></code></a></p>
-<p>Raised when SSL configuration was specified that won&#8217;t be understood.</p>
-</dd></dl>
-
-<dl class="class">
-<dt id="because.client.ssl.SSLConfig">
-<em class="property">class </em><code class="descclassname">because.client.ssl.</code><code class="descname">SSLConfig</code><span class="sig-paren">(</span><em>protocol='default'</em>, <em>key=None</em>, <em>options=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/client/ssl.html#SSLConfig"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.client.ssl.SSLConfig" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
-<p>Parameters for setting up whatever SSL configuration is needed.</p>
-<p>Each implementation offers its own SSLConfig to take care of the details,
-hide the dance of working with keys, make it easier to set options,
-and use secure defaults.</p>
-<dl class="attribute">
-<dt id="because.client.ssl.SSLConfig.default_options">
-<code class="descname">default_options</code><em class="property"> = {'compression': False}</em><a class="headerlink" href="#because.client.ssl.SSLConfig.default_options" title="Permalink to this definition">¶</a></dt>
-<dd><p>Default options to set in this implementation.
-These should be plain Python types, not implementation-specific types,
-but otherwise can be arbitrary.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="because.client.ssl.SSLKey">
-<em class="property">class </em><code class="descclassname">because.client.ssl.</code><code class="descname">SSLKey</code><span class="sig-paren">(</span><em>data</em>, <em>pass_phrase=b''</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/client/ssl.html#SSLKey"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.client.ssl.SSLKey" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
-<p>Represent a key used in an SSL or TLS configuration.</p>
-<p>This is partly here to provide a place to put parameters like algorithm,
-key encoding, and key type, if they are ever needed by a particular
-implementation.</p>
-</dd></dl>
-
+  <div class="section" id="because-client-ssl">
+<h1>because.client.ssl<a class="headerlink" href="#because-client-ssl" title="Permalink to this headline">¶</a></h1>
 </div>
 
 

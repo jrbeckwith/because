@@ -1,0 +1,253 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>because.headers module &#8212; because 0.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="because.hosts module" href="because.hosts.html" />
+    <link rel="prev" title="because.frontend module" href="because.frontend.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-because.headers">
+<span id="because-headers-module"></span><h1>because.headers module<a class="headerlink" href="#module-because.headers" title="Permalink to this headline">¶</a></h1>
+<p>Storage for HTTP request and response headers.</p>
+<p>This storage does not &#8220;know&#8221; anything about HTTP, it just preserves all the
+information that may be needed per HTTP standards.</p>
+<dl class="class">
+<dt id="because.headers.Headers">
+<em class="property">class </em><code class="descclassname">because.headers.</code><code class="descname">Headers</code><span class="sig-paren">(</span><em>pairs=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/headers.html#Headers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.headers.Headers" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="because.reprs.html#because.reprs.ReprMixin" title="because.reprs.ReprMixin"><code class="xref py py-class docutils literal"><span class="pre">because.reprs.ReprMixin</span></code></a>, <a class="reference internal" href="because.pretty.html#because.pretty.PrettyMixin" title="because.pretty.PrettyMixin"><code class="xref py py-class docutils literal"><span class="pre">because.pretty.PrettyMixin</span></code></a></p>
+<p>Storage for HTTP headers.</p>
+<p>This is basically a mutable collection of (name, value) bytestrings,
+but it must also satisfy a few special considerations that make it
+unsatisfying to use a list of tuples.</p>
+<p>For efficiency, values must be indexed by header name. Otherwise a list
+would have to be traversed, e.g., to find the values of a particular
+header, to delete a particular header, to ensure a header is not
+duplicated, etc.</p>
+<p>Header names are case-insensitive, so keys have to be internally
+normalized.</p>
+<p>When there are multiple headers of the same name, all the values must be
+stored instead of just one. So if you just use a dict, you are eventually
+going to find cases where that doesn&#8217;t work.</p>
+<p>Header ordering does not generally matter &#8211; <em>except</em> for ordering among
+headers with the same name, which must be preserved. So one can&#8217;t use sets.</p>
+<p>Both of those considerations are handled by storing a list for each header
+name.</p>
+<p>This list is exposed to allow operations like insert, append and remove
+without writing a lot of new methods on this class.</p>
+<p>Lastly, it&#8217;s not a big deal, but when the same complex kind of list or dict
+gets passed around a lot, there tend to be a lot of exposed interfaces
+which each have the same largish set of ways to choke on degenerate
+structures. If the standard interchange format for headers in your code is
+List[Tuple[Text, List[Text]]] there are a lot of things that some code
+somewhere could get wrong, so you might as well formalize the arrangement.</p>
+<dl class="method">
+<dt id="because.headers.Headers.add">
+<code class="descname">add</code><span class="sig-paren">(</span><em>key</em>, <em>value</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/headers.html#Headers.add"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.headers.Headers.add" title="Permalink to this definition">¶</a></dt>
+<dd><p>Append the given value under the given key.</p>
+<p>h.add(k, v) is just a nicer spelling for h[k].append(v).</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="because.headers.Headers.coerce">
+<em class="property">classmethod </em><code class="descname">coerce</code><span class="sig-paren">(</span><em>obj</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/headers.html#Headers.coerce"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.headers.Headers.coerce" title="Permalink to this definition">¶</a></dt>
+<dd><p>Turn the given object into an instance, if it&#8217;s obvious how to.</p>
+<p>Putting this into a separate classmethod/constructor allows the
+constructor not to be crazily polymorphic but also allows all kinds of
+conceivably sensible conversions in a way that is explicitly marked.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="because.headers.Headers.copy">
+<code class="descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/headers.html#Headers.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.headers.Headers.copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a new instance with the same contents.</p>
+<p>The main use for this is to make defensive copies of a Headers instance
+that you want to pass to another unit without allowing that unit to
+make changes. Otherwise, there is normally no reason to use this.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="because.headers.Headers.items">
+<code class="descname">items</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/headers.html#Headers.items"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.headers.Headers.items" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return (key, values) pairs, as in dict.items.</p>
+<p>Note the subtle distinction of this from pairs(). items() returns
+(key, values) tuples: Tuple[Text, List[Text]]. pairs() returns
+(key, value) tuples: Tuple[Text, Text].</p>
+<p>The capitalization of the keys is normalized on the way out.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="because.headers.Headers.keys">
+<code class="descname">keys</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/headers.html#Headers.keys"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.headers.Headers.keys" title="Permalink to this definition">¶</a></dt>
+<dd><p>Give the keys set in this instance, as dict.keys().</p>
+</dd></dl>
+
+<dl class="classmethod">
+<dt id="because.headers.Headers.merged">
+<em class="property">classmethod </em><code class="descname">merged</code><span class="sig-paren">(</span><em>*objs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/headers.html#Headers.merged"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.headers.Headers.merged" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make a copy with overrides from another object.</p>
+<p>Where there are no key collisions, the result has keys from all the
+passed objects. Otherwise, objects earlier in the list are overridden
+from objects later in the list.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="because.headers.Headers.pairs">
+<code class="descname">pairs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/headers.html#Headers.pairs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.headers.Headers.pairs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all of the items in this instance as pairs.</p>
+<p>Note the subtle distinction of this from items(). items() returns (key,
+values) tuples: Tuple[Text, List[Text]]. pairs() returns (key, value)
+tuples: Tuple[Text, Text].</p>
+<p>Returns an iterator of (header_name, header_value) pairs.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="because.headers.Headers.pretty_tuples">
+<code class="descname">pretty_tuples</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/headers.html#Headers.pretty_tuples"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.headers.Headers.pretty_tuples" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="because.headers.Headers.repr_data">
+<code class="descname">repr_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/headers.html#Headers.repr_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.headers.Headers.repr_data" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="because.headers.Headers.set">
+<code class="descname">set</code><span class="sig-paren">(</span><em>key</em>, <em>value</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/headers.html#Headers.set"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.headers.Headers.set" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set one value for the given name.</p>
+<p>The provided value replaces all values previously set.</p>
+<p>This shortcut simply avoids the need to check for other values and
+supply a new list.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="because.headers.Headers.unset">
+<code class="descname">unset</code><span class="sig-paren">(</span><em>key</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/headers.html#Headers.unset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.headers.Headers.unset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove all values for the given name.</p>
+<p>If the name isn&#8217;t set, this does nothing.</p>
+<p>This is just a shortcut for a common need.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="because.headers.Headers.values">
+<code class="descname">values</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/headers.html#Headers.values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.headers.Headers.values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Give the values lists set in this instance, as dict.values().</p>
+<p>Note the subtle distinction here that this gives a list of lists,
+with one list for each key, rather than a flat list of values.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="exception">
+<dt id="because.headers.InvalidHeader">
+<em class="property">exception </em><code class="descclassname">because.headers.</code><code class="descname">InvalidHeader</code><span class="sig-paren">(</span><em>message</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/headers.html#InvalidHeader"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.headers.InvalidHeader" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#because.headers.InvalidHeaders" title="because.headers.InvalidHeaders"><code class="xref py py-class docutils literal"><span class="pre">because.headers.InvalidHeaders</span></code></a></p>
+<p>Raised instead of modifying a header in an invalid way.</p>
+<p>This implies that the current operation, if allowed to continue, would make
+a headers object with invalid state.</p>
+<p>This exception subclasses InvalidHeaders so that you can catch problems
+with just one header, or catch all problems relating to headers.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="because.headers.InvalidHeaders">
+<em class="property">exception </em><code class="descclassname">because.headers.</code><code class="descname">InvalidHeaders</code><span class="sig-paren">(</span><em>message</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/headers.html#InvalidHeaders"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.headers.InvalidHeaders" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="because.errors.html#because.errors.InvalidObject" title="because.errors.InvalidObject"><code class="xref py py-class docutils literal"><span class="pre">because.errors.InvalidObject</span></code></a></p>
+<p>Raised instead of making a headers object with invalid state.</p>
+<p>The distinction of this from InvalidHeader is that this is generally raised
+when creating a Headers instance, but since InvalidHeader is an instance of
+InvalidHeaders the distinction is not so important.</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="because.html">because package</a><ul>
+      <li>Previous: <a href="because.frontend.html" title="previous chapter">because.frontend module</a></li>
+      <li>Next: <a href="because.hosts.html" title="next chapter">because.hosts module</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/reference/because.headers.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Boundless.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+      |
+      <a href="../_sources/reference/because.headers.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

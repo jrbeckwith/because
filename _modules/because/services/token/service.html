@@ -45,9 +45,12 @@
 <span></span><span class="sd">&quot;&quot;&quot;This module is a place for code which customizes a BCS service definition.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">base64</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Text</span>
+<span class="kn">from</span> <span class="nn">because.headers</span> <span class="k">import</span> <span class="n">Headers</span>
 <span class="kn">from</span> <span class="nn">because.services.headers</span> <span class="k">import</span> <span class="n">DEFAULT_HEADERS</span>
-<span class="kn">from</span> <span class="nn">because.client.service</span> <span class="k">import</span> <span class="p">(</span>
+<span class="kn">from</span> <span class="nn">because.service</span> <span class="k">import</span> <span class="p">(</span>
     <span class="n">Service</span><span class="p">,</span>
     <span class="n">Endpoint</span><span class="p">,</span>
 <span class="p">)</span>
@@ -71,10 +74,47 @@
 
             <span class="p">),</span>
         <span class="p">}</span>
+        <span class="n">headers</span> <span class="o">=</span> <span class="n">Headers</span><span class="o">.</span><span class="n">merged</span><span class="p">(</span>
+            <span class="n">DEFAULT_HEADERS</span><span class="p">,</span>
+            <span class="n">Headers</span><span class="p">([</span>
+                <span class="p">(</span><span class="n">b</span><span class="s2">&quot;Content-Type&quot;</span><span class="p">,</span> <span class="n">b</span><span class="s2">&quot;application/json&quot;</span><span class="p">),</span>
+            <span class="p">])</span>
+        <span class="p">)</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">TokenService</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span>
             <span class="n">endpoints</span><span class="p">,</span>
-            <span class="n">headers</span><span class="o">=</span><span class="n">DEFAULT_HEADERS</span><span class="p">,</span>
+            <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="TokenService.login_request"><a class="viewcode-back" href="../../../../reference/because.services.token.service.html#because.services.token.service.TokenService.login_request">[docs]</a>    <span class="k">def</span> <span class="nf">login_request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base</span><span class="p">,</span> <span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+        <span class="n">body</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">({</span>
+            <span class="s2">u&quot;username&quot;</span><span class="p">:</span> <span class="n">username</span><span class="p">,</span>
+            <span class="s2">u&quot;password&quot;</span><span class="p">:</span> <span class="n">password</span><span class="p">,</span>
+        <span class="p">})</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="p">(</span>
+            <span class="n">endpoint_name</span><span class="o">=</span><span class="s2">u&quot;token&quot;</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">u&quot;POST&quot;</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="n">base</span><span class="p">,</span> <span class="n">body</span><span class="o">=</span><span class="n">body</span><span class="p">,</span>
+            <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span>
         <span class="p">)</span></div>
+
+<div class="viewcode-block" id="TokenService.parse"><a class="viewcode-back" href="../../../../reference/because.services.token.service.html#because.services.token.service.TokenService.parse">[docs]</a>    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
+        <span class="c1"># TODO: check HTTP status</span>
+        <span class="n">parsed</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span>
+        <span class="n">token</span> <span class="o">=</span> <span class="n">parsed</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;token&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">token</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">token</span> <span class="o">=</span> <span class="n">token</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">token</span></div>
+
+<div class="viewcode-block" id="TokenService.parse_metadata"><a class="viewcode-back" href="../../../../reference/because.services.token.service.html#because.services.token.service.TokenService.parse_metadata">[docs]</a>    <span class="k">def</span> <span class="nf">parse_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">token</span><span class="p">):</span>
+        <span class="n">parts</span> <span class="o">=</span> <span class="n">token</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">b</span><span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="n">middle</span> <span class="o">=</span> <span class="n">parts</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">padding</span> <span class="o">=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">middle</span><span class="p">)</span> <span class="o">%</span> <span class="mi">4</span><span class="p">)</span> <span class="o">*</span> <span class="n">b</span><span class="s2">&quot;=&quot;</span>
+        <span class="n">payload</span> <span class="o">=</span> <span class="n">base64</span><span class="o">.</span><span class="n">b64decode</span><span class="p">(</span><span class="n">middle</span> <span class="o">+</span> <span class="n">padding</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">payload</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">data</span></div></div>
 </pre></div>
 
           </div>
@@ -86,6 +126,8 @@
 <ul>
   <li><a href="../../../../index.html">Documentation overview</a><ul>
   <li><a href="../../../index.html">Module code</a><ul>
+  <li><a href="../../../because.html">because</a><ul>
+  </ul></li>
   </ul></li>
   </ul></li>
 </ul>

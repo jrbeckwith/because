@@ -1,5 +1,5 @@
-because.interfaces.python.client
-================================
+because.interfaces.python.client module
+=======================================
 
 .. automodule:: because.interfaces.python.client
     :members:

@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>because.interfaces.qt.client &#8212; because 0.0.0 documentation</title>
+    <title>because.interfaces.qt.client module &#8212; because 0.0.0 documentation</title>
     
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -26,8 +26,8 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="because.interfaces.qt.response" href="because.interfaces.qt.response.html" />
-    <link rel="prev" title="because.interfaces.qt" href="because.interfaces.qt.html" />
+    <link rel="next" title="because.interfaces.qt.response module" href="because.interfaces.qt.response.html" />
+    <link rel="prev" title="because.interfaces.qt package" href="because.interfaces.qt.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -43,8 +43,58 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="because-interfaces-qt-client">
-<h1>because.interfaces.qt.client<a class="headerlink" href="#because-interfaces-qt-client" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="module-because.interfaces.qt.client">
+<span id="because-interfaces-qt-client-module"></span><h1>because.interfaces.qt.client module<a class="headerlink" href="#module-because.interfaces.qt.client" title="Permalink to this headline">¶</a></h1>
+<p>Client implementation for PyQt.</p>
+<p>This implementation has the following features specific to the PyQt
+environment.</p>
+<ul class="simple">
+<li>It abstracts many Qt details like QNetworkAccessManager, QSsl stuff,
+QNetworkRequest and QNetworkReply so that code for things like managing
+login tokens, generating requests and parsing responses can be reused in
+non-Qt environments.</li>
+<li>This includes carefully holding and dropping references to prevent 
+PyQt objects from being prematurely collected, which tends to generate
+bizarre behavior and SEGFAULTs at obscure times.</li>
+<li>It provides for Qt parents to be set.</li>
+<li>It exposes Qt signals so that they can be connected to other Qt signals and
+slots (this being the Qt idiom for async and communication across threads).</li>
+</ul>
+<dl class="class">
+<dt id="because.interfaces.qt.client.Client">
+<em class="property">class </em><code class="descclassname">because.interfaces.qt.client.</code><code class="descname">Client</code><span class="sig-paren">(</span><em>ssl_config=None</em>, <em>log=None</em>, <em>qnam=None</em>, <em>parent=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/interfaces/qt/client.html#Client"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.interfaces.qt.client.Client" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="because.client.html#because.client.Client" title="because.client.Client"><code class="xref py py-class docutils literal"><span class="pre">because.client.Client</span></code></a></p>
+<p>Make HTTP requests according to a specified policy.</p>
+<dl class="attribute">
+<dt id="because.interfaces.qt.client.Client.log">
+<code class="descname">log</code><em class="property"> = &lt;logging.Logger object&gt;</em><a class="headerlink" href="#because.interfaces.qt.client.Client.log" title="Permalink to this definition">¶</a></dt>
+<dd><p>default logger for this class.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="because.interfaces.qt.client.Client.transfer">
+<code class="descname">transfer</code><span class="sig-paren">(</span><em>request</em>, <em>timeout=None</em>, <em>on_finished=None</em>, <em>on_progress=None</em>, <em>log=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/interfaces/qt/client.html#Client.transfer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.interfaces.qt.client.Client.transfer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a Transfer object tied to this client for the given request.</p>
+<p>The transfer is not started.</p>
+<p>This hides Qt implementation details like the QNetworkRequest, the SSL
+config, and QNAM sendCustomRequest. Transfer just gets a function it
+can call to send body data.</p>
+<p>Unfortunately, Transfer has to hold references to QBuffer and
+QByteArray. So to avoid passing them from the client, transfer builds
+them itself and passes the QBuffer to this internal callback, which
+also minimizes the visibility of QBuffer to Client on the way to
+sendCustomRequest.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="because.interfaces.qt.client.Client.transfer_cls">
+<code class="descname">transfer_cls</code><a class="headerlink" href="#because.interfaces.qt.client.Client.transfer_cls" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transfer implementation used by this class.</p>
+<p>alias of <code class="xref py py-class docutils literal"><span class="pre">Transfer</span></code></p>
+</dd></dl>
+
+</dd></dl>
+
 </div>
 
 
@@ -56,11 +106,11 @@
 <h3>Related Topics</h3>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
-  <li><a href="because.html">Because API Reference</a><ul>
-  <li><a href="because.interfaces.html">because.interfaces</a><ul>
-  <li><a href="because.interfaces.qt.html">because.interfaces.qt</a><ul>
-      <li>Previous: <a href="because.interfaces.qt.html" title="previous chapter">because.interfaces.qt</a></li>
-      <li>Next: <a href="because.interfaces.qt.response.html" title="next chapter">because.interfaces.qt.response</a></li>
+  <li><a href="because.html">because package</a><ul>
+  <li><a href="because.interfaces.html">because.interfaces package</a><ul>
+  <li><a href="because.interfaces.qt.html">because.interfaces.qt package</a><ul>
+      <li>Previous: <a href="because.interfaces.qt.html" title="previous chapter">because.interfaces.qt package</a></li>
+      <li>Next: <a href="because.interfaces.qt.response.html" title="next chapter">because.interfaces.qt.response module</a></li>
   </ul></li>
   </ul></li>
   </ul></li>

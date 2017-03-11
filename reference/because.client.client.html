@@ -43,58 +43,8 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="module-because.client.client">
-<span id="because-client-client"></span><h1>because.client.client<a class="headerlink" href="#module-because.client.client" title="Permalink to this headline">¶</a></h1>
-<p>Hold parameters and state for making any number of HTTP requests.</p>
-<dl class="class">
-<dt id="because.client.client.Client">
-<em class="property">class </em><code class="descclassname">because.client.client.</code><code class="descname">Client</code><span class="sig-paren">(</span><em>ssl_config=None</em>, <em>log=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/client/client.html#Client"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.client.client.Client" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
-<p>A bundle of parameters describing a policy for making HTTP requests.</p>
-<p>Client collects a lot of parameters so that they can be passed and checked
-just once, as opposed to forcing users to save different things in a bunch
-of variables and repeatedly pass them all in different calls.</p>
-<p>A corollary of this is that, since an instance is meant to be reused any
-number of times, the state on a Client instance should generally be kept to
-a minimum, to avoid undesirable interference between requests (not to
-mention issues for concurrent implementations).</p>
-<p>Client should only contain data pertaining to performance of requests, but
-which are not individual to each request. Specifically, prospectively
-represented requests yet to be performed should be Requests, while
-per-connection state should be in Transfer.</p>
-<dl class="attribute">
-<dt id="because.client.client.Client.log">
-<code class="descname">log</code><em class="property"> = &lt;logging.Logger object&gt;</em><a class="headerlink" href="#because.client.client.Client.log" title="Permalink to this definition">¶</a></dt>
-<dd><p>Default logger, used if no logger is passed for the log parameter.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="because.client.client.Client.send">
-<code class="descname">send</code><span class="sig-paren">(</span><em>request</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/client/client.html#Client.send"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.client.client.Client.send" title="Permalink to this definition">¶</a></dt>
-<dd><p>Start performing the given request and return a transfer.</p>
-<p>Ideally, this method does not block on the complete response, so that
-other work can be done, progress can be monitored, etc.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="because.client.client.Client.ssl_config_cls">
-<code class="descname">ssl_config_cls</code><a class="headerlink" href="#because.client.client.Client.ssl_config_cls" title="Permalink to this definition">¶</a></dt>
-<dd><p>Class called to make an SSLConfig if none was specified.
-Overriding this is a way of changing how SSL parameters are represented.</p>
-<p>alias of <code class="xref py py-class docutils literal"><span class="pre">SSLConfig</span></code></p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="because.client.client.Client.transfer_cls">
-<code class="descname">transfer_cls</code><a class="headerlink" href="#because.client.client.Client.transfer_cls" title="Permalink to this definition">¶</a></dt>
-<dd><p>Class called to make a Transfer.
-Overriding this is a way of changing the implementation of how requests
-can be performed and managed asynchronously.</p>
-<p>alias of <code class="xref py py-class docutils literal"><span class="pre">Transfer</span></code></p>
-</dd></dl>
-
-</dd></dl>
-
+  <div class="section" id="because-client-client">
+<h1>because.client.client<a class="headerlink" href="#because-client-client" title="Permalink to this headline">¶</a></h1>
 </div>
 
 

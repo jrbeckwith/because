@@ -43,46 +43,8 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="module-because.client.request">
-<span id="because-client-request"></span><h1>because.client.request<a class="headerlink" href="#module-because.client.request" title="Permalink to this headline">¶</a></h1>
-<dl class="exception">
-<dt id="because.client.request.InvalidRequest">
-<em class="property">exception </em><code class="descclassname">because.client.request.</code><code class="descname">InvalidRequest</code><span class="sig-paren">(</span><em>message</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/client/request.html#InvalidRequest"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.client.request.InvalidRequest" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="because.base.errors.html#because.base.errors.InvalidObject" title="because.base.errors.InvalidObject"><code class="xref py py-class docutils literal"><span class="pre">because.base.errors.InvalidObject</span></code></a></p>
-<p>Raised instead of creating an invalid Request instance.</p>
-</dd></dl>
-
-<dl class="class">
-<dt id="because.client.request.Request">
-<em class="property">class </em><code class="descclassname">because.client.request.</code><code class="descname">Request</code><span class="sig-paren">(</span><em>method</em>, <em>url</em>, <em>body=None</em>, <em>headers=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/client/request.html#Request"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.client.request.Request" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="because.base.utils.html#because.base.utils.PrettyPrintable" title="because.base.utils.PrettyPrintable"><code class="xref py py-class docutils literal"><span class="pre">because.base.utils.PrettyPrintable</span></code></a></p>
-<p>Represent parameters for making an HTTP request.</p>
-<p>You may be saying to yourself: &#8220;why yet another class Request?!?&#8221; Well &#8211;
-this internal representation is used to abstract over representations like
-QNetworkRequest, so that <cite>because</cite> can work about the same in multiple
-environments without all the response processing code having to be
-duplicated with minor variations in it.</p>
-<p>Excludes some important operational parameters, like SSL configuration and
-timeout duration, that do not really specify the request payload. This also
-does not represent a request as it is being performed. That&#8217;s a Transfer.</p>
-<dl class="method">
-<dt id="because.client.request.Request.pretty_lines">
-<code class="descname">pretty_lines</code><span class="sig-paren">(</span><em>pair_sep=': '</em>, <em>line_start='  '</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/client/request.html#Request.pretty_lines"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.client.request.Request.pretty_lines" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get a debug representation of attributes as a list of strings.</p>
-<p>This is really just used to customize the pretty_text() method provided
-by PrettyPrintable, so that each header gets its own line.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="because.client.request.Request.pretty_tuples">
-<code class="descname">pretty_tuples</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/client/request.html#Request.pretty_tuples"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.client.request.Request.pretty_tuples" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get a debug representation of attributes as a list of tuples.</p>
-<p>This is really just used to customize the pretty_text() method provided
-by PrettyPrintable.</p>
-</dd></dl>
-
-</dd></dl>
-
+  <div class="section" id="because-client-request">
+<h1>because.client.request<a class="headerlink" href="#because-client-request" title="Permalink to this headline">¶</a></h1>
 </div>
 
 

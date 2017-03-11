@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>because.services.token.service &#8212; because 0.0.0 documentation</title>
+    <title>because.services.token.service module &#8212; because 0.0.0 documentation</title>
     
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -26,8 +26,8 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="because.services.headers" href="because.services.headers.html" />
-    <link rel="prev" title="because.services.token" href="because.services.token.html" />
+    <link rel="next" title="because.services.token.user module" href="because.services.token.user.html" />
+    <link rel="prev" title="because.services.token package" href="because.services.token.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -44,13 +44,28 @@
           <div class="body" role="main">
             
   <div class="section" id="module-because.services.token.service">
-<span id="because-services-token-service"></span><h1>because.services.token.service<a class="headerlink" href="#module-because.services.token.service" title="Permalink to this headline">¶</a></h1>
+<span id="because-services-token-service-module"></span><h1>because.services.token.service module<a class="headerlink" href="#module-because.services.token.service" title="Permalink to this headline">¶</a></h1>
 <p>This module is a place for code which customizes a BCS service definition.</p>
 <dl class="class">
 <dt id="because.services.token.service.TokenService">
 <em class="property">class </em><code class="descclassname">because.services.token.service.</code><code class="descname">TokenService</code><a class="reference internal" href="../_modules/because/services/token/service.html#TokenService"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.services.token.service.TokenService" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="because.client.service.html#because.client.service.Service" title="because.client.service.Service"><code class="xref py py-class docutils literal"><span class="pre">because.client.service.Service</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="because.service.html#because.service.Service" title="because.service.Service"><code class="xref py py-class docutils literal"><span class="pre">because.service.Service</span></code></a></p>
 <p>Define endpoints for BCS token service.</p>
+<dl class="method">
+<dt id="because.services.token.service.TokenService.login_request">
+<code class="descname">login_request</code><span class="sig-paren">(</span><em>base</em>, <em>username</em>, <em>password</em>, <em>headers=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/services/token/service.html#TokenService.login_request"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.services.token.service.TokenService.login_request" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="because.services.token.service.TokenService.parse">
+<code class="descname">parse</code><span class="sig-paren">(</span><em>response</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/services/token/service.html#TokenService.parse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.services.token.service.TokenService.parse" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="because.services.token.service.TokenService.parse_metadata">
+<code class="descname">parse_metadata</code><span class="sig-paren">(</span><em>token</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/services/token/service.html#TokenService.parse_metadata"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.services.token.service.TokenService.parse_metadata" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 </div>
@@ -64,11 +79,11 @@
 <h3>Related Topics</h3>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
-  <li><a href="because.html">Because API Reference</a><ul>
-  <li><a href="because.services.html">because.services</a><ul>
-  <li><a href="because.services.token.html">because.services.token</a><ul>
-      <li>Previous: <a href="because.services.token.html" title="previous chapter">because.services.token</a></li>
-      <li>Next: <a href="because.services.headers.html" title="next chapter">because.services.headers</a></li>
+  <li><a href="because.html">because package</a><ul>
+  <li><a href="because.services.html">because.services package</a><ul>
+  <li><a href="because.services.token.html">because.services.token package</a><ul>
+      <li>Previous: <a href="because.services.token.html" title="previous chapter">because.services.token package</a></li>
+      <li>Next: <a href="because.services.token.user.html" title="next chapter">because.services.token.user module</a></li>
   </ul></li>
   </ul></li>
   </ul></li>

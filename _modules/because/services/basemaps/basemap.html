@@ -45,7 +45,8 @@
 <span></span><span class="sd">&quot;&quot;&quot;Represent results from the basemap discovery endpoint.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">from</span> <span class="nn">because.base.errors</span> <span class="k">import</span> <span class="n">InvalidObject</span>
+
+<span class="kn">from</span> <span class="nn">because.errors</span> <span class="k">import</span> <span class="n">InvalidObject</span>
 
 
 <div class="viewcode-block" id="InvalidBasemap"><a class="viewcode-back" href="../../../../reference/because.services.basemaps.basemap.html#because.services.basemaps.basemap.InvalidBasemap">[docs]</a><span class="k">class</span> <span class="nc">InvalidBasemap</span><span class="p">(</span><span class="n">InvalidObject</span><span class="p">):</span>
@@ -58,7 +59,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># methods: always just GET.</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span>
+            <span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span>
             <span class="c1"># In basemaps service, kind of essential</span>
             <span class="n">standard</span><span class="o">=</span><span class="s2">&quot;XYZ&quot;</span><span class="p">,</span>
             <span class="n">tile_format</span><span class="o">=</span><span class="s2">&quot;PNG&quot;</span><span class="p">,</span>
@@ -69,15 +70,16 @@
             <span class="n">description</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
             <span class="n">thumbnail</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
             <span class="n">headers</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">style_url</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        :arg path:</span>
+<span class="sd">        :arg url:</span>
 <span class="sd">            URI template to use. This will probably specify how to encode x, y,</span>
 <span class="sd">            and z coordinates and any other parameters needed.</span>
 <span class="sd">        :arg title:</span>
 <span class="sd">            Title like &quot;Boundless OSM Basemap&quot; (aka &#39;name&#39; in /basemaps result)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">url</span> <span class="o">=</span> <span class="n">url</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">standard</span> <span class="o">=</span> <span class="n">standard</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tile_format</span> <span class="o">=</span> <span class="n">tile_format</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">title</span> <span class="o">=</span> <span class="n">title</span>
@@ -86,9 +88,10 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="n">description</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">thumbnail</span> <span class="o">=</span> <span class="n">thumbnail</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">headers</span> <span class="o">=</span> <span class="n">headers</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">style_url</span> <span class="o">=</span> <span class="n">style_url</span>
 
         <span class="c1"># don&#39;t delete these untless implementation supports something else</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tile_format</span> <span class="o">!=</span> <span class="s2">&quot;PNG&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">tile_format</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;PNG&quot;</span><span class="p">,</span> <span class="s2">&quot;PBF&quot;</span><span class="p">):</span>
             <span class="k">raise</span> <span class="n">InvalidBasemap</span><span class="p">(</span>
                 <span class="s2">&quot;only tile_format=PNG basemaps are supported&quot;</span>
             <span class="p">)</span>
@@ -97,34 +100,14 @@
                 <span class="s2">&quot;only XYZ basemaps are supported&quot;</span>
             <span class="p">)</span>
 
-        <span class="n">parameter_names</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s2">&quot;{([a-zA-Z_]+)}&quot;</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span>
+        <span class="n">parameter_names</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s2">&quot;{\-?([a-zA-Z_]+)}&quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">parameter_names</span><span class="p">)</span>
         <span class="n">expected</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;z&quot;</span><span class="p">])</span>
         <span class="k">if</span> <span class="nb">set</span><span class="p">(</span><span class="n">parameter_names</span><span class="p">)</span> <span class="o">!=</span> <span class="n">expected</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">InvalidBasemap</span><span class="p">(</span>
                 <span class="s2">&quot;expected parameters for x, y, and z&quot;</span>
-            <span class="p">)</span>
+            <span class="p">)</span></div>
 
-    <span class="nd">@classmethod</span>
-<div class="viewcode-block" id="Basemap.from_dict"><a class="viewcode-back" href="../../../../reference/because.services.basemaps.basemap.html#because.services.basemaps.basemap.Basemap.from_dict">[docs]</a>    <span class="k">def</span> <span class="nf">from_dict</span><span class="p">(</span><span class="n">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Convert from dict representing JSON object from basemap discovery</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">attr_mapping</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;accessList&quot;</span><span class="p">:</span> <span class="s2">&quot;access_list&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;attribution&quot;</span><span class="p">:</span> <span class="s2">&quot;attribution&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="s2">&quot;description&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;endpoint&quot;</span><span class="p">:</span> <span class="s2">&quot;path&quot;</span><span class="p">,</span>
-            <span class="c1"># reserve &quot;name&quot; for the parameter given after service, e.g.</span>
-            <span class="c1"># /basemaps/boundless/{osm} or /basemaps/mapbox/{outdoors}</span>
-            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;title&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;standard&quot;</span><span class="p">:</span> <span class="s2">&quot;standard&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;thumbnail&quot;</span><span class="p">:</span> <span class="s2">&quot;thumbnail&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;tileFormat&quot;</span><span class="p">:</span> <span class="s2">&quot;tile_format&quot;</span><span class="p">,</span>
-        <span class="p">}</span>
-        <span class="n">remapped</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="n">attr_mapping</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">source_attr</span><span class="p">,</span> <span class="n">source_attr</span><span class="p">):</span> <span class="n">data</span><span class="p">[</span><span class="n">source_attr</span><span class="p">]</span>
-            <span class="k">for</span> <span class="n">source_attr</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
-        <span class="p">}</span>
-        <span class="k">return</span> <span class="n">Basemap</span><span class="p">(</span><span class="o">**</span><span class="n">remapped</span><span class="p">)</span></div></div>
 </pre></div>
 
           </div>
@@ -136,6 +119,8 @@
 <ul>
   <li><a href="../../../../index.html">Documentation overview</a><ul>
   <li><a href="../../../index.html">Module code</a><ul>
+  <li><a href="../../../because.html">because</a><ul>
+  </ul></li>
   </ul></li>
   </ul></li>
 </ul>

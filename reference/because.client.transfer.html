@@ -43,56 +43,8 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="module-because.client.transfer">
-<span id="because-client-transfer"></span><h1>because.client.transfer<a class="headerlink" href="#module-because.client.transfer" title="Permalink to this headline">¶</a></h1>
-<dl class="class">
-<dt id="because.client.transfer.Transfer">
-<em class="property">class </em><code class="descclassname">because.client.transfer.</code><code class="descname">Transfer</code><span class="sig-paren">(</span><em>request</em>, <em>ssl_config=None</em>, <em>log=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/client/transfer.html#Transfer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.client.transfer.Transfer" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
-<p>Hold per-request state for one ongoing HTTP request cycle.</p>
-<p>This can play a role like a future or promise in implementations that
-support asynchronous network I/O.</p>
-<p>This can also be used as a device for bundling up multiple descriptions of
-a transfer&#8217;s state to be handled by e.g. one callback, instead of requiring
-many separate callbacks to handle many different state notifications.</p>
-<dl class="method">
-<dt id="because.client.transfer.Transfer.close">
-<code class="descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/client/transfer.html#Transfer.close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.client.transfer.Transfer.close" title="Permalink to this definition">¶</a></dt>
-<dd><p>Abort the transfer, if possible.</p>
-<p>If aborting is not possible, then flail your arms like a windmill and
-announce your intent to ignore any response becuase it&#8217;s too late now,
-the crucial moment has already passed and you just can&#8217;t anymore.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="because.client.transfer.Transfer.log">
-<code class="descname">log</code><em class="property"> = &lt;logging.Logger object&gt;</em><a class="headerlink" href="#because.client.transfer.Transfer.log" title="Permalink to this definition">¶</a></dt>
-<dd><p>Default logger to use if no logger was passed.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="because.client.transfer.Transfer.start">
-<code class="descname">start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/client/transfer.html#Transfer.start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.client.transfer.Transfer.start" title="Permalink to this definition">¶</a></dt>
-<dd><p>Begin the transfer.</p>
-<p>This method allows execution of a transfer to be deferred after its
-construction, which couldn&#8217;t be done if __init__ started it.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="because.client.transfer.Transfer.wait">
-<code class="descname">wait</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/client/transfer.html#Transfer.wait"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.client.transfer.Transfer.wait" title="Permalink to this definition">¶</a></dt>
-<dd><p>Block until the transfer is finished, then return a Response.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="exception">
-<dt id="because.client.transfer.TransferError">
-<em class="property">exception </em><code class="descclassname">because.client.transfer.</code><code class="descname">TransferError</code><span class="sig-paren">(</span><em>text</em>, <em>code=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/client/transfer.html#TransferError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.client.transfer.TransferError" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">Exception</span></code></p>
-<p>Represents error descriptions encoded as QNetworkReply::NetworkError.</p>
-</dd></dl>
-
+  <div class="section" id="because-client-transfer">
+<h1>because.client.transfer<a class="headerlink" href="#because-client-transfer" title="Permalink to this headline">¶</a></h1>
 </div>
 
 

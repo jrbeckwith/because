@@ -58,12 +58,17 @@
     <span class="kn">import</span> <span class="nn">http.client</span> <span class="k">as</span> <span class="nn">httplib</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
     <span class="kn">import</span> <span class="nn">httplib</span>  <span class="c1"># type: ignore</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">urllib.parse</span> <span class="k">as</span> <span class="nn">urlparse</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">urlparse</span>
 
-<span class="kn">from</span> <span class="nn">because.base.errors</span> <span class="k">import</span> <span class="n">InvalidObject</span>
-<span class="kn">from</span> <span class="nn">because.client.request</span> <span class="k">import</span> <span class="n">Request</span>
-<span class="kn">from</span> <span class="nn">because.client.response</span> <span class="k">import</span> <span class="n">Response</span>
-<span class="kn">from</span> <span class="nn">because.client.headers</span> <span class="k">import</span> <span class="n">Headers</span>
-<span class="kn">from</span> <span class="nn">.</span> <span class="n">ssl</span> <span class="kn">import</span> <span class="nn">SSLConfig</span>
+
+<span class="kn">from</span> <span class="nn">because.errors</span> <span class="k">import</span> <span class="n">InvalidObject</span>
+<span class="kn">from</span> <span class="nn">because.request</span> <span class="k">import</span> <span class="n">Request</span>
+<span class="kn">from</span> <span class="nn">because.response</span> <span class="k">import</span> <span class="n">Response</span>
+<span class="kn">from</span> <span class="nn">because.headers</span> <span class="k">import</span> <span class="n">Headers</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="n">ssl_config</span> <span class="kn">import</span> <span class="nn">SSLConfig</span>
 
 <span class="n">LOG</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
 
@@ -99,7 +104,7 @@
 
     <span class="n">log</span> <span class="o">=</span> <span class="n">LOG</span><span class="o">.</span><span class="n">getChild</span><span class="p">(</span><span class="s2">&quot;Transfer&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">ssl_config</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">ssl_config</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">subscriber</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="c1"># type: (Request, Optional[SSLConfig], Optional[logging.Logger]) -&gt; None</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg request:</span>
@@ -111,6 +116,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">request</span> <span class="o">=</span> <span class="n">request</span>                       <span class="c1"># type: Request</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ssl_config</span> <span class="o">=</span> <span class="n">ssl_config</span> <span class="ow">or</span> <span class="n">SSLConfig</span><span class="p">()</span>  <span class="c1"># type: SSLConfig</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">=</span> <span class="n">log</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">log</span>                   <span class="c1"># type: logging.Logger</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">subscriber</span> <span class="o">=</span> <span class="n">subscriber</span>
         
         <span class="c1"># Initialize internal state</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">response</span> <span class="o">=</span> <span class="kc">None</span>                         <span class="c1"># type: Optional[Response]</span>
@@ -122,9 +128,12 @@
 <span class="sd">        This method allows execution of a transfer to be deferred after its</span>
 <span class="sd">        construction.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;request: &quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">pretty_text</span><span class="p">())</span>
+
         <span class="c1"># The implementaton of httplib (aka http.client) hardcodes the use</span>
         <span class="c1"># of str literals, which are bytes in Python 2 and text in Python 3.</span>
-        <span class="c1"># So we have to split on str literals, which means url has to be str.</span>
+        <span class="c1"># So we have to split on str literals, which means url HAS to be str.</span>
         <span class="c1"># We can do this decode provided that url is always internally</span>
         <span class="c1"># generated and always encoded in utf-8.</span>
         <span class="c1"># TODO: maybe don&#39;t decode, just always store as Text? :/</span>
@@ -143,55 +152,47 @@
             <span class="p">)</span>
         <span class="p">)</span>
 
-        <span class="c1"># httplib needs us to preparse the URL. awkward...</span>
-        <span class="k">if</span> <span class="n">url</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">url</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">InvalidTransfer</span><span class="p">(</span><span class="s2">&quot;falsy url&quot;</span><span class="p">)</span>
-        <span class="n">scheme</span><span class="p">,</span> <span class="n">rest</span> <span class="o">=</span> <span class="n">url</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;://&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">prefix</span><span class="p">,</span> <span class="n">path</span> <span class="o">=</span> <span class="n">rest</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-            <span class="n">prefix</span><span class="p">,</span> <span class="n">path</span> <span class="o">=</span> <span class="n">rest</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span>
-        <span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;/</span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">))</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="n">host</span><span class="p">,</span> <span class="n">port</span> <span class="o">=</span> <span class="n">prefix</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-            <span class="n">host</span><span class="p">,</span> <span class="n">port</span> <span class="o">=</span> <span class="n">prefix</span><span class="p">,</span> <span class="s2">&quot;&quot;</span>
-        <span class="k">if</span> <span class="n">scheme</span> <span class="o">==</span> <span class="s2">&quot;http&quot;</span><span class="p">:</span>
+        <span class="n">parsed</span> <span class="o">=</span> <span class="n">urlparse</span><span class="o">.</span><span class="n">urlparse</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">parsed</span><span class="o">.</span><span class="n">scheme</span> <span class="o">==</span> <span class="s2">&quot;http&quot;</span><span class="p">:</span>
             <span class="n">connection</span> <span class="o">=</span> <span class="n">httplib</span><span class="o">.</span><span class="n">HTTPConnection</span><span class="p">(</span>
-                <span class="n">host</span><span class="o">=</span><span class="n">host</span><span class="p">,</span>
-                <span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">,</span>
+                <span class="n">host</span><span class="o">=</span><span class="n">parsed</span><span class="o">.</span><span class="n">hostname</span><span class="p">,</span>
+                <span class="n">port</span><span class="o">=</span><span class="n">parsed</span><span class="o">.</span><span class="n">port</span><span class="p">,</span>
             <span class="p">)</span>
-        <span class="k">elif</span> <span class="n">scheme</span> <span class="o">==</span> <span class="s2">&quot;https&quot;</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">parsed</span><span class="o">.</span><span class="n">scheme</span> <span class="o">==</span> <span class="s2">&quot;https&quot;</span><span class="p">:</span>
             <span class="n">context</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ssl_config</span><span class="o">.</span><span class="n">to_ssl_context</span><span class="p">()</span>  <span class="c1"># type: ssl.SSLContext</span>
-            <span class="c1"># key_file</span>
-            <span class="c1"># cert_file</span>
             <span class="n">connection</span> <span class="o">=</span> <span class="n">httplib</span><span class="o">.</span><span class="n">HTTPSConnection</span><span class="p">(</span>
-                <span class="n">host</span><span class="o">=</span><span class="n">host</span><span class="p">,</span>
-                <span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">,</span>
+                <span class="n">host</span><span class="o">=</span><span class="n">parsed</span><span class="o">.</span><span class="n">hostname</span><span class="p">,</span>
+                <span class="n">port</span><span class="o">=</span><span class="n">parsed</span><span class="o">.</span><span class="n">port</span><span class="p">,</span>
                 <span class="n">context</span><span class="o">=</span><span class="n">context</span><span class="p">,</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;fixme&quot;</span><span class="p">)</span>
 
-        <span class="c1"># ugh: connection.request wants a dict. blegh.</span>
+        <span class="c1"># ugh, connection.request wants a dict?</span>
         <span class="n">headers</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">pairs</span><span class="p">())</span>
-        
+
         <span class="c1"># Actually start it, and block until it finishes</span>
         <span class="n">connection</span><span class="o">.</span><span class="n">request</span><span class="p">(</span>
             <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span>
-            <span class="n">url</span><span class="o">=</span><span class="n">path</span><span class="p">,</span>
+            <span class="c1"># TODO: query, fragment?</span>
+            <span class="n">url</span><span class="o">=</span><span class="n">parsed</span><span class="o">.</span><span class="n">path</span> <span class="o">+</span> <span class="p">(</span><span class="s2">&quot;?&quot;</span> <span class="o">+</span> <span class="n">parsed</span><span class="o">.</span><span class="n">query</span> <span class="k">if</span> <span class="n">parsed</span><span class="o">.</span><span class="n">query</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
             <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span>
             <span class="n">body</span><span class="o">=</span><span class="n">body</span><span class="p">,</span>
         <span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_connection</span> <span class="o">=</span> <span class="n">connection</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_connection</span> <span class="o">=</span> <span class="n">connection</span>
+
+        <span class="c1"># Returned so caller - Client - can pass to subscriber.on_start().</span>
+        <span class="k">return</span> <span class="n">connection</span></div>
 
     <span class="k">def</span> <span class="nf">_get_response</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># type: () -&gt; Response</span>
-        <span class="c1"># Ask httplib for our response please</span>
-        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection</span><span class="o">.</span><span class="n">getresponse</span><span class="p">()</span>  <span class="c1"># type: httplib.HTTPResponse</span>
 
-        <span class="n">headers_str</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">getheaders</span><span class="p">()</span>  <span class="c1"># type: List[Tuple[str, str]]</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_connection</span><span class="o">.</span><span class="n">getresponse</span><span class="p">()</span>
+        <span class="n">headers_str</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">getheaders</span><span class="p">()</span>
         <span class="k">if</span> <span class="nb">bool</span><span class="p">(</span><span class="n">headers_str</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">headers_str</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="nb">bytes</span><span class="p">):</span>
             <span class="n">encoding</span> <span class="o">=</span> <span class="s2">&quot;utf-8&quot;</span>
             <span class="n">headers_bytes</span> <span class="o">=</span> <span class="p">[</span>
@@ -200,9 +201,8 @@
             <span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">headers_bytes</span> <span class="o">=</span> <span class="n">headers_str</span>
-
-        <span class="c1"># Whole response is in memory, not good for huge ones.</span>
-        <span class="n">body</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>  <span class="c1"># type: str</span>
+        <span class="c1"># TODO: the whole response is read into memory...</span>
+        <span class="n">body</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
 
         <span class="c1"># Repack for internal consumers which don&#39;t assume httplib was used.</span>
         <span class="c1"># TODO: shouldn&#39;t have to manually create Headers?</span>
@@ -219,13 +219,25 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># No actual wait necessary here, since that already happened in start()</span>
         <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_response</span><span class="p">()</span>  <span class="c1"># type: Response</span>
+        <span class="c1">#TODO</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;response:&quot;</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">pretty_text</span><span class="p">())</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">subscriber</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">subscriber</span><span class="o">.</span><span class="n">on_finish</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">response</span></div>
 
 <div class="viewcode-block" id="Transfer.close"><a class="viewcode-back" href="../../../../reference/because.interfaces.python.transfer.html#because.interfaces.python.client.Transfer.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># type: () -&gt; None</span>
         <span class="sd">&quot;&quot;&quot;Abort the transfer.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span></div></div>
+        <span class="k">pass</span></div>
+
+    <span class="k">def</span> <span class="nf">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># playing around</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">def</span> <span class="nf">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">type_</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">traceback</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 </pre></div>
 
           </div>
@@ -237,6 +249,8 @@
 <ul>
   <li><a href="../../../../index.html">Documentation overview</a><ul>
   <li><a href="../../../index.html">Module code</a><ul>
+  <li><a href="../../../because.html">because</a><ul>
+  </ul></li>
   </ul></li>
   </ul></li>
 </ul>

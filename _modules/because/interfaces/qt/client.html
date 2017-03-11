@@ -1,0 +1,335 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>because.interfaces.qt.client &#8212; because 0.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '0.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for because.interfaces.qt.client</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Client implementation for PyQt.</span>
+
+<span class="sd">This implementation has the following features specific to the PyQt</span>
+<span class="sd">environment.</span>
+
+<span class="sd">* It abstracts many Qt details like QNetworkAccessManager, QSsl stuff,</span>
+<span class="sd">  QNetworkRequest and QNetworkReply so that code for things like managing</span>
+<span class="sd">  login tokens, generating requests and parsing responses can be reused in</span>
+<span class="sd">  non-Qt environments.</span>
+
+<span class="sd">* This includes carefully holding and dropping references to prevent </span>
+<span class="sd">  PyQt objects from being prematurely collected, which tends to generate</span>
+<span class="sd">  bizarre behavior and SEGFAULTs at obscure times.</span>
+
+<span class="sd">* It provides for Qt parents to be set.</span>
+
+<span class="sd">* It exposes Qt signals so that they can be connected to other Qt signals and</span>
+<span class="sd">  slots (this being the Qt idiom for async and communication across threads).</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="p">(</span>
+    <span class="n">Any</span><span class="p">,</span>
+    <span class="n">Optional</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">PyQt5.QtNetwork</span> <span class="k">import</span> <span class="p">(</span>
+        <span class="n">QNetworkAccessManager</span><span class="p">,</span>
+        <span class="n">QNetworkRequest</span><span class="p">,</span>
+        <span class="n">QNetworkReply</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="kn">from</span> <span class="nn">PyQt5.QtCore</span> <span class="k">import</span> <span class="p">(</span>
+        <span class="n">QObject</span><span class="p">,</span>
+        <span class="n">QUrl</span><span class="p">,</span>
+        <span class="n">QByteArray</span><span class="p">,</span>
+        <span class="n">QBuffer</span><span class="p">,</span>
+        <span class="n">QIODevice</span><span class="p">,</span>
+        <span class="n">pyqtSignal</span><span class="p">,</span>
+    <span class="p">)</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">PyQt4.QtNetwork</span> <span class="k">import</span> <span class="p">(</span>
+        <span class="n">QNetworkAccessManager</span><span class="p">,</span>
+        <span class="n">QNetworkRequest</span><span class="p">,</span>
+        <span class="n">QNetworkReply</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="kn">from</span> <span class="nn">PyQt4.QtCore</span> <span class="k">import</span> <span class="p">(</span>
+        <span class="n">QObject</span><span class="p">,</span>
+        <span class="n">QUrl</span><span class="p">,</span>
+        <span class="n">QByteArray</span><span class="p">,</span>
+        <span class="n">QBuffer</span><span class="p">,</span>
+        <span class="n">QIODevice</span><span class="p">,</span>
+        <span class="n">pyqtSignal</span><span class="p">,</span>
+    <span class="p">)</span>
+<span class="kn">from</span> <span class="nn">because.request</span> <span class="k">import</span> <span class="n">Request</span><span class="p">,</span> <span class="n">InvalidRequest</span>
+<span class="kn">from</span> <span class="nn">because.client</span> <span class="k">import</span> <span class="n">Client</span> <span class="k">as</span> <span class="n">_Client</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="n">ssl_config</span> <span class="kn">import</span> <span class="nn">SSLConfig</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="n">response</span> <span class="kn">import</span> <span class="nn">Response</span><span class="o">,</span> <span class="nn">unpack_qnetworkreply</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="n">transfer</span> <span class="kn">import</span> <span class="nn">Transfer</span>
+
+<span class="n">LOG</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Client"><a class="viewcode-back" href="../../../../reference/because.interfaces.qt.client.html#because.interfaces.qt.client.Client">[docs]</a><span class="k">class</span> <span class="nc">Client</span><span class="p">(</span><span class="n">_Client</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Make HTTP requests according to a specified policy.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1">#: Transfer implementation used by this class.</span>
+    <span class="n">transfer_cls</span> <span class="o">=</span> <span class="n">Transfer</span>
+
+    <span class="c1">#: default logger for this class.</span>
+    <span class="n">log</span> <span class="o">=</span> <span class="n">LOG</span><span class="o">.</span><span class="n">getChild</span><span class="p">(</span><span class="s2">&quot;Client&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">ssl_config</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">log</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">qnam</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="c1"># type: (SSLConfig, QObject, logging.Logger) -&gt; None</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :arg ssl_config:</span>
+<span class="sd">            Optional. SSLConfig instance to use.</span>
+<span class="sd">        :arg log:</span>
+<span class="sd">            Optional. Logger to use. Defaults to logger .qt.client.Client.</span>
+<span class="sd">        :arg qnam:</span>
+<span class="sd">            Optional. A QNetworkAccessManager to be used by this client. If</span>
+<span class="sd">            None is passed, the QNAM will be created automatically.</span>
+<span class="sd">        :arg parent:</span>
+<span class="sd">            Optional. A QObject to pass as the parent when creating a QNAM or</span>
+<span class="sd">            other objects.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># TODO: replace these with super call</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">=</span> <span class="n">log</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">log</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ssl_config</span> <span class="o">=</span> <span class="n">ssl_config</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">ssl_config_cls</span><span class="p">()</span>
+
+        <span class="c1"># In Qt, we need this thing to do POST requests and connect to some</span>
+        <span class="c1"># basic signals. NOTE: Outside QGIS, this won&#39;t work without e.g.</span>
+        <span class="c1"># QCoreApplication([]) first.</span>
+        <span class="c1"># This doubles as a way for the caller to connect QNAM signals, since</span>
+        <span class="c1"># they can create QNAM, connect signals then pass it in here.</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">qnam</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">parent</span><span class="p">:</span>
+                <span class="n">qnam</span> <span class="o">=</span> <span class="n">QNetworkAccessManager</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">qnam</span> <span class="o">=</span> <span class="n">QNetworkAccessManager</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_qnam</span> <span class="o">=</span> <span class="n">qnam</span>
+
+        <span class="c1"># This is needed so Client knows when responses are done.</span>
+        <span class="n">qnam</span><span class="o">.</span><span class="n">finished</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_finished</span><span class="p">)</span>
+
+        <span class="c1"># Associate pending QNetworkReply with Transfers that wrap them,</span>
+        <span class="c1"># so that QNAM finished signals can call into the right Transfer.</span>
+        <span class="c1"># Maybe also so QObjects on the Transfer aren&#39;t collected prematurely.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transfers</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># type: dict[QNetworkReply, Transfer]</span>
+
+    <span class="k">def</span> <span class="nf">_finished</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reply</span><span class="p">):</span>
+        <span class="c1"># type: (QNetworkReply) -&gt; None</span>
+        <span class="sd">&quot;&quot;&quot;Receive notification of finished requests.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Normally QNetworkReply signals should be connected to slots on</span>
+        <span class="c1"># Transfer, but I&#39;m not sure if that is subject to race conditions</span>
+        <span class="c1"># where finished events may fire before those signals are connected; if</span>
+        <span class="c1"># so, this is a last resort to be certain no finished events leak.</span>
+        <span class="n">transfer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transfers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">reply</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">transfer</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="c1"># response = unpack_qnetworkreply(reply)</span>
+        <span class="c1"># ugh</span>
+        <span class="c1"># transfer.response = response</span>
+        <span class="c1"># transfer.on_finished()</span>
+        <span class="c1"># NOTE: transfer has to be responsible for cleanup like</span>
+        <span class="c1"># reply.deleteLater(), otherwise its callback will be called after</span>
+        <span class="c1"># transfer.close() and fail because the reply was invalidated.</span>
+        <span class="c1"># q_reply.deleteLater()</span>
+        <span class="c1"># transfer.close()</span>
+
+<div class="viewcode-block" id="Client.transfer"><a class="viewcode-back" href="../../../../reference/because.interfaces.qt.client.html#because.interfaces.qt.client.Client.transfer">[docs]</a>    <span class="k">def</span> <span class="nf">transfer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">on_finished</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">on_progress</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="c1"># type: (Request, Any, Any, Any, logging.Logger) -&gt; Any</span>
+        <span class="sd">&quot;&quot;&quot;Create a Transfer object tied to this client for the given request.</span>
+
+<span class="sd">        The transfer is not started.</span>
+
+<span class="sd">        This hides Qt implementation details like the QNetworkRequest, the SSL</span>
+<span class="sd">        config, and QNAM sendCustomRequest. Transfer just gets a function it</span>
+<span class="sd">        can call to send body data.</span>
+
+<span class="sd">        Unfortunately, Transfer has to hold references to QBuffer and</span>
+<span class="sd">        QByteArray. So to avoid passing them from the client, transfer builds</span>
+<span class="sd">        them itself and passes the QBuffer to this internal callback, which</span>
+<span class="sd">        also minimizes the visibility of QBuffer to Client on the way to</span>
+<span class="sd">        sendCustomRequest.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">assert</span> <span class="n">timeout</span>
+
+        <span class="c1"># To allow a transfer.start()</span>
+        <span class="c1"># * Share QNAM, transfer knows to call its sendCustomRequest</span>
+        <span class="c1">#   * Caller has to know it is using a QNAM</span>
+        <span class="c1">#   * Exposes everything else on QNAM</span>
+        <span class="c1">#   * Exposes QNetworkRequest</span>
+        <span class="c1">#   * Exposes QBuffer</span>
+        <span class="c1"># * Share QNAM&#39;s sendCustomRequest bound method</span>
+        <span class="c1">#   * Exposes QNetworkRequest</span>
+        <span class="c1">#   * Exposes QBuffer</span>
+        <span class="c1"># * Share client itself, with some public method for transfer to call</span>
+        <span class="c1"># * Share a callback that closes over Qt objects</span>
+        <span class="c1">#   * Still exposes QBuffer, unless....</span>
+
+        <span class="c1"># * We need a QNetworkRequest to give to QNetworkManager.</span>
+        <span class="c1"># * QNetworkRequest needs a QUrl, not a Python string.</span>
+        <span class="c1"># * It doesn&#39;t take other constructor parameters, use .setWhatever().</span>
+        <span class="c1"># * QNetworkRequest doesn&#39;t take a parent.</span>
+        <span class="n">q_request</span> <span class="o">=</span> <span class="n">QNetworkRequest</span><span class="p">(</span><span class="n">QUrl</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">url</span><span class="p">))</span>
+
+        <span class="c1"># Set headers on the request.</span>
+        <span class="c1"># We use setRawHeader to avoid looking up header-name constants.</span>
+        <span class="k">for</span> <span class="n">header_name</span><span class="p">,</span> <span class="n">header_value</span> <span class="ow">in</span> <span class="n">request</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">pairs</span><span class="p">():</span>
+            <span class="n">q_request</span><span class="o">.</span><span class="n">setRawHeader</span><span class="p">(</span><span class="n">header_name</span><span class="p">,</span> <span class="n">header_value</span><span class="p">)</span>
+
+        <span class="c1"># Set SSL configuration (SSLConfig hides many details).</span>
+        <span class="n">q_request</span><span class="o">.</span><span class="n">setSslConfiguration</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ssl_config</span><span class="o">.</span><span class="n">q_ssl_config</span><span class="p">)</span>
+
+        <span class="k">class</span> <span class="nc">Nonlocal</span><span class="p">:</span>
+            <span class="n">transfer</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># type: Optional[Transfer]</span>
+
+        <span class="k">def</span> <span class="nf">send_body</span><span class="p">(</span><span class="n">q_buffer</span><span class="p">):</span>
+            <span class="c1"># type: (QBuffer) -&gt; None</span>
+            <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">            Have Qt send the request.</span>
+<span class="sd">            Encapsulates QNAM and used to ensure the encapsulation of</span>
+<span class="sd">            QNetworkRequest and QNetworkReply, such that Transfer only knows</span>
+<span class="sd">            about QBuffer (since we need to hold a reference to it and Transfer</span>
+<span class="sd">            is a natural place for that).</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="c1"># Using sendCustomRequest for convenience: it allows an arbitrary</span>
+            <span class="c1"># HTTP method, so we can represent that explicitly in our own</span>
+            <span class="c1"># request representation and avoid if/elif/elif...</span>
+            <span class="n">q_reply</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_qnam</span><span class="o">.</span><span class="n">sendCustomRequest</span><span class="p">(</span>
+                <span class="n">q_request</span><span class="p">,</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span><span class="p">,</span> <span class="n">q_buffer</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="c1"># Associate the QNetworkReply to a Transfer... I&#39;m not sure I need</span>
+            <span class="c1"># this, and it doesn&#39;t necessarily fix the race described below.</span>
+            <span class="c1"># BUT Client needs to hold a reference to the Transfer to prevent</span>
+            <span class="c1"># it and the Qt objects it holds refs to from being collected.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">transfers</span><span class="p">[</span><span class="n">q_reply</span><span class="p">]</span> <span class="o">=</span> <span class="n">Nonlocal</span><span class="o">.</span><span class="n">transfer</span>
+            <span class="k">return</span> <span class="n">q_reply</span>
+
+            <span class="c1"># NOTE: there MAY be a gap of time between the call to</span>
+            <span class="c1"># sendCustomRequest and the connection of the QNetworkReply signals</span>
+            <span class="c1"># to handlers, such that some signals pertaining to the request</span>
+            <span class="c1"># aren&#39;t handled as expected.</span>
+            <span class="c1">#</span>
+            <span class="c1"># QNAM has signals that can be presubscribed to avoid this gap,</span>
+            <span class="c1"># but there may still be a gap of time between the call to</span>
+            <span class="c1"># sendCustomRequest and a QNetworkReply being associated to other</span>
+            <span class="c1"># data, putting us right back at the same race condition.</span>
+
+        <span class="c1"># Make the Transfer instance</span>
+        <span class="n">transfer</span> <span class="o">=</span> <span class="n">Transfer</span><span class="p">(</span>
+            <span class="n">request</span><span class="o">=</span><span class="n">request</span><span class="p">,</span>
+            <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
+            <span class="n">on_finished</span><span class="o">=</span><span class="n">on_finished</span><span class="p">,</span>
+            <span class="n">on_progress</span><span class="o">=</span><span class="n">on_progress</span><span class="p">,</span>
+            <span class="n">log</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">,</span>
+
+            <span class="c1"># TODO: how to replace this?</span>
+            <span class="n">send</span><span class="o">=</span><span class="n">send_body</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Share this instance with the closure already given to the transfer,</span>
+        <span class="c1"># so that it can associate the transfer to the returned QNetworkReply.</span>
+        <span class="c1">#</span>
+        <span class="c1"># While I&#39;d rather not expose QNetworkReply to Client at all, we do</span>
+        <span class="c1"># need to hold references to e.g. QByteArray to prevent them from being</span>
+        <span class="c1"># collected until the Transfer is finished.</span>
+        <span class="c1"># The transfer is a more logical place to keep these than client.</span>
+        <span class="n">Nonlocal</span><span class="o">.</span><span class="n">transfer</span> <span class="o">=</span> <span class="n">transfer</span>
+
+        <span class="c1"># TODO: Transfer can connect to signals on the reply returned by the</span>
+        <span class="c1"># callback.</span>
+        <span class="c1"># If it were not for the need to hold references, we could nuke these</span>
+        <span class="c1"># QNetworkReply to Transfer mappings as soon as the transfer&#39;s signals</span>
+        <span class="c1"># were all connected...</span>
+
+        <span class="k">return</span> <span class="n">transfer</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../index.html">Module code</a><ul>
+  <li><a href="../../../because.html">because</a><ul>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Boundless.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

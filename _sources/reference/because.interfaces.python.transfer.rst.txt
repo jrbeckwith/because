@@ -1,5 +1,5 @@
-because.interfaces.python.transfer
-==================================
+because.interfaces.python.transfer module
+=========================================
 
 .. automodule:: because.interfaces.python.transfer
     :members:

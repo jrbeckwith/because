@@ -1,38 +1,50 @@
-=======
-Routing
-=======
+===============
+Routing Service
+===============
 
-What is it?
------------
+The routing service lets you get routes which tell how to get from one place to
+another, with vector data and step-by-step instructions. 
 
-The Boundless routing service lets you get routes and step-by-step instructions
-for traveling from one place to another. You can specify locations either with
-latitude and longitude, or with addresses.
-
-The actual data may come from other sources, like Mapbox, Mapzen, or a locally
-hosted instance of an open source backend like Graphhopper or Valhalla. The
-Boundless service unifies all these backends behind one common HTTP interface
-and allows you to use them without having to sign up or use credentials for
-each individual service. 
-
-Due to the complexity of routing and the data it uses, there may be minor
-variations in what data you obtain from different backends.
+You can specify just an origin location and a destination location, or you can
+specify several waypoints to travel through. You can specify each location
+either with latitude and longitude, or with addresses. You can also choose
+which source you would like the route data to come from, like Mapbox or Mapzen. 
 
 
-How can I use it?
------------------
+Example
+-------
 
-TODO
+The following simple example logs in to BCS, then finds a route between two
+addresses, getting the data from Mapbox. Once it has a route, it iterates over
+its legs; for each leg, it iterates over its steps; and for each step, it
+prints out the instructions for that step, and the accompanying list of points
+representing the path taken when taking that step.
+
+.. code-block:: python
+
+    from because import Because
+
+    bcs = Because()
+    username = "myusername"
+    password = "mypassword"
+    bcs.login(username, password).wait()
+
+    home = "3637 Far West Blvd, Austin, TX 78731"
+    dest = "1600 Pennsylvania Ave., Washington, DC"
+    route = bcs.route(home, dest, service="mapbox").wait()
+
+    for leg_number, leg in enumerate(route.legs()):
+        print("Leg {}:".format(leg_number))
+        for step_number, step in enumerate(leg.steps()):
+            print("Step {}:".format(step_number))
+            print(step.instructions)
+            print(step.points)
 
 
-Reference
----------
+API Reference
+-------------
 
 .. toctree::
-   :hidden:
-   :maxdepth: 1
-   :caption: Contents:
+   :maxdepth: 3
 
    ../reference/because.services.routing
-
-:doc:`because.services.routing`

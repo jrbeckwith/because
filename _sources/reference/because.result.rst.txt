@@ -1,0 +1,7 @@
+because.result module
+=====================
+
+.. automodule:: because.result
+    :members:
+    :undoc-members:
+    :show-inheritance:

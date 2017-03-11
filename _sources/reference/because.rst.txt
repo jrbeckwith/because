@@ -1,16 +1,39 @@
-Because API Reference
-=====================
+because package
+===============
 
 .. automodule:: because
     :members:
     :undoc-members:
     :show-inheritance:
 
+Subpackages
+-----------
+
 .. toctree::
 
-    because.base
-    because.boundless
-    because.client
     because.interfaces
     because.services
     because.tests
+
+Submodules
+----------
+
+.. toctree::
+
+   because.bbox
+   because.client
+   because.errors
+   because.frontend
+   because.headers
+   because.hosts
+   because.point
+   because.pretty
+   because.reprs
+   because.request
+   because.response
+   because.result
+   because.service
+   because.ssl_config
+   because.transfer
+   because.utils
+

@@ -43,43 +43,8 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="module-because.client.response">
-<span id="because-client-response"></span><h1>because.client.response<a class="headerlink" href="#module-because.client.response" title="Permalink to this headline">¶</a></h1>
-<dl class="exception">
-<dt id="because.client.response.InvalidResponse">
-<em class="property">exception </em><code class="descclassname">because.client.response.</code><code class="descname">InvalidResponse</code><span class="sig-paren">(</span><em>message</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/client/response.html#InvalidResponse"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.client.response.InvalidResponse" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="because.base.errors.html#because.base.errors.InvalidObject" title="because.base.errors.InvalidObject"><code class="xref py py-class docutils literal"><span class="pre">because.base.errors.InvalidObject</span></code></a></p>
-<p>Raised instead of creating an invalid Response instance.</p>
-</dd></dl>
-
-<dl class="class">
-<dt id="because.client.response.Response">
-<em class="property">class </em><code class="descclassname">because.client.response.</code><code class="descname">Response</code><span class="sig-paren">(</span><em>status</em>, <em>headers=None</em>, <em>body=b''</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/client/response.html#Response"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.client.response.Response" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="because.base.utils.html#because.base.utils.PrettyPrintable" title="because.base.utils.PrettyPrintable"><code class="xref py py-class docutils literal"><span class="pre">because.base.utils.PrettyPrintable</span></code></a></p>
-<p>Represent a received HTTP response.</p>
-<p>You may be saying to yourself: &#8220;why yet another class Response?!?&#8221; Well &#8211;
-this internal representation is used to abstract over representations like
-httplib.HTTPResponse or QNetworkReply, so that <cite>because</cite> can work about the
-same in multiple environments without all the response processing code
-having to be duplicated with minor variations in it.</p>
-<dl class="method">
-<dt id="because.client.response.Response.pretty_lines">
-<code class="descname">pretty_lines</code><span class="sig-paren">(</span><em>pair_sep=': '</em>, <em>line_start='  '</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/client/response.html#Response.pretty_lines"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.client.response.Response.pretty_lines" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get a debug representation of attributes as a list of strings.</p>
-<p>This is really just used to customize the pretty_text() method provided
-by PrettyPrintable, so that each header gets its own line.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="because.client.response.Response.pretty_tuples">
-<code class="descname">pretty_tuples</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/client/response.html#Response.pretty_tuples"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.client.response.Response.pretty_tuples" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get a debug representation of attributes as a list of tuples.</p>
-<p>This is really just used to customize the pretty_text() method provided
-by PrettyPrintable.</p>
-</dd></dl>
-
-</dd></dl>
-
+  <div class="section" id="because-client-response">
+<h1>because.client.response<a class="headerlink" href="#because-client-response" title="Permalink to this headline">¶</a></h1>
 </div>
 
 

@@ -1,18 +1,7 @@
-because.client
-==============
+because.client module
+=====================
 
 .. automodule:: because.client
     :members:
     :undoc-members:
     :show-inheritance:
-
-.. toctree::
-
-   because.client.client
-   because.client.headers
-   because.client.request
-   because.client.response
-   because.client.service
-   because.client.ssl
-   because.client.transfer
-

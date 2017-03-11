@@ -1,0 +1,389 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>because.service &#8212; because 0.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for because.service</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Store specifications of how to access services.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="p">(</span>
+    <span class="n">Optional</span><span class="p">,</span>
+    <span class="n">Sequence</span><span class="p">,</span>
+    <span class="n">List</span><span class="p">,</span>
+    <span class="n">Text</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">urllib.parse</span> <span class="k">import</span> <span class="n">quote</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">urllib</span> <span class="k">import</span> <span class="n">quote</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="n">errors</span> <span class="kn">import</span> <span class="nn">InvalidObject</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="n">headers</span> <span class="kn">import</span> <span class="nn">Headers</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="n">request</span> <span class="kn">import</span> <span class="nn">Request</span>
+
+
+<div class="viewcode-block" id="InvalidEndpoint"><a class="viewcode-back" href="../../reference/because.service.html#because.service.InvalidEndpoint">[docs]</a><span class="k">class</span> <span class="nc">InvalidEndpoint</span><span class="p">(</span><span class="n">InvalidObject</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    &quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="UnknownEndpoint"><a class="viewcode-back" href="../../reference/because.service.html#because.service.UnknownEndpoint">[docs]</a><span class="k">class</span> <span class="nc">UnknownEndpoint</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;The given endpoint name is not known, preventing construction of a URL.</span>
+<span class="sd">    &quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="URLError"><a class="viewcode-back" href="../../reference/because.service.html#because.service.URLError">[docs]</a><span class="k">class</span> <span class="nc">URLError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Insufficient information to build a URL.</span>
+<span class="sd">    &quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="Service"><a class="viewcode-back" href="../../reference/because.service.html#because.service.Service">[docs]</a><span class="k">class</span> <span class="nc">Service</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Describe how to interact with a collection of related endpoints.</span>
+
+<span class="sd">    :note: This interface is still in flux and still has some wrinkles.</span>
+
+<span class="sd">    Instances of this class store invariant parameters that are not expected to</span>
+<span class="sd">    change. It doesn&#39;t matter if arguments are loaded from config files,</span>
+<span class="sd">    specified in Python modules, discovered by other requests, etc.</span>
+
+<span class="sd">    Base URLs are specified separately at the time URLs or requests are</span>
+<span class="sd">    generated. This allows the same service definition to be used against</span>
+<span class="sd">    different deployments, e.g. test vs. prod.</span>
+<span class="sd">    </span>
+<span class="sd">    Associate and hold information on a collection of related endpoints.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">endpoints</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="c1"># type: (dict[Text, Endpoint], Optional[Headers]) -&gt; None</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :arg endpoints:</span>
+<span class="sd">            dict (or similar object) mapping names to Endpoint instances to be</span>
+<span class="sd">            grouped together under this service.</span>
+<span class="sd">        :arg headers:</span>
+<span class="sd">            Optional. Default HTTP headers to use in requests constructed</span>
+<span class="sd">            through this service. In cases of conflicting headers, these will</span>
+<span class="sd">            be overridden by headers specified by the endpoint or host.</span>
+<span class="sd">        :arg base:</span>
+<span class="sd">            Optional. Base URL, prefixed to all endpoint URIs.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">endpoints</span> <span class="o">=</span> <span class="n">endpoints</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_headers</span> <span class="o">=</span> <span class="n">headers</span> <span class="ow">or</span> <span class="n">Headers</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">base</span> <span class="o">=</span> <span class="n">base</span>
+
+<div class="viewcode-block" id="Service.endpoint"><a class="viewcode-back" href="../../reference/because.service.html#because.service.Service.endpoint">[docs]</a>    <span class="k">def</span> <span class="nf">endpoint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">endpoint_name</span><span class="p">):</span>
+        <span class="c1"># type: (Text) -&gt; Endpoint</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">endpoint</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">endpoints</span><span class="p">[</span><span class="n">endpoint_name</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">UnknownEndpoint</span><span class="p">(</span><span class="n">endpoint_name</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">endpoint</span></div>
+
+<div class="viewcode-block" id="Service.url"><a class="viewcode-back" href="../../reference/because.service.html#because.service.Service.url">[docs]</a>    <span class="k">def</span> <span class="nf">url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">endpoint_name</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="c1"># type: (Text, Text, Optional[dict[Text, Text]]) -&gt; Text</span>
+        <span class="sd">&quot;&quot;&quot;Generate a URL to be used in a request to this service.</span>
+
+<span class="sd">        :arg base:</span>
+<span class="sd">            Base URL to use. If a base URL was supplied to the service</span>
+<span class="sd">            instance, this parameter overrides that. Otherwise, this</span>
+<span class="sd">            parameters supplies it.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">base</span> <span class="o">=</span> <span class="n">base</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">base</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">base</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">URLError</span><span class="p">(</span>
+                <span class="s2">&quot;specify a base URL for the service or in the url() call.&quot;</span>
+            <span class="p">)</span>
+        <span class="c1"># blegh</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
+            <span class="n">base</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+
+        <span class="n">endpoint</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">endpoint</span><span class="p">(</span><span class="n">endpoint_name</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">endpoint</span><span class="o">.</span><span class="n">url</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="n">base</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="n">values</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">result</span></div>
+
+<div class="viewcode-block" id="Service.headers"><a class="viewcode-back" href="../../reference/because.service.html#because.service.Service.headers">[docs]</a>    <span class="k">def</span> <span class="nf">headers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># type: () -&gt; Headers</span>
+        <span class="sd">&quot;&quot;&quot;Generate headers to be used in a request to this service.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">new</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_headers</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>  <span class="c1"># type: Headers</span>
+        <span class="k">return</span> <span class="n">new</span></div>
+
+<div class="viewcode-block" id="Service.request"><a class="viewcode-back" href="../../reference/because.service.html#because.service.Service.request">[docs]</a>    <span class="k">def</span> <span class="nf">request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">endpoint_name</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">base</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">body</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">headers</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="c1"># type: (Text, Text, Text, Optional[dict], Optional[bytes]) -&gt; Request</span>
+        <span class="sd">&quot;&quot;&quot;Generate a description of an HTTP request.</span>
+
+<span class="sd">        This method can be overridden to customize generated requests for a</span>
+<span class="sd">        particular kind of service.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># The endpoint can do the bulk of the request construction,</span>
+        <span class="c1"># but it needs to provide default headers that request overrides</span>
+        <span class="n">endpoint</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">endpoint</span><span class="p">(</span><span class="n">endpoint_name</span><span class="p">)</span>
+        <span class="n">request</span> <span class="o">=</span> <span class="n">endpoint</span><span class="o">.</span><span class="n">request</span><span class="p">(</span>
+            <span class="n">method</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="n">base</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="n">values</span><span class="p">,</span> <span class="n">body</span><span class="o">=</span><span class="n">body</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="n">request</span><span class="o">.</span><span class="n">headers</span> <span class="o">=</span> <span class="n">Headers</span><span class="o">.</span><span class="n">merged</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_headers</span><span class="p">,</span> <span class="n">request</span><span class="o">.</span><span class="n">headers</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">request</span></div></div>
+
+
+<div class="viewcode-block" id="Endpoint"><a class="viewcode-back" href="../../reference/because.service.html#because.service.Endpoint">[docs]</a><span class="k">class</span> <span class="nc">Endpoint</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Describe how to interact with a single endpoint.</span>
+
+<span class="sd">    :note: This interface is still in flux and still has some wrinkles.</span>
+
+<span class="sd">    Here, an endpoint is defined as a consistent form for relative URIs,</span>
+<span class="sd">    representable as a template containing placeholders. This is associated</span>
+<span class="sd">    with information on how to compose requests against those relative URIs.</span>
+
+<span class="sd">    Base URLs are specified separately, allowing the same endpoint definition</span>
+<span class="sd">    to be used against different deployments, e.g. test vs. prod.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="c1"># type: (Text, Optional[dict], Optional[List[Text]], Optional[Headers]) -&gt; None</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :arg path:</span>
+<span class="sd">            A template for constructing relative URIs, as a format string</span>
+<span class="sd">            (str.format).</span>
+<span class="sd">        :arg parameters:</span>
+<span class="sd">            Dict mapping names of parameters in the path template to Parameter</span>
+<span class="sd">            objects describing their type. This defines how to fill in the</span>
+<span class="sd">            template.</span>
+<span class="sd">        :arg methods:</span>
+<span class="sd">            ? Sequence of HTTP methods supported by this endpoint.</span>
+<span class="sd">        :arg headers:</span>
+<span class="sd">            Optional. Default HTTP headers to use in requests to this endpoint.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Find obvious typos</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">InvalidEndpoint</span><span class="p">(</span>
+                <span class="s2">&quot;path does not start with &#39;/&#39;: </span><span class="si">{0!r}</span><span class="s2">&quot;</span>
+                <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">methods</span> <span class="o">=</span> <span class="n">methods</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_headers</span> <span class="o">=</span> <span class="n">headers</span> <span class="ow">or</span> <span class="n">Headers</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Endpoint.uri"><a class="viewcode-back" href="../../reference/because.service.html#because.service.Endpoint.uri">[docs]</a>    <span class="k">def</span> <span class="nf">uri</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="c1"># type: (Optional[dict]) -&gt; Text</span>
+        <span class="sd">&quot;&quot;&quot;Generate a relative URI that can be appended to a base URL.</span>
+
+<span class="sd">        :arg values:</span>
+<span class="sd">            Dictionary of values for the template.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">values</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">values</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">expected_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+            <span class="c1"># Ensure Text gets urlencoded</span>
+            <span class="k">if</span> <span class="n">expected_type</span> <span class="o">==</span> <span class="n">Text</span><span class="p">:</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">quote</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="n">values</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+        <span class="c1"># TODO: we have to split off the query from the rest as long as the</span>
+        <span class="c1"># query is possibly part of the path template.</span>
+        <span class="c1"># the first stuff just gets used as-is (and if the path sucks so be it)</span>
+        <span class="c1"># but the query stuff has to be urlencode() instead of format()</span>
+        <span class="c1"># that&#39;s tedious to deal with</span>
+        <span class="c1"># maybe we just need to separate path parameters from query parameters</span>
+        <span class="c1"># from body parameters. but for now that much design is too much time</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">values</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Endpoint.url"><a class="viewcode-back" href="../../reference/because.service.html#because.service.Endpoint.url">[docs]</a>    <span class="k">def</span> <span class="nf">url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
+        <span class="c1"># type: (Text, dict[Text, Text]) -&gt; Text</span>
+        <span class="sd">&quot;&quot;&quot;Generate an absolute URL for this endpoint.</span>
+
+<span class="sd">        :arg url:</span>
+<span class="sd">            Base URL to append the endpoint&#39;s relative URI to.</span>
+<span class="sd">        :arg values:</span>
+<span class="sd">            Dictionary of arguments.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># TODO: probably want to check for a scheme etc.</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">base</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">base</span><span class="o">.</span><span class="n">startswith</span><span class="p">((</span><span class="s2">&quot;http://&quot;</span><span class="p">,</span> <span class="s2">&quot;https://&quot;</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="n">URLError</span><span class="p">()</span>
+        <span class="k">return</span> <span class="s2">&quot;/&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span>
+            <span class="n">base</span><span class="o">.</span><span class="n">rstrip</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">),</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">uri</span><span class="p">(</span><span class="n">values</span><span class="o">=</span><span class="n">values</span><span class="p">)</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">),</span>
+        <span class="p">])</span></div>
+
+<div class="viewcode-block" id="Endpoint.headers"><a class="viewcode-back" href="../../reference/because.service.html#because.service.Endpoint.headers">[docs]</a>    <span class="k">def</span> <span class="nf">headers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This can be overridden to specify headres as a function of passed</span>
+<span class="sd">        parameters.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_headers</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Endpoint.request"><a class="viewcode-back" href="../../reference/because.service.html#because.service.Endpoint.request">[docs]</a>    <span class="k">def</span> <span class="nf">request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">base</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">body</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="c1"># type: (Text, Text, Optional[dict[Text, Text]], Optional[Headers], Optional[bytes]) -&gt; Request</span>
+        <span class="sd">&quot;&quot;&quot;Generate a description of an HTTP request.</span>
+
+<span class="sd">        This method can be overridden to customize generated requests for a</span>
+<span class="sd">        particular kind of service.</span>
+
+<span class="sd">        :arg method:</span>
+<span class="sd">        :arg base:</span>
+<span class="sd">            Base URL</span>
+<span class="sd">        :arg values:</span>
+<span class="sd">            Dictionary of arguments, if any are needed</span>
+<span class="sd">        :arg headers:</span>
+<span class="sd">            Optional. Headers that will override any others specified.</span>
+<span class="sd">        :arg body:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Allow self.headers overrides to reflect here</span>
+        <span class="n">self_headers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">(</span><span class="n">values</span><span class="p">)</span>
+
+        <span class="c1"># Combine own headers with passed headers - passed get precedence</span>
+        <span class="n">headers</span> <span class="o">=</span> <span class="n">Headers</span><span class="o">.</span><span class="n">merged</span><span class="p">(</span><span class="n">self_headers</span><span class="p">,</span> <span class="n">headers</span><span class="p">)</span>
+
+        <span class="c1"># Allow self.url customizations on top of the passed URL</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="n">base</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="n">values</span><span class="p">)</span>
+
+        <span class="c1"># TODO: blegh</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
+            <span class="n">method</span> <span class="o">=</span> <span class="n">method</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
+            <span class="n">url</span> <span class="o">=</span> <span class="n">url</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">Request</span><span class="p">(</span>
+            <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span>
+            <span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span>
+            <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span>
+            <span class="n">body</span><span class="o">=</span><span class="n">body</span><span class="p">,</span>
+        <span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="Host"><a class="viewcode-back" href="../../reference/because.service.html#because.service.Host">[docs]</a><span class="k">class</span> <span class="nc">Host</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Store information associated with a specific host.</span>
+
+<span class="sd">    :note: This interface is still in flux and still has some wrinkles.</span>
+
+<span class="sd">    Hosts are passed to methods of Service or Endpoint so that they can convert</span>
+<span class="sd">    relative URIs into absolute URLs.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="c1"># type: (Text, Optional[Headers]) -&gt; None</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :arg url:</span>
+<span class="sd">            Base URL.</span>
+<span class="sd">            This must not contain URL parameters.</span>
+<span class="sd">        :arg headers:</span>
+<span class="sd">            Optional. HTTP header overrides to use for the given host.</span>
+<span class="sd">            These take precedence over anything on a service or endpoint</span>
+<span class="sd">            definition.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_url</span> <span class="o">=</span> <span class="n">url</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_headers</span> <span class="o">=</span> <span class="n">headers</span> <span class="ow">or</span> <span class="n">Headers</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">url</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># type: () -&gt; Text</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_url</span>
+
+<div class="viewcode-block" id="Host.headers"><a class="viewcode-back" href="../../reference/because.service.html#because.service.Host.headers">[docs]</a>    <span class="k">def</span> <span class="nf">headers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># type: () -&gt; Headers</span>
+        <span class="sd">&quot;&quot;&quot;Generate a dict of headers for this host.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># This method can be overridden.</span>
+
+        <span class="c1"># Defensive copy.</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_headers</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="Parameter"><a class="viewcode-back" href="../../reference/because.service.html#because.service.Parameter">[docs]</a><span class="k">class</span> <span class="nc">Parameter</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;One parameter, and how to validate it</span>
+
+<span class="sd">    :note: this is completely TBD for now.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="c1"># type: (Optional[Sequence[Text]]) -&gt; None</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :arg options:</span>
+<span class="sd">            If provided, this should be a list of strings that are accepted</span>
+<span class="sd">            as arguments for this parameter.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">options</span> <span class="o">=</span> <span class="n">options</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  <li><a href="../because.html">because</a><ul>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Boundless.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
