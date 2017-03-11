@@ -10,6 +10,12 @@ setup(
     url="https://github.com/harts-boundless/because",
     packages=[
         "because",
+        "because.services",
+        "because.services.token",
+        "because.services.routing",
+        "because.services.geocoding",
+        "because.services.basemaps",
+        "because.services.search",
         "because.interfaces",
         "because.interfaces.python",
         "because.interfaces.qt",
