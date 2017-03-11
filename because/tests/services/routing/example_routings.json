@@ -1,0 +1,20 @@
+[
+    {
+        "name": "Mapbox Routing",
+        "description": "Mapbox Routing Service",
+        "endpoint": "http://api.boundlessgeo.io/v1/route/mapbox/originx/{originx}/originy/{originy}/destinationx/{destinationx}/destinationy/{destinationy}",
+        "accessList": [
+            "bcs-routing-mapbox"
+        ],
+        "apidoc": "http://bcs-swagger.boundlessgeo.com:8082/?service=connect_routing_service"
+    },
+    {
+        "name": "MapzenRouting",
+        "description": "MapzenRouting Service",
+        "endpoint": "http://api.boundlessgeo.io/v1/route/mapzen/originx/{originx}/originy/{originy}/destinationx/{destinationx}/destinationy/{destinationy}",
+        "accessList": [
+            "bcs-routing-mapzen"
+        ],
+        "apidoc": "http://bcs-swagger.boundlessgeo.com:8082/?service=connect_routing_service"
+    }
+]
