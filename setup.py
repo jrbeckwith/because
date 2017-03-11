@@ -9,6 +9,7 @@ setup(
     maintainer_email="harts@boundlessgeo.com",
     url="https://github.com/harts-boundless/because",
     packages=[
+        "because",
     ],
     install_requires=[
     ],
