@@ -12,5 +12,6 @@ setup(
         "because",
     ],
     install_requires=[
+        "typing==3.5.3.0",
     ],
 )
