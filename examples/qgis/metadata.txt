@@ -1,0 +1,23 @@
+; Example QGIS plugin using because
+
+[general]
+name=Because Example
+icon=images/boundless_content.png
+about=
+    This plugin demonstrates the use of because to make a QGIS plugin
+    which does things like geocoding and routing using Boundless services.
+description=
+    Example plugin using because.
+version=version 0.0.0
+qgisMinimumVersion=2.00
+qgisMaximumVersion=2.99
+experimental=True
+deprecated=False
+category=web
+tags=boundless,geocoding,routing,bcs
+
+author=Boundless
+email=harts@boundlessgeo.com
+homepage=http://github.com/harts-boundless/because
+repository=http://github.com/harts-boundless/because
+tracker=http://github.com/harts-boundless/because/issues

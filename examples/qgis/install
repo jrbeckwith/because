@@ -1,0 +1,13 @@
+#!/bin/bash
+HERE="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+PLUGINS_HOME="${HOME}/.qgis2/python/plugins"
+PLUGIN_PATH="${PLUGINS_HOME}/because_example"
+LIB_PATH="${PLUGINS_HOME}/because"
+
+mkdir -p "${PLUGIN_PATH}"
+cp -vaR "${HERE}/." "${PLUGIN_PATH}/"
+cp -vaR "${HERE}/../../because/." "${LIB_PATH}/"
+# Let us use the reload plugin on because
+cp "${HERE}/stub.py" "${LIB_PATH}/__init__.py"
+find "${LIB_PATH}" -type f -name "*.pyc" -delete -print
+find "${LIB_PATH}" -type d -name "__pycache__" -delete -print
