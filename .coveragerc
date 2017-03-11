@@ -1,0 +1,22 @@
+[run]
+
+# measure branch coverage
+branch = True
+
+source = because
+
+# (default) don't measure stdlib
+cover_pylib = False
+
+# (default) location of data file
+data_file = .coverage
+
+[html]
+# where to write html coverage files
+directory = coverage
+
+[paths]
+source = 
+    because
+    .tox/*/lib/python*/site-packages/because
+    .tox/pypy*/site-packages/because
