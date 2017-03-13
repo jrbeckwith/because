@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Geocoding &#8212; because 0.0.0 documentation</title>
+    <title>Geocoding Service &#8212; because 0.0.0 documentation</title>
     
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -26,8 +26,6 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Reverse Geocoding" href="reverse_geocoding.html" />
-    <link rel="prev" title="Routing" href="routing.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -43,22 +41,77 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="geocoding">
-<h1>Geocoding<a class="headerlink" href="#geocoding" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="what-is-it">
-<h2>What is it?<a class="headerlink" href="#what-is-it" title="Permalink to this headline">¶</a></h2>
-<p>The Boundless geocoding service lets you find latitude/longitude coordinates
-which correspond to textual descriptions like mailing addresses.</p>
-<p>It is often the case that there are multiple matches. The service will present
-all these matches to you, along with an estimate of how relevant each one might
-be, so that you can decide for yourself what to do with the ambiguity.</p>
-<p>There may be minor variations in what data you obtain from different backends.</p>
-<p>The actual data may come from sources outside Boundless, like Mapbox, Mapzen,
-or a locally hosted instance of Valhalla.</p>
+  <div class="section" id="geocoding-service">
+<h1>Geocoding Service<a class="headerlink" href="#geocoding-service" title="Permalink to this headline">¶</a></h1>
+<p>The geocoding service lets you convert between WGS84 latitude/longitude
+coordinates and textual addresses. Forward geocoding is address to location
+(lat/lon), and reverse geocoding is location (lat/lon) to address.</p>
+<p>The service returns multiple matches, each with an estimate of how relevant it
+might be, so that you can decide for yourself what to do with ambiguous cases.
+you can also choose which source you would like the geocoding data to come
+from, like Mapbox or Mapzen.</p>
+<div class="section" id="examples">
+<h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
+<p>The following simple example logs in to BCS, requests candidate locations for
+the address with data from Mapbox, then prints each of the candidate locations.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">because</span> <span class="kn">import</span> <span class="n">Because</span>
+
+<span class="n">bcs</span> <span class="o">=</span> <span class="n">Because</span><span class="p">()</span>
+<span class="n">username</span> <span class="o">=</span> <span class="s2">&quot;myusername&quot;</span>
+<span class="n">password</span> <span class="o">=</span> <span class="s2">&quot;mypassword&quot;</span>
+<span class="n">bcs</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">)</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+
+<span class="n">address</span> <span class="o">=</span> <span class="s2">&quot;1600 Pennsylvania Ave., Washington, DC&quot;</span>
+<span class="n">matches</span> <span class="o">=</span> <span class="n">bcs</span><span class="o">.</span><span class="n">geocode</span><span class="p">(</span><span class="n">address</span><span class="p">,</span> <span class="n">service</span><span class="o">=</span><span class="s2">&quot;mapbox&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">match</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">matches</span><span class="p">):</span>
+    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Match {}:&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">index</span><span class="p">))</span>
+    <span class="k">print</span><span class="p">(</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Score: {}</span>
+<span class="sd">        Location: ({}, {})</span>
+<span class="sd">        Address: {}</span>
+<span class="sd">        &quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">score</span><span class="p">,</span> <span class="n">match</span><span class="o">.</span><span class="n">x</span><span class="p">,</span>  <span class="n">match</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">match</span><span class="o">.</span><span class="n">address</span><span class="p">),</span>
+    <span class="p">)</span>
+</pre></div>
 </div>
-<div class="section" id="how-can-i-use-it">
-<h2>How can I use it?<a class="headerlink" href="#how-can-i-use-it" title="Permalink to this headline">¶</a></h2>
-<p>TODO</p>
+<p>Here is an example of reverse geocoding, where a location is given and
+addresses are returned.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">because</span> <span class="kn">import</span> <span class="n">Because</span>
+
+<span class="n">bcs</span> <span class="o">=</span> <span class="n">Because</span><span class="p">()</span>
+<span class="n">username</span> <span class="o">=</span> <span class="s2">&quot;myusername&quot;</span>
+<span class="n">password</span> <span class="o">=</span> <span class="s2">&quot;mypassword&quot;</span>
+<span class="n">bcs</span><span class="o">.</span><span class="n">login</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">)</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+
+<span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mf">76.981041</span><span class="p">,</span> <span class="mf">38.878649</span><span class="p">)</span>
+<span class="n">matches</span> <span class="o">=</span> <span class="n">bcs</span><span class="o">.</span><span class="n">reverse_geocode</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">service</span><span class="o">=</span><span class="s2">&quot;mapbox&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">match</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">matches</span><span class="p">):</span>
+    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Match {}:&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">index</span><span class="p">))</span>
+    <span class="k">print</span><span class="p">(</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Score: {}</span>
+<span class="sd">        Location: ({}, {})</span>
+<span class="sd">        Address: {}</span>
+<span class="sd">        &quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">score</span><span class="p">,</span> <span class="n">match</span><span class="o">.</span><span class="n">x</span><span class="p">,</span>  <span class="n">match</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="n">match</span><span class="o">.</span><span class="n">address</span><span class="p">)</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="api-reference">
+<h2>API Reference<a class="headerlink" href="#api-reference" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="reference/because.services.geocoding.html">because.services.geocoding package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="reference/because.services.geocoding.html#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="reference/because.services.geocoding.candidate.html">because.services.geocoding.candidate module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/because.services.geocoding.geocode.html">because.services.geocoding.geocode module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="reference/because.services.geocoding.service.html">because.services.geocoding.service module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
 </div>
 </div>
 
@@ -70,9 +123,9 @@ or a locally hosted instance of Valhalla.</p>
         <div class="sphinxsidebarwrapper">
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Geocoding</a><ul>
-<li><a class="reference internal" href="#what-is-it">What is it?</a></li>
-<li><a class="reference internal" href="#how-can-i-use-it">How can I use it?</a></li>
+<li><a class="reference internal" href="#">Geocoding Service</a><ul>
+<li><a class="reference internal" href="#examples">Examples</a></li>
+<li><a class="reference internal" href="#api-reference">API Reference</a></li>
 </ul>
 </li>
 </ul>
@@ -80,8 +133,6 @@ or a locally hosted instance of Valhalla.</p>
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="routing.html" title="previous chapter">Routing</a></li>
-      <li>Next: <a href="reverse_geocoding.html" title="next chapter">Reverse Geocoding</a></li>
   </ul></li>
 </ul>
 </div>

@@ -59,7 +59,6 @@
  | <a href="#L"><strong>L</strong></a>
  | <a href="#M"><strong>M</strong></a>
  | <a href="#N"><strong>N</strong></a>
- | <a href="#O"><strong>O</strong></a>
  | <a href="#P"><strong>P</strong></a>
  | <a href="#R"><strong>R</strong></a>
  | <a href="#S"><strong>S</strong></a>
@@ -244,6 +243,8 @@
       </ul></li>
       <li><a href="reference/because.headers.html#because.headers.Headers.coerce">coerce() (because.headers.Headers class method)</a>
 </li>
+      <li><a href="reference/because.interfaces.qt.transfer.html#because.interfaces.qt.transfer.TransferSignals.connect">connect() (because.interfaces.qt.transfer.TransferSignals method)</a>
+</li>
       <li><a href="reference/because.reprs.html#because.reprs.consistent_repr">consistent_repr() (in module because.reprs)</a>
 </li>
       <li><a href="reference/because.headers.html#because.headers.Headers.copy">copy() (because.headers.Headers method)</a>
@@ -272,9 +273,9 @@
 </li>
       <li><a href="reference/because.services.routing.parse.html#because.services.routing.parse.dict_to_step">dict_to_step() (in module because.services.routing.parse)</a>
 </li>
-      <li><a href="reference/because.interfaces.qt.transfer.html#because.interfaces.qt.transfer.Transfer.download_finished">download_finished (because.interfaces.qt.transfer.Transfer attribute)</a>
+      <li><a href="reference/because.interfaces.qt.transfer.html#because.interfaces.qt.transfer.TransferSignals.downloadProgress">downloadProgress (because.interfaces.qt.transfer.TransferSignals attribute)</a>
 </li>
-      <li><a href="reference/because.interfaces.qt.transfer.html#because.interfaces.qt.transfer.Transfer.download_percent">download_percent (because.interfaces.qt.transfer.Transfer attribute)</a>
+      <li><a href="reference/because.transfer.html#because.transfer.Transfer.duration">duration() (because.transfer.Transfer method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -282,12 +283,10 @@
 <h2 id="E">E</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="reference/because.interfaces.qt.transfer.html#because.interfaces.qt.transfer.Transfer.elapsed">elapsed (because.interfaces.qt.transfer.Transfer attribute)</a>
+      <li><a href="reference/because.service.html#because.service.Endpoint">Endpoint (class in because.service)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="reference/because.service.html#because.service.Endpoint">Endpoint (class in because.service)</a>
-</li>
       <li><a href="reference/because.service.html#because.service.Service.endpoint">endpoint() (because.service.Service method)</a>
 </li>
   </ul></td>
@@ -296,10 +295,12 @@
 <h2 id="F">F</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="reference/because.interfaces.qt.transfer.html#because.interfaces.qt.transfer.TransferWorker.finished">finished (because.interfaces.qt.transfer.TransferWorker attribute)</a>
+      <li><a href="reference/because.interfaces.qt.transfer.html#because.interfaces.qt.transfer.TransferSignals.failure">failure (because.interfaces.qt.transfer.TransferSignals attribute)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/because.interfaces.qt.transfer.html#because.interfaces.qt.transfer.TransferSignals.finished">finished (because.interfaces.qt.transfer.TransferSignals attribute)</a>
+</li>
       <li><a href="reference/because.frontend.html#because.frontend.Frontend">Frontend (class in because.frontend)</a>
 </li>
   </ul></td>
@@ -370,7 +371,7 @@
 </li>
       <li><a href="reference/because.ssl_config.html#because.ssl_config.InvalidSSLConfig">InvalidSSLConfig</a>
 </li>
-      <li><a href="reference/because.interfaces.python.transfer.html#because.interfaces.python.transfer.InvalidTransfer">InvalidTransfer</a>
+      <li><a href="reference/because.interfaces.python.transfer.html#because.interfaces.python.transfer.InvalidTransfer">InvalidTransfer</a>, <a href="reference/because.transfer.html#because.transfer.InvalidTransfer">[1]</a>
 </li>
       <li><a href="reference/because.utils.html#because.utils.is_iterable">is_iterable() (in module because.utils)</a>
 </li>
@@ -435,31 +436,11 @@
   </ul></td>
 </tr></table>
 
-<h2 id="O">O</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="reference/because.interfaces.qt.transfer.html#because.interfaces.qt.transfer.Transfer.on_error">on_error() (because.interfaces.qt.transfer.Transfer method)</a>
-</li>
-      <li><a href="reference/because.transfer.html#because.transfer.Subscriber.on_finish">on_finish() (because.transfer.Subscriber method)</a>
-</li>
-      <li><a href="reference/because.interfaces.qt.transfer.html#because.interfaces.qt.transfer.Transfer.on_finished">on_finished() (because.interfaces.qt.transfer.Transfer method)</a>
-</li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="reference/because.interfaces.qt.transfer.html#because.interfaces.qt.transfer.Transfer.on_progress">on_progress() (because.interfaces.qt.transfer.Transfer method)</a>
-</li>
-      <li><a href="reference/because.interfaces.qt.transfer.html#because.interfaces.qt.transfer.Transfer.on_redirected">on_redirected() (because.interfaces.qt.transfer.Transfer method)</a>
-</li>
-      <li><a href="reference/because.transfer.html#because.transfer.Subscriber.on_start">on_start() (because.transfer.Subscriber method)</a>
-</li>
-      <li><a href="reference/because.interfaces.qt.transfer.html#because.interfaces.qt.transfer.Transfer.on_timeout">on_timeout() (because.interfaces.qt.transfer.Transfer method)</a>
-</li>
-  </ul></td>
-</tr></table>
-
 <h2 id="P">P</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/because.interfaces.qt.client.html#because.interfaces.qt.client.pack_request">pack_request() (in module because.interfaces.qt.client)</a>
+</li>
       <li><a href="reference/because.headers.html#because.headers.Headers.pairs">pairs() (because.headers.Headers method)</a>
 </li>
       <li><a href="reference/because.service.html#because.service.Parameter">Parameter (class in because.service)</a>
@@ -484,10 +465,10 @@
 </li>
       <li><a href="reference/because.point.html#because.point.Point">Point (class in because.point)</a>
 </li>
-      <li><a href="reference/because.services.routing.route.html#because.services.routing.route.Step.points">points (because.services.routing.route.Step attribute)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="reference/because.services.routing.route.html#because.services.routing.route.Step.points">points (because.services.routing.route.Step attribute)</a>
+</li>
       <li><a href="reference/because.interfaces.qt.response.html#because.interfaces.qt.response.Response.pretty">pretty() (because.interfaces.qt.response.Response method)</a>
 </li>
       <li><a href="reference/because.pretty.html#because.pretty.PrettyMixin.pretty_dict">pretty_dict() (because.pretty.PrettyMixin method)</a>
@@ -513,8 +494,6 @@
 </li>
       </ul></li>
       <li><a href="reference/because.pretty.html#because.pretty.PrettyMixin">PrettyMixin (class in because.pretty)</a>
-</li>
-      <li><a href="reference/because.interfaces.qt.transfer.html#because.interfaces.qt.transfer.TransferWorker.pulse">pulse (because.interfaces.qt.transfer.TransferWorker attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -578,12 +557,22 @@
 </li>
       <li><a href="reference/because.headers.html#because.headers.Headers.set">set() (because.headers.Headers method)</a>
 </li>
+      <li><a href="reference/because.interfaces.qt.transfer.html#because.interfaces.qt.transfer.Transfer.signals">signals (because.interfaces.qt.transfer.Transfer attribute)</a>
+</li>
       <li><a href="reference/because.client.html#because.client.Client.ssl_config_cls">ssl_config_cls (because.client.Client attribute)</a>
 
       <ul>
         <li><a href="reference/because.interfaces.python.client.html#because.interfaces.python.client.Client.ssl_config_cls">(because.interfaces.python.client.Client attribute)</a>
 </li>
+        <li><a href="reference/because.interfaces.qt.client.html#because.interfaces.qt.client.Client.ssl_config_cls">(because.interfaces.qt.client.Client attribute)</a>
+</li>
+        <li><a href="reference/because.interfaces.qt.transfer.html#because.interfaces.qt.transfer.Transfer.ssl_config_cls">(because.interfaces.qt.transfer.Transfer attribute)</a>
+</li>
+        <li><a href="reference/because.transfer.html#because.transfer.Transfer.ssl_config_cls">(because.transfer.Transfer attribute)</a>
+</li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/because.interfaces.python.ssl_config.html#because.interfaces.python.ssl_config.SSLConfig">SSLConfig (class in because.interfaces.python.ssl_config)</a>
 
       <ul>
@@ -592,8 +581,6 @@
         <li><a href="reference/because.ssl_config.html#because.ssl_config.SSLConfig">(class in because.ssl_config)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/because.interfaces.python.ssl_config.html#because.interfaces.python.ssl_config.SSLKey">SSLKey (class in because.interfaces.python.ssl_config)</a>
 
       <ul>
@@ -614,7 +601,7 @@
 </li>
       <li><a href="reference/because.services.routing.route.html#because.services.routing.route.Leg.steps">steps() (because.services.routing.route.Leg method)</a>
 </li>
-      <li><a href="reference/because.transfer.html#because.transfer.Subscriber">Subscriber (class in because.transfer)</a>
+      <li><a href="reference/because.interfaces.qt.transfer.html#because.interfaces.qt.transfer.TransferSignals.success">success (because.interfaces.qt.transfer.TransferSignals attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -736,8 +723,12 @@
         <li><a href="reference/because.transfer.html#because.transfer.Transfer">(class in because.transfer)</a>
 </li>
       </ul></li>
-      <li><a href="reference/because.interfaces.qt.client.html#because.interfaces.qt.client.Client.transfer">transfer() (because.interfaces.qt.client.Client method)</a>
+      <li><a href="reference/because.client.html#because.client.Client.transfer">transfer() (because.client.Client method)</a>
+
+      <ul>
+        <li><a href="reference/because.interfaces.qt.client.html#because.interfaces.qt.client.Client.transfer">(because.interfaces.qt.client.Client method)</a>
 </li>
+      </ul></li>
       <li><a href="reference/because.client.html#because.client.Client.transfer_cls">transfer_cls (because.client.Client attribute)</a>
 
       <ul>
@@ -746,9 +737,9 @@
         <li><a href="reference/because.interfaces.qt.client.html#because.interfaces.qt.client.Client.transfer_cls">(because.interfaces.qt.client.Client attribute)</a>
 </li>
       </ul></li>
-      <li><a href="reference/because.interfaces.python.transfer.html#because.interfaces.python.transfer.TransferError">TransferError</a>, <a href="reference/because.interfaces.qt.transfer.html#because.interfaces.qt.transfer.TransferError">[1]</a>, <a href="reference/because.transfer.html#because.transfer.TransferError">[2]</a>
+      <li><a href="reference/because.interfaces.python.transfer.html#because.interfaces.python.transfer.TransferError">TransferError</a>, <a href="reference/because.transfer.html#because.transfer.TransferError">[1]</a>
 </li>
-      <li><a href="reference/because.interfaces.qt.transfer.html#because.interfaces.qt.transfer.TransferWorker">TransferWorker (class in because.interfaces.qt.transfer)</a>
+      <li><a href="reference/because.interfaces.qt.transfer.html#because.interfaces.qt.transfer.TransferSignals">TransferSignals (class in because.interfaces.qt.transfer)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -760,13 +751,11 @@
 </li>
       <li><a href="reference/because.interfaces.qt.response.html#because.interfaces.qt.response.unpack_qnetworkreply">unpack_qnetworkreply() (in module because.interfaces.qt.response)</a>
 </li>
-      <li><a href="reference/because.interfaces.qt.transfer.html#because.interfaces.qt.transfer.unpackQreply">unpackQreply() (in module because.interfaces.qt.transfer)</a>
+      <li><a href="reference/because.interfaces.qt.transfer.html#because.interfaces.qt.transfer.unpack_reply">unpack_reply() (in module because.interfaces.qt.transfer)</a>
 </li>
       <li><a href="reference/because.headers.html#because.headers.Headers.unset">unset() (because.headers.Headers method)</a>
 </li>
-      <li><a href="reference/because.interfaces.qt.transfer.html#because.interfaces.qt.transfer.Transfer.upload_finished">upload_finished (because.interfaces.qt.transfer.Transfer attribute)</a>
-</li>
-      <li><a href="reference/because.interfaces.qt.transfer.html#because.interfaces.qt.transfer.Transfer.upload_percent">upload_percent (because.interfaces.qt.transfer.Transfer attribute)</a>
+      <li><a href="reference/because.interfaces.qt.transfer.html#because.interfaces.qt.transfer.TransferSignals.uploadProgress">uploadProgress (because.interfaces.qt.transfer.TransferSignals attribute)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -801,6 +790,8 @@
       <li><a href="reference/because.interfaces.python.transfer.html#because.interfaces.python.transfer.Transfer.wait">wait() (because.interfaces.python.transfer.Transfer method)</a>
 
       <ul>
+        <li><a href="reference/because.interfaces.qt.transfer.html#because.interfaces.qt.transfer.Transfer.wait">(because.interfaces.qt.transfer.Transfer method)</a>
+</li>
         <li><a href="reference/because.result.html#because.result.Result.wait">(because.result.Result method)</a>
 </li>
         <li><a href="reference/because.transfer.html#because.transfer.Transfer.wait">(because.transfer.Transfer method)</a>
