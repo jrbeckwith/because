@@ -71,9 +71,15 @@ slots (this being the Qt idiom for async and communication across threads).</li>
 <dd><p>default logger for this class.</p>
 </dd></dl>
 
+<dl class="attribute">
+<dt id="because.interfaces.qt.client.Client.ssl_config_cls">
+<code class="descname">ssl_config_cls</code><a class="headerlink" href="#because.interfaces.qt.client.Client.ssl_config_cls" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal"><span class="pre">SSLConfig</span></code></p>
+</dd></dl>
+
 <dl class="method">
 <dt id="because.interfaces.qt.client.Client.transfer">
-<code class="descname">transfer</code><span class="sig-paren">(</span><em>request</em>, <em>timeout=None</em>, <em>on_finished=None</em>, <em>on_progress=None</em>, <em>log=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/interfaces/qt/client.html#Client.transfer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.interfaces.qt.client.Client.transfer" title="Permalink to this definition">¶</a></dt>
+<code class="descname">transfer</code><span class="sig-paren">(</span><em>request</em>, <em>log=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/interfaces/qt/client.html#Client.transfer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.interfaces.qt.client.Client.transfer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a Transfer object tied to this client for the given request.</p>
 <p>The transfer is not started.</p>
 <p>This hides Qt implementation details like the QNetworkRequest, the SSL
@@ -93,6 +99,12 @@ sendCustomRequest.</p>
 <p>alias of <code class="xref py py-class docutils literal"><span class="pre">Transfer</span></code></p>
 </dd></dl>
 
+</dd></dl>
+
+<dl class="function">
+<dt id="because.interfaces.qt.client.pack_request">
+<code class="descclassname">because.interfaces.qt.client.</code><code class="descname">pack_request</code><span class="sig-paren">(</span><em>request</em>, <em>ssl_config</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/interfaces/qt/client.html#pack_request"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.interfaces.qt.client.pack_request" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a QNetworkRequest</p>
 </dd></dl>
 
 </div>

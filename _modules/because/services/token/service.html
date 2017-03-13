@@ -76,7 +76,7 @@
         <span class="p">}</span>
         <span class="n">headers</span> <span class="o">=</span> <span class="n">Headers</span><span class="o">.</span><span class="n">merged</span><span class="p">(</span>
             <span class="n">DEFAULT_HEADERS</span><span class="p">,</span>
-            <span class="n">Headers</span><span class="p">([</span>
+            <span class="n">Headers</span><span class="o">.</span><span class="n">coerce</span><span class="p">([</span>
                 <span class="p">(</span><span class="n">b</span><span class="s2">&quot;Content-Type&quot;</span><span class="p">,</span> <span class="n">b</span><span class="s2">&quot;application/json&quot;</span><span class="p">),</span>
             <span class="p">])</span>
         <span class="p">)</span>

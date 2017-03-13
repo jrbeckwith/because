@@ -45,27 +45,11 @@
             
   <div class="section" id="module-because.transfer">
 <span id="because-transfer-module"></span><h1>because.transfer module<a class="headerlink" href="#module-because.transfer" title="Permalink to this headline">¶</a></h1>
-<dl class="class">
-<dt id="because.transfer.Subscriber">
-<em class="property">class </em><code class="descclassname">because.transfer.</code><code class="descname">Subscriber</code><a class="reference internal" href="../_modules/because/transfer.html#Subscriber"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.transfer.Subscriber" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
-<dl class="method">
-<dt id="because.transfer.Subscriber.on_finish">
-<code class="descname">on_finish</code><span class="sig-paren">(</span><em>obj</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/transfer.html#Subscriber.on_finish"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.transfer.Subscriber.on_finish" title="Permalink to this definition">¶</a></dt>
-<dd><p>This may be called any time between when a response is received
-and the return of any pending call to wait(). It always takes a
-Response.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="because.transfer.Subscriber.on_start">
-<code class="descname">on_start</code><span class="sig-paren">(</span><em>obj</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/transfer.html#Subscriber.on_start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.transfer.Subscriber.on_start" title="Permalink to this definition">¶</a></dt>
-<dd><p>This takes whatever object is returned by Transfer.start().
-For example, a Qt-based Transfer would return the QNetworkReply
-returned by QNAM.sendCustomRequest so that the subscriber can
-connect the reply&#8217;s signals to slots.</p>
-</dd></dl>
-
+<dl class="exception">
+<dt id="because.transfer.InvalidTransfer">
+<em class="property">exception </em><code class="descclassname">because.transfer.</code><code class="descname">InvalidTransfer</code><span class="sig-paren">(</span><em>message</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/transfer.html#InvalidTransfer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.transfer.InvalidTransfer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="because.errors.html#because.errors.InvalidObject" title="because.errors.InvalidObject"><code class="xref py py-class docutils literal"><span class="pre">because.errors.InvalidObject</span></code></a></p>
+<p>Raised instead of creating an invalid Transfer instance.</p>
 </dd></dl>
 
 <dl class="class">
@@ -81,12 +65,21 @@ many separate callbacks to handle many different state notifications.</p>
 <dl class="method">
 <dt id="because.transfer.Transfer.cancel">
 <code class="descname">cancel</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/transfer.html#Transfer.cancel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.transfer.Transfer.cancel" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Abort the transfer.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="because.transfer.Transfer.close">
 <code class="descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/transfer.html#Transfer.close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.transfer.Transfer.close" title="Permalink to this definition">¶</a></dt>
-<dd><p>Abort the transfer, if possible, and clean up.</p>
+<dd><p>Clean up state and disable the transfer.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="because.transfer.Transfer.duration">
+<code class="descname">duration</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/transfer.html#Transfer.duration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.transfer.Transfer.duration" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the duration of the transfer, in seconds.</p>
+<p>If the transfer has not started, this returns 0. If the transfer is
+still ongoing, this returns how much time has elapsed so far.</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -95,18 +88,33 @@ many separate callbacks to handle many different state notifications.</p>
 <dd><p>Default logger to use if no logger was passed.</p>
 </dd></dl>
 
+<dl class="attribute">
+<dt id="because.transfer.Transfer.ssl_config_cls">
+<code class="descname">ssl_config_cls</code><a class="headerlink" href="#because.transfer.Transfer.ssl_config_cls" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal"><span class="pre">SSLConfig</span></code></p>
+</dd></dl>
+
 <dl class="method">
 <dt id="because.transfer.Transfer.start">
-<code class="descname">start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/transfer.html#Transfer.start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.transfer.Transfer.start" title="Permalink to this definition">¶</a></dt>
+<code class="descname">start</code><span class="sig-paren">(</span><em>finish=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/transfer.html#Transfer.start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.transfer.Transfer.start" title="Permalink to this definition">¶</a></dt>
 <dd><p>Begin the transfer.</p>
 <p>This method allows execution of a transfer to be deferred after its
 construction, which couldn&#8217;t be done if __init__ started it.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>finish</strong> &#8211; A callback for the implementation to call when response is done.</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="because.transfer.Transfer.wait">
 <code class="descname">wait</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/transfer.html#Transfer.wait"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.transfer.Transfer.wait" title="Permalink to this definition">¶</a></dt>
-<dd><p>Block until the transfer is finished, then return a Response.</p>
+<dd><p>Block until the transfer is finished, then give a result.</p>
+<p>Returns a Response or raises a TransferError.</p>
 </dd></dl>
 
 </dd></dl>
@@ -115,7 +123,7 @@ construction, which couldn&#8217;t be done if __init__ started it.</p>
 <dt id="because.transfer.TransferError">
 <em class="property">exception </em><code class="descclassname">because.transfer.</code><code class="descname">TransferError</code><span class="sig-paren">(</span><em>text</em>, <em>code=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/transfer.html#TransferError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.transfer.TransferError" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">Exception</span></code></p>
-<p>Represents error descriptions encoded as QNetworkReply::NetworkError.</p>
+<p>Base exception class for problems preventing a good response returning.</p>
 </dd></dl>
 
 </div>

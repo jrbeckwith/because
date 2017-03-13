@@ -1,0 +1,16 @@
+To consume BCS services, it is necessary to send a short-lived JWT token or an
+API key. 
+
+To send such information, a QGIS plugin must hold it in memory. The same
+information may be available to any code running in the same process, which may
+include other QGIS plugins.
+
+If a QGIS plugin stores such information on the local filesystem or a database
+that is shared by all QGIS plugins, that is also a way for other QGIS plugins
+to get at that information.
+
+What QGIS plugins seem to need is a storage that is only accessible to the
+plugin using it.
+
+On the other hand, someone could take my plugin, copy it, and then change it to
+access my plugin's credential store.

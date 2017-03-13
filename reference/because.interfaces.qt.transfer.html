@@ -47,8 +47,8 @@
 <span id="because-interfaces-qt-transfer-module"></span><h1>because.interfaces.qt.transfer module<a class="headerlink" href="#module-because.interfaces.qt.transfer" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="because.interfaces.qt.transfer.Transfer">
-<em class="property">class </em><code class="descclassname">because.interfaces.qt.transfer.</code><code class="descname">Transfer</code><span class="sig-paren">(</span><em>request</em>, <em>on_finished=None</em>, <em>on_progress=None</em>, <em>timeout=None</em>, <em>send=None</em>, <em>log=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/interfaces/qt/transfer.html#Transfer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.interfaces.qt.transfer.Transfer" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<em class="property">class </em><code class="descclassname">because.interfaces.qt.transfer.</code><code class="descname">Transfer</code><span class="sig-paren">(</span><em>request</em>, <em>ssl_config=None</em>, <em>log=None</em>, <em>_send=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/interfaces/qt/transfer.html#Transfer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.interfaces.qt.transfer.Transfer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="because.transfer.html#because.transfer.Transfer" title="because.transfer.Transfer"><code class="xref py py-class docutils literal"><span class="pre">because.transfer.Transfer</span></code></a></p>
 <p>Hold per-request state for one ongoing HTTP request cycle.</p>
 <p>This is also used as a device for bundling up multiple descriptions of a
 transfer&#8217;s state to be handled by one callback, instead of requiring many
@@ -66,110 +66,118 @@ separate callbacks to handle many different state notifications.</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="because.interfaces.qt.transfer.Transfer.download_finished">
-<code class="descname">download_finished</code><a class="headerlink" href="#because.interfaces.qt.transfer.Transfer.download_finished" title="Permalink to this definition">¶</a></dt>
-<dd><p>Property to check whether the response portion was completed.</p>
-<p>This is based on downloadProgress.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="because.interfaces.qt.transfer.Transfer.download_percent">
-<code class="descname">download_percent</code><a class="headerlink" href="#because.interfaces.qt.transfer.Transfer.download_percent" title="Permalink to this definition">¶</a></dt>
-<dd><p>Property to compute percent completion of upload.</p>
-<p>This is based on downloadProgress.</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="because.interfaces.qt.transfer.Transfer.elapsed">
-<code class="descname">elapsed</code><a class="headerlink" href="#because.interfaces.qt.transfer.Transfer.elapsed" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="attribute">
 <dt id="because.interfaces.qt.transfer.Transfer.log">
 <code class="descname">log</code><em class="property"> = &lt;logging.Logger object&gt;</em><a class="headerlink" href="#because.interfaces.qt.transfer.Transfer.log" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
-<dt id="because.interfaces.qt.transfer.Transfer.on_error">
-<code class="descname">on_error</code><span class="sig-paren">(</span><em>code</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/interfaces/qt/transfer.html#Transfer.on_error"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.interfaces.qt.transfer.Transfer.on_error" title="Permalink to this definition">¶</a></dt>
-<dd><p>Handle an error detected during response processing.</p>
+<dl class="attribute">
+<dt id="because.interfaces.qt.transfer.Transfer.signals">
+<code class="descname">signals</code><em class="property"> = None</em><a class="headerlink" href="#because.interfaces.qt.transfer.Transfer.signals" title="Permalink to this definition">¶</a></dt>
+<dd><p>Exposes Qt signals for this Transfer instance.</p>
 </dd></dl>
 
-<dl class="method">
-<dt id="because.interfaces.qt.transfer.Transfer.on_finished">
-<code class="descname">on_finished</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/interfaces/qt/transfer.html#Transfer.on_finished"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.interfaces.qt.transfer.Transfer.on_finished" title="Permalink to this definition">¶</a></dt>
-<dd><p>Handle completion of reply processing.</p>
-<p>This means that the end of the transfer is ready to be handled,
-response read, etc. whether or not there was an error.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="because.interfaces.qt.transfer.Transfer.on_progress">
-<code class="descname">on_progress</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/interfaces/qt/transfer.html#Transfer.on_progress"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.interfaces.qt.transfer.Transfer.on_progress" title="Permalink to this definition">¶</a></dt>
-<dd><p>Notify consumer of a progress update.</p>
-<p>Passes self to the callback so the consumer can inspect the transfer
-instance to see any status it finds pertinent.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="because.interfaces.qt.transfer.Transfer.on_redirected">
-<code class="descname">on_redirected</code><span class="sig-paren">(</span><em>url</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/interfaces/qt/transfer.html#Transfer.on_redirected"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.interfaces.qt.transfer.Transfer.on_redirected" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="method">
-<dt id="because.interfaces.qt.transfer.Transfer.on_timeout">
-<code class="descname">on_timeout</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/interfaces/qt/transfer.html#Transfer.on_timeout"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.interfaces.qt.transfer.Transfer.on_timeout" title="Permalink to this definition">¶</a></dt>
-<dd><p>Handle the expiration of the deadline timer.</p>
+<dl class="attribute">
+<dt id="because.interfaces.qt.transfer.Transfer.ssl_config_cls">
+<code class="descname">ssl_config_cls</code><a class="headerlink" href="#because.interfaces.qt.transfer.Transfer.ssl_config_cls" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <code class="xref py py-class docutils literal"><span class="pre">SSLConfig</span></code></p>
 </dd></dl>
 
 <dl class="method">
 <dt id="because.interfaces.qt.transfer.Transfer.start">
-<code class="descname">start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/interfaces/qt/transfer.html#Transfer.start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.interfaces.qt.transfer.Transfer.start" title="Permalink to this definition">¶</a></dt>
+<code class="descname">start</code><span class="sig-paren">(</span><em>finish=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/interfaces/qt/transfer.html#Transfer.start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.interfaces.qt.transfer.Transfer.start" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
-<dt id="because.interfaces.qt.transfer.Transfer.upload_finished">
-<code class="descname">upload_finished</code><a class="headerlink" href="#because.interfaces.qt.transfer.Transfer.upload_finished" title="Permalink to this definition">¶</a></dt>
-<dd><p>Property to check whether the response portion was completed.</p>
-<p>This is based on uploadProgress.</p>
+<dl class="method">
+<dt id="because.interfaces.qt.transfer.Transfer.wait">
+<code class="descname">wait</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/interfaces/qt/transfer.html#Transfer.wait"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.interfaces.qt.transfer.Transfer.wait" title="Permalink to this definition">¶</a></dt>
+<dd><p>Wait synchronously for the transfer to finish.</p>
+<p>The method is offered and blocks to honor the base class contract.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Warning:</th><td class="field-body">this function blocks, which isn&#8217;t the right way to use Qt,</td>
+</tr>
+</tbody>
+</table>
+<p>because you are likely e.g. to make the GUI thread unresponsive.</p>
 </dd></dl>
 
-<dl class="attribute">
-<dt id="because.interfaces.qt.transfer.Transfer.upload_percent">
-<code class="descname">upload_percent</code><a class="headerlink" href="#because.interfaces.qt.transfer.Transfer.upload_percent" title="Permalink to this definition">¶</a></dt>
-<dd><p>Property to compute percent completion of upload.</p>
-<p>This is based on uploadProgress.</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="exception">
-<dt id="because.interfaces.qt.transfer.TransferError">
-<em class="property">exception </em><code class="descclassname">because.interfaces.qt.transfer.</code><code class="descname">TransferError</code><span class="sig-paren">(</span><em>text</em>, <em>code=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/interfaces/qt/transfer.html#TransferError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.interfaces.qt.transfer.TransferError" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">Exception</span></code></p>
-<p>Represents error descriptions encoded as QNetworkReply::NetworkError.</p>
 </dd></dl>
 
 <dl class="class">
-<dt id="because.interfaces.qt.transfer.TransferWorker">
-<em class="property">class </em><code class="descclassname">because.interfaces.qt.transfer.</code><code class="descname">TransferWorker</code><span class="sig-paren">(</span><em>parent</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/interfaces/qt/transfer.html#TransferWorker"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.interfaces.qt.transfer.TransferWorker" title="Permalink to this definition">¶</a></dt>
+<dt id="because.interfaces.qt.transfer.TransferSignals">
+<em class="property">class </em><code class="descclassname">because.interfaces.qt.transfer.</code><code class="descname">TransferSignals</code><span class="sig-paren">(</span><em>parent=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/interfaces/qt/transfer.html#TransferSignals"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.interfaces.qt.transfer.TransferSignals" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">PyQt4.QtCore.QObject</span></code></p>
-<dl class="attribute">
-<dt id="because.interfaces.qt.transfer.TransferWorker.finished">
-<code class="descname">finished</code><a class="headerlink" href="#because.interfaces.qt.transfer.TransferWorker.finished" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<p>Hold signals for an instance of interfaces.qt.Transfer.</p>
+<p>This is the QObject handling signals for Transfer, allowing Transfer itself
+not to be a QObject.</p>
+<p>Exposing these means not having to expose the QNetworkReply directly.</p>
+<dl class="method">
+<dt id="because.interfaces.qt.transfer.TransferSignals.connect">
+<code class="descname">connect</code><span class="sig-paren">(</span><em>reply</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/interfaces/qt/transfer.html#TransferSignals.connect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.interfaces.qt.transfer.TransferSignals.connect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Forward signals of the provided QNetworkReply.</p>
+</dd></dl>
 
 <dl class="attribute">
-<dt id="because.interfaces.qt.transfer.TransferWorker.pulse">
-<code class="descname">pulse</code><a class="headerlink" href="#because.interfaces.qt.transfer.TransferWorker.pulse" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="because.interfaces.qt.transfer.TransferSignals.downloadProgress">
+<code class="descname">downloadProgress</code><a class="headerlink" href="#because.interfaces.qt.transfer.TransferSignals.downloadProgress" title="Permalink to this definition">¶</a></dt>
+<dd><p>Forwarded from the QNetworkReply.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="because.interfaces.qt.transfer.TransferSignals.failure">
+<code class="descname">failure</code><a class="headerlink" href="#because.interfaces.qt.transfer.TransferSignals.failure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Emitted when a response was unavailable for any reason.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="because.interfaces.qt.transfer.TransferSignals.finished">
+<code class="descname">finished</code><a class="headerlink" href="#because.interfaces.qt.transfer.TransferSignals.finished" title="Permalink to this definition">¶</a></dt>
+<dd><p>Should be emitted for either a success or a failure.
+You should probably connect success and failure instead.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="because.interfaces.qt.transfer.TransferSignals.success">
+<code class="descname">success</code><a class="headerlink" href="#because.interfaces.qt.transfer.TransferSignals.success" title="Permalink to this definition">¶</a></dt>
+<dd><p>Emitted when a response is available on the transfer.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="because.interfaces.qt.transfer.TransferSignals.uploadProgress">
+<code class="descname">uploadProgress</code><a class="headerlink" href="#because.interfaces.qt.transfer.TransferSignals.uploadProgress" title="Permalink to this definition">¶</a></dt>
+<dd><p>Forwarded from the QNetworkReply.</p>
+</dd></dl>
 
 </dd></dl>
 
 <dl class="function">
-<dt id="because.interfaces.qt.transfer.unpackQreply">
-<code class="descclassname">because.interfaces.qt.transfer.</code><code class="descname">unpackQreply</code><span class="sig-paren">(</span><em>q_reply</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/interfaces/qt/transfer.html#unpackQreply"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.interfaces.qt.transfer.unpackQreply" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="because.interfaces.qt.transfer.unpack_reply">
+<code class="descclassname">because.interfaces.qt.transfer.</code><code class="descname">unpack_reply</code><span class="sig-paren">(</span><em>reply</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/interfaces/qt/transfer.html#unpack_reply"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.interfaces.qt.transfer.unpack_reply" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert a QNetworkReply to a because.response.Response.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Warning:</th><td class="field-body">This may destroy the state of the QNetworkReply, so don&#8217;t use the</td>
+</tr>
+</tbody>
+</table>
+<p>QNetworkReply after calling this.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Warning:</th><td class="field-body">The returned Response may not work properly if the QNetworkReply</td>
+</tr>
+</tbody>
+</table>
+<p>or objects it depends on are freed before the Response is used.</p>
+<p>You probably want to use Transfer instead of using this. This helper
+function is used in the implementation of Transfer, but is exposed
+separately as part of the lower-level API layer.</p>
+</dd></dl>
 
 </div>
 

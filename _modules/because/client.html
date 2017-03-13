@@ -120,22 +120,29 @@
         <span class="c1"># I know, &quot;flat is better than nested,&quot; but for how many parameters?</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ssl_config</span> <span class="o">=</span> <span class="n">ssl_config</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">ssl_config_cls</span><span class="p">()</span>
 
-<div class="viewcode-block" id="Client.send"><a class="viewcode-back" href="../../reference/because.client.html#because.client.Client.send">[docs]</a>    <span class="k">def</span> <span class="nf">send</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">subscriber</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="c1"># type: (Request) -&gt; Any</span>
+<div class="viewcode-block" id="Client.transfer"><a class="viewcode-back" href="../../reference/because.client.html#because.client.Client.transfer">[docs]</a>    <span class="k">def</span> <span class="nf">transfer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="c1"># type: (Request, logging.Logger) -&gt; Any</span>
+        <span class="sd">&quot;&quot;&quot;Create a Transfer instance.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># The mediation of this method allows customizations in addition to</span>
+        <span class="c1"># swapping out for a different transfer_cls.</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">transfer_cls</span><span class="p">(</span>
+            <span class="n">request</span><span class="o">=</span><span class="n">request</span><span class="p">,</span>
+            <span class="n">log</span><span class="o">=</span><span class="n">log</span><span class="p">,</span>
+        <span class="p">)</span></div>
+
+<div class="viewcode-block" id="Client.send"><a class="viewcode-back" href="../../reference/because.client.html#because.client.Client.send">[docs]</a>    <span class="k">def</span> <span class="nf">send</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">_finish</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="c1"># type: (Request, Any) -&gt; Any</span>
         <span class="sd">&quot;&quot;&quot;Start performing the given request and return a transfer.</span>
 
 <span class="sd">        Ideally, this method does not block on the complete response, so that</span>
 <span class="sd">        other work can be done, progress can be monitored, etc.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">transfer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transfer_cls</span><span class="p">(</span>
+        <span class="n">transfer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transfer</span><span class="p">(</span>
             <span class="n">request</span><span class="o">=</span><span class="n">request</span><span class="p">,</span>
             <span class="n">log</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">,</span>
-            <span class="c1"># TODO: should this be passed in start? or wait?</span>
-            <span class="n">subscriber</span><span class="o">=</span><span class="n">subscriber</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">obj</span> <span class="o">=</span> <span class="n">transfer</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>  <span class="c1"># type: Any</span>
-        <span class="k">if</span> <span class="n">subscriber</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">subscriber</span><span class="o">.</span><span class="n">on_start</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
+        <span class="n">transfer</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">finish</span><span class="o">=</span><span class="n">_finish</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">transfer</span></div></div>
 </pre></div>
 

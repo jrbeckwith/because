@@ -47,7 +47,14 @@
 <span class="sd">very high-level, all-in-one interface for quickstarts.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
+<span class="kn">from</span> <span class="nn">logging</span> <span class="k">import</span> <span class="n">Logger</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="p">(</span>
+    <span class="n">Any</span><span class="p">,</span>
+    <span class="n">Optional</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="n">errors</span> <span class="kn">import</span> <span class="nn">InvalidObject</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="n">response</span> <span class="kn">import</span> <span class="nn">Response</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="n">ssl_config</span> <span class="kn">import</span> <span class="nn">SSLConfig</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="n">headers</span> <span class="kn">import</span> <span class="nn">Headers</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="n">result</span> <span class="kn">import</span> <span class="nn">Result</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="n">services</span><span class="o">.</span><span class="n">token</span><span class="o">.</span><span class="n">service</span> <span class="kn">import</span> <span class="nn">TokenService</span>
@@ -62,39 +69,6 @@
 <div class="viewcode-block" id="NotLoggedIn"><a class="viewcode-back" href="../../reference/because.frontend.html#because.frontend.NotLoggedIn">[docs]</a><span class="k">class</span> <span class="nc">NotLoggedIn</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Raised when non-token requests are made without logging in first.</span>
 <span class="sd">    &quot;&quot;&quot;</span></div>
-
-
-<span class="k">class</span> <span class="nc">_Finish</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Calls a callback</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">finish</span><span class="p">,</span> <span class="n">subscriber</span><span class="p">):</span>
-        <span class="c1"># type: () -&gt; None</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        :arg finish:</span>
-<span class="sd">            Callable to call when Transfer is done.</span>
-<span class="sd">        :arg subscriber:</span>
-<span class="sd">            Another object which wants to know about transfer.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">finish</span> <span class="o">=</span> <span class="n">finish</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">subscriber</span> <span class="o">=</span> <span class="n">subscriber</span>
-
-    <span class="k">def</span> <span class="nf">on_start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">):</span>
-        <span class="c1"># type: (Any) -&gt; None</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># Forward to whatever function caller wanted called</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">subscriber</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">subscriber</span><span class="o">.</span><span class="n">on_start</span><span class="p">(</span><span class="n">obj</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">on_finish</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
-        <span class="c1"># type: (Response) -&gt; None</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">finish</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
-
-        <span class="c1"># Forward</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">subscriber</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">subscriber</span><span class="o">.</span><span class="n">on_finish</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
 
 
 <span class="c1"># It won&#39;t work to directly provide a Client subclass because then we can&#39;t use</span>
@@ -114,7 +88,7 @@
             <span class="n">ssl_config</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
             <span class="n">log</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="c1"># type: () -&gt; None</span>
+        <span class="c1"># type: (str, str, Optional[SSLConfig], Optional[Logger]) -&gt; None</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -140,15 +114,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">search_service</span> <span class="o">=</span> <span class="n">SearchService</span><span class="p">()</span>
 
         <span class="c1"># Store token to use in Authorization headers</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">token</span> <span class="o">=</span> <span class="kc">None</span>
-
-        <span class="c1"># Store roles?</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span> <span class="o">=</span> <span class="kc">None</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">roles</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">token</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># type: Optional[bytes]</span>
 
         <span class="c1"># Cache basemaps from the enumeration endpoint.</span>
         <span class="c1"># Indexed by strings like &quot;Mapbox Satellite&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">basemaps</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">basemaps</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># type: Any</span>
 
 <div class="viewcode-block" id="Frontend.headers"><a class="viewcode-back" href="../../reference/because.frontend.html#because.frontend.Frontend.headers">[docs]</a>    <span class="k">def</span> <span class="nf">headers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">token</span><span class="p">:</span>
@@ -161,49 +131,8 @@
             <span class="p">),</span>
         <span class="p">])</span></div>
 
-    <span class="k">def</span> <span class="nf">_go</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">finish</span><span class="p">,</span> <span class="n">subscriber</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="c1"># Frontend needs a result, but the result doesn&#39;t have to be to this</span>
-        <span class="c1"># method. Which is lucky, since users of non-blocking implementations</span>
-        <span class="c1"># like Qt will expect not to block, and this method can&#39;t just</span>
-        <span class="c1"># &quot;await&quot; or &quot;yield&quot; without assumptions about caller interface that</span>
-        <span class="c1"># aren&#39;t sustainable on Python 2. Callbacks will work fine anywhere.</span>
-        <span class="c1">#</span>
-        <span class="c1"># To abstract off that detail, we need a way to tell the implementation</span>
-        <span class="c1"># to call a method on self whenever a response is ready.</span>
-        <span class="c1">#</span>
-        <span class="c1"># Non-blocking implementations like Qt also need an opportunity after</span>
-        <span class="c1"># the request is composed and the transfer is started to do things like</span>
-        <span class="c1"># subscribing to progress events. In Qt&#39;s case, this means it needs to</span>
-        <span class="c1"># get at the QNetworkReply returned by QNAM.sendCustomRequest so that</span>
-        <span class="c1"># it can connect its signals to slots. And it may also mean that it</span>
-        <span class="c1"># needs to be notified when the transfer is done to clean up.</span>
-        <span class="c1">#</span>
-        <span class="c1"># So callers which are particular about such things can pass a</span>
-        <span class="c1"># callback, which will be called with whatever implementation-specific</span>
-        <span class="c1"># object the caller needs to peek at, and another callback which will</span>
-        <span class="c1"># be called when the transfer is done. And these might as well get</span>
-        <span class="c1"># stuck on an object because otherwise we&#39;re passing around tons of</span>
-        <span class="c1"># loose functions.</span>
-        <span class="c1">#</span>
-        <span class="c1"># So we pass these callback bundles (call them subscribers) to the</span>
-        <span class="c1"># implementation, and when transfer starts, the implementation calls</span>
-        <span class="c1"># subscriber.on_start() with the native object, and when the transfer</span>
-        <span class="c1"># ends, e.g. before transfer.wait() returns, the implementation calls</span>
-        <span class="c1"># subscriber.on_finish() with the Response object, and on_finish can</span>
-        <span class="c1"># also be used to call self._finish_login() here.</span>
-        <span class="c1">#</span>
-        <span class="c1"># To achieve that we make this proxy object that calls the specified</span>
-        <span class="c1"># method when we&#39;re done, and otherwise forwards to subscriber.</span>
-        <span class="n">proxy</span> <span class="o">=</span> <span class="n">_Finish</span><span class="p">(</span><span class="n">finish</span><span class="p">,</span> <span class="n">subscriber</span><span class="p">)</span>
-
-        <span class="c1"># Have client decide how it wants to send that request</span>
-        <span class="n">transfer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">subscriber</span><span class="o">=</span><span class="n">proxy</span><span class="p">)</span>
-
-        <span class="c1"># Caller can wait on result</span>
-        <span class="k">return</span> <span class="n">transfer</span>
-
-<div class="viewcode-block" id="Frontend.login"><a class="viewcode-back" href="../../reference/because.frontend.html#because.frontend.Frontend.login">[docs]</a>    <span class="k">def</span> <span class="nf">login</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span> <span class="n">subscriber</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="c1"># type: (Any, Any) -&gt; None</span>
+<div class="viewcode-block" id="Frontend.login"><a class="viewcode-back" href="../../reference/because.frontend.html#because.frontend.Frontend.login">[docs]</a>    <span class="k">def</span> <span class="nf">login</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">):</span>
+        <span class="c1"># type: (bytes, bytes) -&gt; None</span>
         <span class="sd">&quot;&quot;&quot;Use the token service to grab an auth token.</span>
 
 <span class="sd">        This should be run before other methods.</span>
@@ -211,13 +140,25 @@
         <span class="n">request</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">token_service</span><span class="o">.</span><span class="n">login_request</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_go</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_finish_login</span><span class="p">,</span> <span class="n">subscriber</span><span class="o">=</span><span class="n">subscriber</span><span class="p">)</span></div>
+        <span class="c1"># Frontend methods like login() need results to work.</span>
+        <span class="c1"># However, implementations like Qt expect not to block.</span>
+        <span class="c1"># And there is no async interface we can take for granted on Python 2.</span>
+        <span class="c1"># However, the result doesn&#39;t need to be taken by this method itself.</span>
+        <span class="c1"># And callbacks don&#39;t need special support.</span>
+        <span class="c1"># So we can pass a callback to the implementation and have it call that</span>
+        <span class="c1"># whenever the response is ready.</span>
+        <span class="n">transfer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">_finish</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_login</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">transfer</span></div>
 
-    <span class="k">def</span> <span class="nf">_finish_login</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
+        <span class="c1"># TODO: prettier API if we return the object used to do the rest of</span>
+        <span class="c1"># this from here, rather than having all on this class!</span>
+        <span class="c1"># return Result(transfer, self.token_service.parse)</span>
+
+    <span class="k">def</span> <span class="nf">_login</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
         <span class="n">token</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">token_service</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">token</span> <span class="o">=</span> <span class="n">token</span>
 
-<div class="viewcode-block" id="Frontend.get_basemaps"><a class="viewcode-back" href="../../reference/because.frontend.html#because.frontend.Frontend.get_basemaps">[docs]</a>    <span class="k">def</span> <span class="nf">get_basemaps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subscriber</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Frontend.get_basemaps"><a class="viewcode-back" href="../../reference/because.frontend.html#because.frontend.Frontend.get_basemaps">[docs]</a>    <span class="k">def</span> <span class="nf">get_basemaps</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Use the basemaps service to enumerate available basemaps.</span>
 
 <span class="sd">        For now this has to be called and waited on before doing basemap</span>
@@ -232,10 +173,11 @@
             <span class="n">base</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="o">.</span><span class="n">url</span><span class="p">,</span>
             <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">(),</span>
         <span class="p">)</span>
-        <span class="n">transfer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">subscriber</span><span class="o">=</span><span class="n">subscriber</span><span class="p">)</span>
+        <span class="n">transfer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">_finish</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_basemaps</span><span class="p">)</span>
+        <span class="c1"># TODO: intercept and cache result?</span>
         <span class="k">return</span> <span class="n">Result</span><span class="p">(</span><span class="n">transfer</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">basemaps_service</span><span class="o">.</span><span class="n">parse</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">_finish_basemaps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_get_basemaps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
         <span class="n">basemaps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">basemaps_service</span><span class="o">.</span><span class="n">parse_basemaps</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
         <span class="c1"># Cache it for next time</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">basemaps</span> <span class="o">=</span> <span class="n">basemaps</span>
@@ -253,7 +195,7 @@
         <span class="n">transfer</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">basemaps</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span></div>
 
-<div class="viewcode-block" id="Frontend.geocode"><a class="viewcode-back" href="../../reference/because.frontend.html#because.frontend.Frontend.geocode">[docs]</a>    <span class="k">def</span> <span class="nf">geocode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">service</span><span class="o">=</span><span class="s2">&quot;mapbox&quot;</span><span class="p">,</span> <span class="n">subscriber</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Frontend.geocode"><a class="viewcode-back" href="../../reference/because.frontend.html#because.frontend.Frontend.geocode">[docs]</a>    <span class="k">def</span> <span class="nf">geocode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">service</span><span class="o">=</span><span class="s2">&quot;mapbox&quot;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Use the geocoding service to geocode an address.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">token</span><span class="p">:</span>
@@ -272,10 +214,10 @@
             <span class="p">},</span>
             <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">(),</span>
         <span class="p">)</span>
-        <span class="n">transfer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">subscriber</span><span class="o">=</span><span class="n">subscriber</span><span class="p">)</span>
+        <span class="n">transfer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">Result</span><span class="p">(</span><span class="n">transfer</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">geocoding_service</span><span class="o">.</span><span class="n">parse_forward</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Frontend.reverse_geocode"><a class="viewcode-back" href="../../reference/because.frontend.html#because.frontend.Frontend.reverse_geocode">[docs]</a>    <span class="k">def</span> <span class="nf">reverse_geocode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">service</span><span class="o">=</span><span class="s2">&quot;mapbox&quot;</span><span class="p">,</span> <span class="n">subscriber</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Frontend.reverse_geocode"><a class="viewcode-back" href="../../reference/because.frontend.html#because.frontend.Frontend.reverse_geocode">[docs]</a>    <span class="k">def</span> <span class="nf">reverse_geocode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">service</span><span class="o">=</span><span class="s2">&quot;mapbox&quot;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Use the geocoding service to reverse-geocode a location.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">token</span><span class="p">:</span>
@@ -292,18 +234,14 @@
             <span class="p">},</span>
             <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">(),</span>
         <span class="p">)</span>
-        <span class="n">transfer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">subscriber</span><span class="o">=</span><span class="n">subscriber</span><span class="p">)</span>
+        <span class="n">transfer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">Result</span><span class="p">(</span><span class="n">transfer</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">geocoding_service</span><span class="o">.</span><span class="n">parse_reverse</span><span class="p">)</span></div>
 
-    <span class="c1"># TODO: should subscriber become subscribe, just one callback? Probably</span>
-    <span class="c1"># TODO: return Result, not Transfer. the Result should include the right</span>
-    <span class="c1"># parse function.</span>
 <div class="viewcode-block" id="Frontend.route"><a class="viewcode-back" href="../../reference/because.frontend.html#because.frontend.Frontend.route">[docs]</a>    <span class="k">def</span> <span class="nf">route</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">origin</span><span class="p">,</span> <span class="o">*</span><span class="n">waypoints</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Use the routing service to get a route through locations/addresses.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># These wouldn&#39;t be in **kwargs but Python 2 is lacking</span>
         <span class="n">service</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;service&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="s2">&quot;mapbox&quot;</span>
-        <span class="n">subscriber</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;subscriber&quot;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">token</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">NotLoggedIn</span><span class="p">()</span>
@@ -322,7 +260,7 @@
             <span class="p">},</span>
             <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">(),</span>
         <span class="p">)</span>
-        <span class="n">transfer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">subscriber</span><span class="o">=</span><span class="n">subscriber</span><span class="p">)</span>
+        <span class="n">transfer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">Result</span><span class="p">(</span><span class="n">transfer</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">routing_service</span><span class="o">.</span><span class="n">parse</span><span class="p">)</span></div></div>
 </pre></div>
 

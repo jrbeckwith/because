@@ -45,6 +45,7 @@
 <span></span><span class="sd">&quot;&quot;&quot;Store specifications of how to access services.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="p">(</span>
+    <span class="n">Any</span><span class="p">,</span>
     <span class="n">Optional</span><span class="p">,</span>
     <span class="n">Sequence</span><span class="p">,</span>
     <span class="n">List</span><span class="p">,</span>
@@ -92,7 +93,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">endpoints</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">base</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="c1"># type: (dict[Text, Endpoint], Optional[Headers]) -&gt; None</span>
+        <span class="c1"># type: (dict[Text, Endpoint], Optional[Headers], Any) -&gt; None</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg endpoints:</span>
 <span class="sd">            dict (or similar object) mapping names to Endpoint instances to be</span>
@@ -147,7 +148,7 @@
 
 <div class="viewcode-block" id="Service.request"><a class="viewcode-back" href="../../reference/because.service.html#because.service.Service.request">[docs]</a>    <span class="k">def</span> <span class="nf">request</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">endpoint_name</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">base</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">body</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                 <span class="n">headers</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="c1"># type: (Text, Text, Text, Optional[dict], Optional[bytes]) -&gt; Request</span>
+        <span class="c1"># type: (Text, Text, Text, Optional[dict], Optional[bytes], Optional[Headers]) -&gt; Request</span>
         <span class="sd">&quot;&quot;&quot;Generate a description of an HTTP request.</span>
 
 <span class="sd">        This method can be overridden to customize generated requests for a</span>
@@ -279,14 +280,14 @@
         <span class="n">url</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">(</span><span class="n">base</span><span class="o">=</span><span class="n">base</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="n">values</span><span class="p">)</span>
 
         <span class="c1"># TODO: blegh</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
-            <span class="n">method</span> <span class="o">=</span> <span class="n">method</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
-            <span class="n">url</span> <span class="o">=</span> <span class="n">url</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+        <span class="n">method_bytes</span><span class="p">,</span> <span class="n">url_bytes</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span><span class="n">text</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">)</span> <span class="k">else</span> <span class="n">text</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">text</span> <span class="ow">in</span> <span class="p">[</span><span class="n">method</span><span class="p">,</span> <span class="n">url</span><span class="p">]</span>
+        <span class="p">]</span>
 
         <span class="k">return</span> <span class="n">Request</span><span class="p">(</span>
-            <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">,</span>
-            <span class="n">url</span><span class="o">=</span><span class="n">url</span><span class="p">,</span>
+            <span class="n">method</span><span class="o">=</span><span class="n">method_bytes</span><span class="p">,</span>
+            <span class="n">url</span><span class="o">=</span><span class="n">url_bytes</span><span class="p">,</span>
             <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span>
             <span class="n">body</span><span class="o">=</span><span class="n">body</span><span class="p">,</span>
         <span class="p">)</span></div></div>

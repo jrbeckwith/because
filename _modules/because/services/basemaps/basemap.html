@@ -101,7 +101,6 @@
             <span class="p">)</span>
 
         <span class="n">parameter_names</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s2">&quot;{\-?([a-zA-Z_]+)}&quot;</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">parameter_names</span><span class="p">)</span>
         <span class="n">expected</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;z&quot;</span><span class="p">])</span>
         <span class="k">if</span> <span class="nb">set</span><span class="p">(</span><span class="n">parameter_names</span><span class="p">)</span> <span class="o">!=</span> <span class="n">expected</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">InvalidBasemap</span><span class="p">(</span>

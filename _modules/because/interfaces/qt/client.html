@@ -104,11 +104,41 @@
 <span class="n">LOG</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
 
 
+<div class="viewcode-block" id="pack_request"><a class="viewcode-back" href="../../../../reference/because.interfaces.qt.client.html#because.interfaces.qt.client.pack_request">[docs]</a><span class="k">def</span> <span class="nf">pack_request</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">ssl_config</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Create a QNetworkRequest</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
+        <span class="c1"># No great exception to raise here</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+    <span class="kn">from</span> <span class="nn">.</span> <span class="n">ssl_config</span> <span class="kn">import</span> <span class="nn">SSLConfig</span> <span class="k">as</span> <span class="nn">QtSSLConfig</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ssl_config</span><span class="p">,</span> <span class="n">QtSSLConfig</span><span class="p">)</span>
+
+    <span class="c1"># PyQt5 specifically wants text.</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">url</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">url</span>
+    <span class="n">q_url</span> <span class="o">=</span> <span class="n">QUrl</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+    <span class="n">q_request</span> <span class="o">=</span> <span class="n">QNetworkRequest</span><span class="p">(</span><span class="n">q_url</span><span class="p">)</span>
+
+    <span class="c1"># Set headers on the request.</span>
+    <span class="c1"># We use setRawHeader to avoid looking up header-name constants.</span>
+    <span class="k">for</span> <span class="n">header_name</span><span class="p">,</span> <span class="n">header_value</span> <span class="ow">in</span> <span class="n">request</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">pairs</span><span class="p">():</span>
+        <span class="n">q_request</span><span class="o">.</span><span class="n">setRawHeader</span><span class="p">(</span><span class="n">header_name</span><span class="p">,</span> <span class="n">header_value</span><span class="p">)</span>
+
+    <span class="c1"># Set SSL configuration (SSLConfig hides many details).</span>
+    <span class="n">q_request</span><span class="o">.</span><span class="n">setSslConfiguration</span><span class="p">(</span><span class="n">ssl_config</span><span class="o">.</span><span class="n">_q_ssl_config</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">q_request</span></div>
+
+
 <div class="viewcode-block" id="Client"><a class="viewcode-back" href="../../../../reference/because.interfaces.qt.client.html#because.interfaces.qt.client.Client">[docs]</a><span class="k">class</span> <span class="nc">Client</span><span class="p">(</span><span class="n">_Client</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Make HTTP requests according to a specified policy.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1">#: Transfer implementation used by this class.</span>
     <span class="n">transfer_cls</span> <span class="o">=</span> <span class="n">Transfer</span>
+    <span class="n">ssl_config_cls</span> <span class="o">=</span> <span class="n">SSLConfig</span>
 
     <span class="c1">#: default logger for this class.</span>
     <span class="n">log</span> <span class="o">=</span> <span class="n">LOG</span><span class="o">.</span><span class="n">getChild</span><span class="p">(</span><span class="s2">&quot;Client&quot;</span><span class="p">)</span>
@@ -120,7 +150,7 @@
             <span class="n">qnam</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
             <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="c1"># type: (SSLConfig, QObject, logging.Logger) -&gt; None</span>
+        <span class="c1"># type: (SSLConfig, logging.Logger, QNetworkAccessManager, QObject) -&gt; None</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg ssl_config:</span>
 <span class="sd">            Optional. SSLConfig instance to use.</span>
@@ -133,6 +163,7 @@
 <span class="sd">            Optional. A QObject to pass as the parent when creating a QNAM or</span>
 <span class="sd">            other objects.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="c1"># TODO: replace these with super call</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">=</span> <span class="n">log</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">log</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ssl_config</span> <span class="o">=</span> <span class="n">ssl_config</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">ssl_config_cls</span><span class="p">()</span>
@@ -179,9 +210,8 @@
         <span class="c1"># q_reply.deleteLater()</span>
         <span class="c1"># transfer.close()</span>
 
-<div class="viewcode-block" id="Client.transfer"><a class="viewcode-back" href="../../../../reference/because.interfaces.qt.client.html#because.interfaces.qt.client.Client.transfer">[docs]</a>    <span class="k">def</span> <span class="nf">transfer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">on_finished</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                 <span class="n">on_progress</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="c1"># type: (Request, Any, Any, Any, logging.Logger) -&gt; Any</span>
+<div class="viewcode-block" id="Client.transfer"><a class="viewcode-back" href="../../../../reference/because.interfaces.qt.client.html#because.interfaces.qt.client.Client.transfer">[docs]</a>    <span class="k">def</span> <span class="nf">transfer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">log</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="c1"># type: (Request, logging.Logger) -&gt; Any</span>
         <span class="sd">&quot;&quot;&quot;Create a Transfer object tied to this client for the given request.</span>
 
 <span class="sd">        The transfer is not started.</span>
@@ -196,7 +226,6 @@
 <span class="sd">        also minimizes the visibility of QBuffer to Client on the way to</span>
 <span class="sd">        sendCustomRequest.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">assert</span> <span class="n">timeout</span>
 
         <span class="c1"># To allow a transfer.start()</span>
         <span class="c1"># * Share QNAM, transfer knows to call its sendCustomRequest</span>
@@ -215,15 +244,8 @@
         <span class="c1"># * QNetworkRequest needs a QUrl, not a Python string.</span>
         <span class="c1"># * It doesn&#39;t take other constructor parameters, use .setWhatever().</span>
         <span class="c1"># * QNetworkRequest doesn&#39;t take a parent.</span>
-        <span class="n">q_request</span> <span class="o">=</span> <span class="n">QNetworkRequest</span><span class="p">(</span><span class="n">QUrl</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">url</span><span class="p">))</span>
 
-        <span class="c1"># Set headers on the request.</span>
-        <span class="c1"># We use setRawHeader to avoid looking up header-name constants.</span>
-        <span class="k">for</span> <span class="n">header_name</span><span class="p">,</span> <span class="n">header_value</span> <span class="ow">in</span> <span class="n">request</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">pairs</span><span class="p">():</span>
-            <span class="n">q_request</span><span class="o">.</span><span class="n">setRawHeader</span><span class="p">(</span><span class="n">header_name</span><span class="p">,</span> <span class="n">header_value</span><span class="p">)</span>
-
-        <span class="c1"># Set SSL configuration (SSLConfig hides many details).</span>
-        <span class="n">q_request</span><span class="o">.</span><span class="n">setSslConfiguration</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ssl_config</span><span class="o">.</span><span class="n">q_ssl_config</span><span class="p">)</span>
+        <span class="n">q_request</span> <span class="o">=</span> <span class="n">pack_request</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ssl_config</span><span class="p">)</span>
 
         <span class="k">class</span> <span class="nc">Nonlocal</span><span class="p">:</span>
             <span class="n">transfer</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># type: Optional[Transfer]</span>
@@ -263,13 +285,9 @@
         <span class="c1"># Make the Transfer instance</span>
         <span class="n">transfer</span> <span class="o">=</span> <span class="n">Transfer</span><span class="p">(</span>
             <span class="n">request</span><span class="o">=</span><span class="n">request</span><span class="p">,</span>
-            <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">,</span>
-            <span class="n">on_finished</span><span class="o">=</span><span class="n">on_finished</span><span class="p">,</span>
-            <span class="n">on_progress</span><span class="o">=</span><span class="n">on_progress</span><span class="p">,</span>
             <span class="n">log</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">,</span>
-
             <span class="c1"># TODO: how to replace this?</span>
-            <span class="n">send</span><span class="o">=</span><span class="n">send_body</span><span class="p">,</span>
+            <span class="n">_send</span><span class="o">=</span><span class="n">send_body</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="c1"># Share this instance with the closure already given to the transfer,</span>
