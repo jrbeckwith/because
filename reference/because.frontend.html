@@ -59,17 +59,17 @@ very high-level, all-in-one interface for quickstarts.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="because.frontend.Frontend.geocode">
-<code class="descname">geocode</code><span class="sig-paren">(</span><em>address</em>, <em>service='mapbox'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/frontend.html#Frontend.geocode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.frontend.Frontend.geocode" title="Permalink to this definition">¶</a></dt>
-<dd><p>Use the geocoding service to geocode an address.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="because.frontend.Frontend.get_basemaps">
-<code class="descname">get_basemaps</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/frontend.html#Frontend.get_basemaps"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.frontend.Frontend.get_basemaps" title="Permalink to this definition">¶</a></dt>
+<dt id="because.frontend.Frontend.basemaps">
+<code class="descname">basemaps</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/frontend.html#Frontend.basemaps"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.frontend.Frontend.basemaps" title="Permalink to this definition">¶</a></dt>
 <dd><p>Use the basemaps service to enumerate available basemaps.</p>
 <p>For now this has to be called and waited on before doing basemap
 stuff... :(</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="because.frontend.Frontend.geocode">
+<code class="descname">geocode</code><span class="sig-paren">(</span><em>address</em>, <em>service='mapbox'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/frontend.html#Frontend.geocode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.frontend.Frontend.geocode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use the geocoding service to geocode an address.</p>
 </dd></dl>
 
 <dl class="method">
@@ -85,6 +85,11 @@ stuff... :(</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="because.frontend.Frontend.opensearch">
+<code class="descname">opensearch</code><span class="sig-paren">(</span><em>query</em>, <em>category='ALL'</em>, <em>start_page=0</em>, <em>page_size=20</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/frontend.html#Frontend.opensearch"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.frontend.Frontend.opensearch" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="because.frontend.Frontend.reverse_geocode">
 <code class="descname">reverse_geocode</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>service='mapbox'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/frontend.html#Frontend.reverse_geocode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.frontend.Frontend.reverse_geocode" title="Permalink to this definition">¶</a></dt>
 <dd><p>Use the geocoding service to reverse-geocode a location.</p>
@@ -95,6 +100,26 @@ stuff... :(</p>
 <code class="descname">route</code><span class="sig-paren">(</span><em>origin</em>, <em>*waypoints</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/frontend.html#Frontend.route"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.frontend.Frontend.route" title="Permalink to this definition">¶</a></dt>
 <dd><p>Use the routing service to get a route through locations/addresses.</p>
 </dd></dl>
+
+<dl class="method">
+<dt id="because.frontend.Frontend.search_categories">
+<code class="descname">search_categories</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/frontend.html#Frontend.search_categories"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.frontend.Frontend.search_categories" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="because.frontend.Frontend.search_category">
+<code class="descname">search_category</code><span class="sig-paren">(</span><em>category</em>, <em>q</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/frontend.html#Frontend.search_category"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.frontend.Frontend.search_category" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="because.frontend.Frontend.search_data">
+<code class="descname">search_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/frontend.html#Frontend.search_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.frontend.Frontend.search_data" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="because.frontend.Frontend.search_osd">
+<code class="descname">search_osd</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/frontend.html#Frontend.search_osd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.frontend.Frontend.search_osd" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 

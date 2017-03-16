@@ -94,6 +94,14 @@ conceivably sensible conversions in a way that is explicitly marked.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="because.headers.Headers.combined_pairs">
+<code class="descname">combined_pairs</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/headers.html#Headers.combined_pairs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.headers.Headers.combined_pairs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all the items as pairs with multivalues joined by commas.</p>
+<p>This sort of combination is as per RFC 2616 4.2 and may be needed by
+implementations like httplib which only accept a single value per key.</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="because.headers.Headers.copy">
 <code class="descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/headers.html#Headers.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.headers.Headers.copy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a new instance with the same contents.</p>

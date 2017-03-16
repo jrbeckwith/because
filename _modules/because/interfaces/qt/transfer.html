@@ -89,7 +89,7 @@
 
 
 
-<div class="viewcode-block" id="unpack_reply"><a class="viewcode-back" href="../../../../reference/because.interfaces.qt.transfer.html#because.interfaces.qt.transfer.unpack_reply">[docs]</a><span class="k">def</span> <span class="nf">unpack_reply</span><span class="p">(</span><span class="n">reply</span><span class="p">):</span>
+<div class="viewcode-block" id="unpack_reply"><a class="viewcode-back" href="../../../../reference/because.interfaces.qt.transfer.html#because.interfaces.qt.client.unpack_reply">[docs]</a><span class="k">def</span> <span class="nf">unpack_reply</span><span class="p">(</span><span class="n">reply</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Convert a QNetworkReply to a because.response.Response.</span>
 
 <span class="sd">    :warning: This may destroy the state of the QNetworkReply, so don&#39;t use the</span>
@@ -132,7 +132,7 @@
     <span class="k">return</span> <span class="n">response</span><span class="p">,</span> <span class="kc">None</span></div>
 
 
-<div class="viewcode-block" id="TransferSignals"><a class="viewcode-back" href="../../../../reference/because.interfaces.qt.transfer.html#because.interfaces.qt.transfer.TransferSignals">[docs]</a><span class="k">class</span> <span class="nc">TransferSignals</span><span class="p">(</span><span class="n">QObject</span><span class="p">):</span>
+<div class="viewcode-block" id="TransferSignals"><a class="viewcode-back" href="../../../../reference/because.interfaces.qt.transfer.html#because.interfaces.qt.client.TransferSignals">[docs]</a><span class="k">class</span> <span class="nc">TransferSignals</span><span class="p">(</span><span class="n">QObject</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Hold signals for an instance of interfaces.qt.Transfer.</span>
 
 <span class="sd">    This is the QObject handling signals for Transfer, allowing Transfer itself</span>
@@ -162,7 +162,7 @@
         <span class="nb">super</span><span class="p">(</span><span class="n">TransferSignals</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">reply</span> <span class="o">=</span> <span class="kc">None</span>
 
-<div class="viewcode-block" id="TransferSignals.connect"><a class="viewcode-back" href="../../../../reference/because.interfaces.qt.transfer.html#because.interfaces.qt.transfer.TransferSignals.connect">[docs]</a>    <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reply</span><span class="p">):</span>
+<div class="viewcode-block" id="TransferSignals.connect"><a class="viewcode-back" href="../../../../reference/because.interfaces.qt.transfer.html#because.interfaces.qt.client.TransferSignals.connect">[docs]</a>    <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reply</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Forward signals of the provided QNetworkReply.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Only connect a given instance to one particular reply.</span>
@@ -175,7 +175,7 @@
         <span class="n">reply</span><span class="o">.</span><span class="n">downloadProgress</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">downloadProgress</span><span class="p">)</span></div></div>
 
 
-<div class="viewcode-block" id="Transfer"><a class="viewcode-back" href="../../../../reference/because.interfaces.qt.transfer.html#because.interfaces.qt.transfer.Transfer">[docs]</a><span class="k">class</span> <span class="nc">Transfer</span><span class="p">(</span><span class="n">_Transfer</span><span class="p">):</span>
+<div class="viewcode-block" id="Transfer"><a class="viewcode-back" href="../../../../reference/because.interfaces.qt.transfer.html#because.interfaces.qt.client.Transfer">[docs]</a><span class="k">class</span> <span class="nc">Transfer</span><span class="p">(</span><span class="n">_Transfer</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Hold per-request state for one ongoing HTTP request cycle.</span>
 
 <span class="sd">    This is also used as a device for bundling up multiple descriptions of a</span>
@@ -371,7 +371,7 @@
         <span class="c1"># Emit a courtesy finished in case that&#39;s all caller cares about</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">finished</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span>
 
-<div class="viewcode-block" id="Transfer.start"><a class="viewcode-back" href="../../../../reference/because.interfaces.qt.transfer.html#because.interfaces.qt.transfer.Transfer.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">finish</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="Transfer.start"><a class="viewcode-back" href="../../../../reference/because.interfaces.qt.transfer.html#because.interfaces.qt.client.Transfer.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">finish</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="c1"># type: (Callable) -&gt; None</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">finish</span> <span class="o">=</span> <span class="n">finish</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">finish</span>
@@ -426,7 +426,7 @@
 
         <span class="c1"># Not cleaning up with close() in case there is postmortem to be done.</span>
 
-<div class="viewcode-block" id="Transfer.wait"><a class="viewcode-back" href="../../../../reference/because.interfaces.qt.transfer.html#because.interfaces.qt.transfer.Transfer.wait">[docs]</a>    <span class="k">def</span> <span class="nf">wait</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Transfer.wait"><a class="viewcode-back" href="../../../../reference/because.interfaces.qt.transfer.html#because.interfaces.qt.client.Transfer.wait">[docs]</a>    <span class="k">def</span> <span class="nf">wait</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Wait synchronously for the transfer to finish.</span>
 
 <span class="sd">        The method is offered and blocks to honor the base class contract.</span>
@@ -452,8 +452,8 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reply</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_reply</span><span class="o">.</span><span class="n">isRunning</span><span class="p">():</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_reply</span><span class="o">.</span><span class="n">abort</span><span class="p">()</span>
 
-<div class="viewcode-block" id="Transfer.cancel"><a class="viewcode-back" href="../../../../reference/because.interfaces.qt.transfer.html#because.interfaces.qt.transfer.Transfer.cancel">[docs]</a>    <span class="k">def</span> <span class="nf">cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1"># type: () -&gt; None</span>
+<div class="viewcode-block" id="Transfer.cancel"><a class="viewcode-back" href="../../../../reference/because.interfaces.qt.transfer.html#because.interfaces.qt.client.Transfer.cancel">[docs]</a>    <span class="k">def</span> <span class="nf">cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># type: () -&gt; bool</span>
         <span class="sd">&quot;&quot;&quot;Atttempt to stop all pending timers and activity.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Prevent timeout callback firing ASAP</span>
@@ -465,12 +465,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_abort</span><span class="p">()</span>
 
         <span class="c1"># Update self.stopped_at etc.</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">Transfer</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span></div>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">Transfer</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span></div>
 
         <span class="c1"># NOTE: Teardown is *intentionally* left to close() since someone may</span>
         <span class="c1"># need to stop work and do a postmortem or restart somehow.</span>
 
-<div class="viewcode-block" id="Transfer.close"><a class="viewcode-back" href="../../../../reference/because.interfaces.qt.transfer.html#because.interfaces.qt.transfer.Transfer.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Transfer.close"><a class="viewcode-back" href="../../../../reference/because.interfaces.qt.transfer.html#because.interfaces.qt.client.Transfer.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># type: () -&gt; None</span>
         <span class="sd">&quot;&quot;&quot;Cancel and disable the transfer and tear down state.</span>
 <span class="sd">        &quot;&quot;&quot;</span>

@@ -55,7 +55,7 @@
 <dl class="class">
 <dt id="because.transfer.Transfer">
 <em class="property">class </em><code class="descclassname">because.transfer.</code><code class="descname">Transfer</code><span class="sig-paren">(</span><em>request</em>, <em>ssl_config=None</em>, <em>log=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/transfer.html#Transfer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.transfer.Transfer" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">because.future.Future</span></code></p>
 <p>Hold per-request state for one ongoing HTTP request cycle.</p>
 <p>This can play a role like a future or promise in implementations that
 support asynchronous network I/O.</p>
@@ -65,13 +65,13 @@ many separate callbacks to handle many different state notifications.</p>
 <dl class="method">
 <dt id="because.transfer.Transfer.cancel">
 <code class="descname">cancel</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/transfer.html#Transfer.cancel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.transfer.Transfer.cancel" title="Permalink to this definition">¶</a></dt>
-<dd><p>Abort the transfer.</p>
+<dd><p>Cancel ongoing work and abort the transfer.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="because.transfer.Transfer.close">
 <code class="descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/transfer.html#Transfer.close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.transfer.Transfer.close" title="Permalink to this definition">¶</a></dt>
-<dd><p>Clean up state and disable the transfer.</p>
+<dd><p>Cancel ongoing work, clean up state and disable the instance.</p>
 </dd></dl>
 
 <dl class="method">
@@ -88,6 +88,11 @@ still ongoing, this returns how much time has elapsed so far.</p>
 <dd><p>Default logger to use if no logger was passed.</p>
 </dd></dl>
 
+<dl class="method">
+<dt id="because.transfer.Transfer.result">
+<code class="descname">result</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/transfer.html#Transfer.result"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.transfer.Transfer.result" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="attribute">
 <dt id="because.transfer.Transfer.ssl_config_cls">
 <code class="descname">ssl_config_cls</code><a class="headerlink" href="#because.transfer.Transfer.ssl_config_cls" title="Permalink to this definition">¶</a></dt>
@@ -96,18 +101,10 @@ still ongoing, this returns how much time has elapsed so far.</p>
 
 <dl class="method">
 <dt id="because.transfer.Transfer.start">
-<code class="descname">start</code><span class="sig-paren">(</span><em>finish=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/transfer.html#Transfer.start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.transfer.Transfer.start" title="Permalink to this definition">¶</a></dt>
+<code class="descname">start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/transfer.html#Transfer.start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.transfer.Transfer.start" title="Permalink to this definition">¶</a></dt>
 <dd><p>Begin the transfer.</p>
 <p>This method allows execution of a transfer to be deferred after its
 construction, which couldn&#8217;t be done if __init__ started it.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>finish</strong> &#8211; A callback for the implementation to call when response is done.</td>
-</tr>
-</tbody>
-</table>
 </dd></dl>
 
 <dl class="method">
@@ -123,7 +120,13 @@ construction, which couldn&#8217;t be done if __init__ started it.</p>
 <dt id="because.transfer.TransferError">
 <em class="property">exception </em><code class="descclassname">because.transfer.</code><code class="descname">TransferError</code><span class="sig-paren">(</span><em>text</em>, <em>code=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/transfer.html#TransferError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.transfer.TransferError" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">Exception</span></code></p>
-<p>Base exception class for problems preventing a good response returning.</p>
+<p>Represents an error which happened while trying to execute a transfer.</p>
+<p>This should not represent HTTP errors, which are successful transfers that
+return valid Response objects (so caller can look at the specific code,
+look at the error body, etc.)</p>
+<p>This can be used as a base class for exceptions indicating more specific
+reasons why a good response couldn&#8217;t be returned. However, problems in
+Response.__init__ should raise InvalidResponse instead.</p>
 </dd></dl>
 
 </div>

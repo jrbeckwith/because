@@ -74,13 +74,19 @@
 
             <span class="c1"># e.g. /basemaps/boundless/osm</span>
             <span class="s2">u&quot;xyz&quot;</span><span class="p">:</span> <span class="n">Endpoint</span><span class="p">(</span>
-                <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/basemaps/</span><span class="si">{service}</span><span class="s2">/</span><span class="si">{name}</span><span class="s2">/</span><span class="si">{x}</span><span class="s2">/</span><span class="si">{y}</span><span class="s2">/</span><span class="si">{z}</span><span class="s2">.png&quot;</span><span class="p">,</span>
+                <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/basemaps/</span><span class="si">{service}</span><span class="s2">/</span><span class="si">{name}</span><span class="s2">/</span><span class="si">{x}</span><span class="s2">/</span><span class="si">{y}</span><span class="s2">/</span><span class="si">{z}</span><span class="s2">.png?apikey=</span><span class="si">{apikey}</span><span class="s2">&quot;</span><span class="p">,</span>
                 <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;GET&quot;</span><span class="p">],</span>
+                <span class="n">parameters</span><span class="o">=</span><span class="p">{</span>
+                    <span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                    <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                    <span class="s2">&quot;z&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                    <span class="s2">&quot;apikey&quot;</span><span class="p">:</span> <span class="n">Text</span><span class="p">,</span>
+                <span class="p">}</span>
             <span class="p">),</span>
 
             <span class="c1"># e.g. mapbox and planet basemaps</span>
             <span class="s2">u&quot;zxy&quot;</span><span class="p">:</span> <span class="n">Endpoint</span><span class="p">(</span>
-                <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/basemaps/</span><span class="si">{service}</span><span class="s2">/</span><span class="si">{name}</span><span class="s2">/</span><span class="si">{z}</span><span class="s2">/</span><span class="si">{x}</span><span class="s2">/</span><span class="si">{y}</span><span class="s2">.png&quot;</span><span class="p">,</span>
+                <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/basemaps/</span><span class="si">{service}</span><span class="s2">/</span><span class="si">{name}</span><span class="s2">/</span><span class="si">{z}</span><span class="s2">/</span><span class="si">{x}</span><span class="s2">/</span><span class="si">{y}</span><span class="s2">.png?apikey=</span><span class="si">{apikey}</span><span class="s2">&quot;</span><span class="p">,</span>
                 <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;GET&quot;</span><span class="p">],</span>
             <span class="p">),</span>
 
@@ -96,31 +102,6 @@
             <span class="n">parse</span><span class="o">.</span><span class="n">dict_to_basemap</span><span class="p">(</span><span class="n">record</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="n">data</span>
         <span class="p">]</span></div></div>
-
-
-<span class="k">class</span> <span class="nc">_UnwrappedBasemapsService</span><span class="p">(</span><span class="n">Service</span><span class="p">):</span>
-    <span class="c1"># e.g.</span>
-    <span class="c1"># http://tiles.boundlessgeo-dev.com/tms/1.0.0/osm:osm@EPSG:900913@png/{z}/{x}/{y}.png</span>
-    <span class="c1"># http://tiles.boundlessgeo-dev.com/gmaps?layers=osm:osm&amp;zoom={z}&amp;x={x}&amp;y={y}&amp;format=image/png</span>
-
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-
-        <span class="c1"># type: () -&gt; None</span>
-        <span class="n">endpoints</span> <span class="o">=</span> <span class="p">{</span>
-
-            <span class="s2">u&quot;tms&quot;</span><span class="p">:</span> <span class="n">Endpoint</span><span class="p">(</span>
-                <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/tms/1.0.0/osm:osm@EPSG:900913@png/</span><span class="si">{z}</span><span class="s2">/</span><span class="si">{x}</span><span class="s2">/</span><span class="si">{y}</span><span class="s2">.png&quot;</span><span class="p">,</span>
-            <span class="p">),</span>
-
-            <span class="s2">u&quot;gmaps&quot;</span><span class="p">:</span> <span class="n">Endpoint</span><span class="p">(</span>
-                <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/gmaps?layers=osm:osm&amp;zoom=</span><span class="si">{z}</span><span class="s2">&amp;x=</span><span class="si">{x}</span><span class="s2">&amp;y=</span><span class="si">{y}</span><span class="s2">&amp;format=image/png&quot;</span><span class="p">,</span>
-            <span class="p">)</span>
-
-        <span class="p">}</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">BasemapsService</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span>
-            <span class="n">endpoints</span><span class="p">,</span>
-            <span class="n">headers</span><span class="o">=</span><span class="n">DEFAULT_HEADERS</span><span class="p">,</span>
-        <span class="p">)</span>
 </pre></div>
 
           </div>

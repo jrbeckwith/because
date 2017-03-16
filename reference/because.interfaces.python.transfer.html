@@ -45,50 +45,26 @@
             
   <div class="section" id="module-because.interfaces.python.transfer">
 <span id="because-interfaces-python-transfer-module"></span><h1>because.interfaces.python.transfer module<a class="headerlink" href="#module-because.interfaces.python.transfer" title="Permalink to this headline">¶</a></h1>
-<dl class="exception">
-<dt id="because.interfaces.python.transfer.InvalidTransfer">
-<em class="property">exception </em><code class="descclassname">because.interfaces.python.transfer.</code><code class="descname">InvalidTransfer</code><span class="sig-paren">(</span><em>message</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/interfaces/python/transfer.html#InvalidTransfer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.interfaces.python.transfer.InvalidTransfer" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="because.errors.html#because.errors.InvalidObject" title="because.errors.InvalidObject"><code class="xref py py-class docutils literal"><span class="pre">because.errors.InvalidObject</span></code></a></p>
-</dd></dl>
-
 <dl class="class">
 <dt id="because.interfaces.python.transfer.Transfer">
 <em class="property">class </em><code class="descclassname">because.interfaces.python.transfer.</code><code class="descname">Transfer</code><span class="sig-paren">(</span><em>request</em>, <em>ssl_config=None</em>, <em>log=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/interfaces/python/transfer.html#Transfer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.interfaces.python.transfer.Transfer" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
-<p>This implementation always blocks in start().</p>
-<dl class="method">
-<dt id="because.interfaces.python.transfer.Transfer.close">
-<code class="descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/interfaces/python/transfer.html#Transfer.close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.interfaces.python.transfer.Transfer.close" title="Permalink to this definition">¶</a></dt>
-<dd><p>Abort the transfer.</p>
-</dd></dl>
-
+<dd><p>Bases: <a class="reference internal" href="because.transfer.html#because.transfer.Transfer" title="because.transfer.Transfer"><code class="xref py py-class docutils literal"><span class="pre">because.transfer.Transfer</span></code></a></p>
+<p>Blocking implementation of Transfer using httplib.</p>
+<p>Because this implementation blocks, start() is a no-op, and all the real
+work happens in wait(). Since there is no reason to defer cleanup, close()
+is also a no-op.</p>
 <dl class="attribute">
 <dt id="because.interfaces.python.transfer.Transfer.log">
 <code class="descname">log</code><em class="property"> = &lt;logging.Logger object&gt;</em><a class="headerlink" href="#because.interfaces.python.transfer.Transfer.log" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="because.interfaces.python.transfer.Transfer.start">
-<code class="descname">start</code><span class="sig-paren">(</span><em>finish=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/interfaces/python/transfer.html#Transfer.start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.interfaces.python.transfer.Transfer.start" title="Permalink to this definition">¶</a></dt>
-<dd><p>Begin the transfer.</p>
-<p>This method allows execution of a transfer to be deferred after its
-construction.</p>
-</dd></dl>
-
-<dl class="method">
 <dt id="because.interfaces.python.transfer.Transfer.wait">
 <code class="descname">wait</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/interfaces/python/transfer.html#Transfer.wait"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.interfaces.python.transfer.Transfer.wait" title="Permalink to this definition">¶</a></dt>
 <dd><p>Block until transfer is finished, then return a Response.</p>
+<p>In this implementation, all the work is done in this method.</p>
 </dd></dl>
 
-</dd></dl>
-
-<dl class="exception">
-<dt id="because.interfaces.python.transfer.TransferError">
-<em class="property">exception </em><code class="descclassname">because.interfaces.python.transfer.</code><code class="descname">TransferError</code><span class="sig-paren">(</span><em>text</em>, <em>code=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/interfaces/python/transfer.html#TransferError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.interfaces.python.transfer.TransferError" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">Exception</span></code></p>
-<p>Represents an error which happened while trying to execute a transfer.</p>
-<p>This does not represent HTTP errors, which are successful transfers.</p>
 </dd></dl>
 
 </div>

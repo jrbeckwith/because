@@ -56,7 +56,7 @@
 <span class="kn">from</span> <span class="nn">.</span> <span class="n">response</span> <span class="kn">import</span> <span class="nn">Response</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="n">ssl_config</span> <span class="kn">import</span> <span class="nn">SSLConfig</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="n">headers</span> <span class="kn">import</span> <span class="nn">Headers</span>
-<span class="kn">from</span> <span class="nn">.</span> <span class="n">result</span> <span class="kn">import</span> <span class="nn">Result</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="n">future</span> <span class="kn">import</span> <span class="nn">Result</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="n">services</span><span class="o">.</span><span class="n">token</span><span class="o">.</span><span class="n">service</span> <span class="kn">import</span> <span class="nn">TokenService</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="n">services</span><span class="o">.</span><span class="n">search</span><span class="o">.</span><span class="n">service</span> <span class="kn">import</span> <span class="nn">SearchService</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="n">services</span><span class="o">.</span><span class="n">routing</span><span class="o">.</span><span class="n">service</span> <span class="kn">import</span> <span class="nn">RoutingService</span>
@@ -68,7 +68,11 @@
 
 <div class="viewcode-block" id="NotLoggedIn"><a class="viewcode-back" href="../../reference/because.frontend.html#because.frontend.NotLoggedIn">[docs]</a><span class="k">class</span> <span class="nc">NotLoggedIn</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Raised when non-token requests are made without logging in first.</span>
-<span class="sd">    &quot;&quot;&quot;</span></div>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">NotLoggedIn</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span>
+            <span class="s2">&quot;run login() and let it finish before running other methods&quot;</span>
+        <span class="p">)</span></div>
 
 
 <span class="c1"># It won&#39;t work to directly provide a Client subclass because then we can&#39;t use</span>
@@ -118,7 +122,7 @@
 
         <span class="c1"># Cache basemaps from the enumeration endpoint.</span>
         <span class="c1"># Indexed by strings like &quot;Mapbox Satellite&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">basemaps</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># type: Any</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_basemaps</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># type: Any</span>
 
 <div class="viewcode-block" id="Frontend.headers"><a class="viewcode-back" href="../../reference/because.frontend.html#because.frontend.Frontend.headers">[docs]</a>    <span class="k">def</span> <span class="nf">headers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">token</span><span class="p">:</span>
@@ -132,33 +136,46 @@
         <span class="p">])</span></div>
 
 <div class="viewcode-block" id="Frontend.login"><a class="viewcode-back" href="../../reference/because.frontend.html#because.frontend.Frontend.login">[docs]</a>    <span class="k">def</span> <span class="nf">login</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">):</span>
-        <span class="c1"># type: (bytes, bytes) -&gt; None</span>
+        <span class="c1"># type: (bytes, bytes) -&gt; Result</span>
         <span class="sd">&quot;&quot;&quot;Use the token service to grab an auth token.</span>
 
 <span class="sd">        This should be run before other methods.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># TODO: consider returning cached token if already exists.</span>
+        <span class="c1"># Then login can be put at the head of future chains for each service.</span>
+
         <span class="n">request</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">token_service</span><span class="o">.</span><span class="n">login_request</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="o">.</span><span class="n">url</span><span class="p">,</span> <span class="n">username</span><span class="p">,</span> <span class="n">password</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="c1"># Frontend methods like login() need results to work.</span>
-        <span class="c1"># However, implementations like Qt expect not to block.</span>
-        <span class="c1"># And there is no async interface we can take for granted on Python 2.</span>
-        <span class="c1"># However, the result doesn&#39;t need to be taken by this method itself.</span>
-        <span class="c1"># And callbacks don&#39;t need special support.</span>
-        <span class="c1"># So we can pass a callback to the implementation and have it call that</span>
-        <span class="c1"># whenever the response is ready.</span>
-        <span class="n">transfer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">_finish</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_login</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">transfer</span></div>
 
-        <span class="c1"># TODO: prettier API if we return the object used to do the rest of</span>
-        <span class="c1"># this from here, rather than having all on this class!</span>
-        <span class="c1"># return Result(transfer, self.token_service.parse)</span>
+        <span class="k">def</span> <span class="nf">cache_login</span><span class="p">(</span><span class="n">response</span><span class="p">):</span>
+            <span class="c1"># self is closed over from the outer scope, therefore retained</span>
+            <span class="c1"># wherever this callback ends up.</span>
+            <span class="n">token</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">token_service</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">token</span> <span class="o">=</span> <span class="n">token</span>
+            <span class="k">return</span> <span class="n">token</span>
 
-    <span class="k">def</span> <span class="nf">_login</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
-        <span class="n">token</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">token_service</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">token</span> <span class="o">=</span> <span class="n">token</span>
+        <span class="c1"># Methods like frontend.login() need to sequence work after results</span>
+        <span class="c1"># are received. Normally we&#39;d ensure this by just blocking, but</span>
+        <span class="c1"># async implementations like Qt reasonably expect not to block.</span>
+        <span class="c1"># However, there is no specific async interface we can take for granted</span>
+        <span class="c1"># on Python 2, and even in Python 3 we still have Qt vs. asyncio vs.</span>
+        <span class="c1"># curio or whatever.</span>
+        <span class="c1"># So what we do is abstract over these...</span>
+        <span class="c1">#</span>
+        <span class="c1"># Here, in this method, we have to return something right away and cede</span>
+        <span class="c1"># control. But control doesn&#39;t need to come back to this method if it</span>
+        <span class="c1"># goes to something which does what we need it to - a callback,</span>
+        <span class="c1"># in this case cache_login. Callbacks will work everywhere. But,</span>
+        <span class="c1"># instead of messily passing a callback to client.send, we can wrap the</span>
+        <span class="c1"># transfer in a Result: when the result is waited on by whatever</span>
+        <span class="c1"># mechanism, it waits on the transfer, then the resulting response is</span>
+        <span class="c1"># passed to the callback, and the result yields up whatever the</span>
+        <span class="c1"># callback returned.</span>
+        <span class="n">transfer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Result</span><span class="p">(</span><span class="n">transfer</span><span class="p">,</span> <span class="n">cache_login</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="Frontend.get_basemaps"><a class="viewcode-back" href="../../reference/because.frontend.html#because.frontend.Frontend.get_basemaps">[docs]</a>    <span class="k">def</span> <span class="nf">get_basemaps</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Frontend.basemaps"><a class="viewcode-back" href="../../reference/because.frontend.html#because.frontend.Frontend.basemaps">[docs]</a>    <span class="k">def</span> <span class="nf">basemaps</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Use the basemaps service to enumerate available basemaps.</span>
 
 <span class="sd">        For now this has to be called and waited on before doing basemap</span>
@@ -167,20 +184,36 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">token</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">NotLoggedIn</span><span class="p">()</span>
 
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_basemaps</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_basemaps</span>
+
         <span class="n">request</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">basemaps_service</span><span class="o">.</span><span class="n">request</span><span class="p">(</span>
             <span class="s2">u&quot;metadata&quot;</span><span class="p">,</span>
             <span class="n">method</span><span class="o">=</span><span class="s2">u&quot;GET&quot;</span><span class="p">,</span>
             <span class="n">base</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="o">.</span><span class="n">url</span><span class="p">,</span>
             <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">(),</span>
         <span class="p">)</span>
-        <span class="n">transfer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">_finish</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_get_basemaps</span><span class="p">)</span>
-        <span class="c1"># TODO: intercept and cache result?</span>
-        <span class="k">return</span> <span class="n">Result</span><span class="p">(</span><span class="n">transfer</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">basemaps_service</span><span class="o">.</span><span class="n">parse</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">_get_basemaps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
-        <span class="n">basemaps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">basemaps_service</span><span class="o">.</span><span class="n">parse_basemaps</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
-        <span class="c1"># Cache it for next time</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">basemaps</span> <span class="o">=</span> <span class="n">basemaps</span>
+        <span class="c1"># Ask client to start sending the request.</span>
+        <span class="c1"># It gives us a transfer, which is a &quot;future&quot; - an IOU for the eventual</span>
+        <span class="c1"># result.</span>
+        <span class="n">transfer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+        <span class="c1"># Now the request is running &quot;in the background.&quot;</span>
+
+        <span class="c1"># Now we&#39;re going to define a function that will be called when the</span>
+        <span class="c1"># transfer is complete, yielding a response. This function takes the</span>
+        <span class="c1"># response, parses it, *caches the result* and then returns the result.</span>
+        <span class="k">def</span> <span class="nf">cache_basemaps</span><span class="p">(</span><span class="n">response</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;Define how to intercept basemaps requests to cache results.</span>
+<span class="sd">            &quot;&quot;&quot;</span>
+            <span class="n">basemaps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">basemaps_service</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_basemaps</span> <span class="o">=</span> <span class="n">basemaps</span>
+            <span class="k">return</span> <span class="n">basemaps</span>
+
+        <span class="c1"># Now we wrap the transfer in a result: when the caller waits on this</span>
+        <span class="c1"># result, the result waits on the transfer, then runs cache_basemaps to</span>
+        <span class="c1"># cache the result on this Frontend instance, then return the result.</span>
+        <span class="k">return</span> <span class="n">Result</span><span class="p">(</span><span class="n">transfer</span><span class="p">,</span> <span class="n">cache_basemaps</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Frontend.basemap"><a class="viewcode-back" href="../../reference/because.frontend.html#because.frontend.Frontend.basemap">[docs]</a>    <span class="k">def</span> <span class="nf">basemap</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Get the basemap of the specified name.</span>
@@ -190,10 +223,11 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">token</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">NotLoggedIn</span><span class="p">()</span>
 
-        <span class="c1"># TODO: bleh we need to chain futures to do this properly</span>
-        <span class="n">transfer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_basemaps</span><span class="p">()</span>
-        <span class="n">transfer</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">basemaps</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span></div>
+        <span class="c1"># To be run on the result of self.basemaps().</span>
+        <span class="k">def</span> <span class="nf">extract_basemap</span><span class="p">(</span><span class="n">basemaps</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">basemaps</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="o">.</span><span class="n">lower</span><span class="p">())</span>
+
+        <span class="k">return</span> <span class="n">Result</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">basemaps</span><span class="p">(),</span> <span class="n">extract_basemap</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Frontend.geocode"><a class="viewcode-back" href="../../reference/because.frontend.html#because.frontend.Frontend.geocode">[docs]</a>    <span class="k">def</span> <span class="nf">geocode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">service</span><span class="o">=</span><span class="s2">&quot;mapbox&quot;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Use the geocoding service to geocode an address.</span>
@@ -261,7 +295,99 @@
             <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">(),</span>
         <span class="p">)</span>
         <span class="n">transfer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">Result</span><span class="p">(</span><span class="n">transfer</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">routing_service</span><span class="o">.</span><span class="n">parse</span><span class="p">)</span></div></div>
+        <span class="k">return</span> <span class="n">Result</span><span class="p">(</span><span class="n">transfer</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">routing_service</span><span class="o">.</span><span class="n">parse</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Frontend.search_categories"><a class="viewcode-back" href="../../reference/because.frontend.html#because.frontend.Frontend.search_categories">[docs]</a>    <span class="k">def</span> <span class="nf">search_categories</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">token</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">NotLoggedIn</span><span class="p">()</span>
+
+        <span class="n">request</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">search_service</span><span class="o">.</span><span class="n">request</span><span class="p">(</span>
+            <span class="s2">u&quot;categories&quot;</span><span class="p">,</span>
+            <span class="n">method</span><span class="o">=</span><span class="s2">u&quot;GET&quot;</span><span class="p">,</span>
+            <span class="n">base</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="o">.</span><span class="n">url</span><span class="p">,</span>
+            <span class="n">values</span><span class="o">=</span><span class="p">{</span>
+            <span class="p">},</span>
+            <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">(),</span>
+        <span class="p">)</span>
+        <span class="n">transfer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Result</span><span class="p">(</span><span class="n">transfer</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">search_service</span><span class="o">.</span><span class="n">parse_categories</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Frontend.search_category"><a class="viewcode-back" href="../../reference/because.frontend.html#because.frontend.Frontend.search_category">[docs]</a>    <span class="k">def</span> <span class="nf">search_category</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">token</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">NotLoggedIn</span><span class="p">()</span>
+
+        <span class="n">request</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">search_service</span><span class="o">.</span><span class="n">request</span><span class="p">(</span>
+            <span class="s2">u&quot;category&quot;</span><span class="p">,</span>
+            <span class="n">method</span><span class="o">=</span><span class="s2">u&quot;GET&quot;</span><span class="p">,</span>
+            <span class="n">base</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="o">.</span><span class="n">url</span><span class="p">,</span>
+            <span class="n">values</span><span class="o">=</span><span class="p">{</span>
+                <span class="s2">&quot;category&quot;</span><span class="p">:</span> <span class="n">category</span><span class="p">,</span>
+                <span class="s2">&quot;q&quot;</span><span class="p">:</span> <span class="n">q</span><span class="p">,</span>
+            <span class="p">},</span>
+            <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">(),</span>
+        <span class="p">)</span>
+        <span class="n">transfer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Result</span><span class="p">(</span><span class="n">transfer</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">search_service</span><span class="o">.</span><span class="n">parse_category</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Frontend.opensearch"><a class="viewcode-back" href="../../reference/because.frontend.html#because.frontend.Frontend.opensearch">[docs]</a>    <span class="k">def</span> <span class="nf">opensearch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">query</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="s2">&quot;ALL&quot;</span><span class="p">,</span> <span class="n">start_page</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">page_size</span><span class="o">=</span><span class="mi">20</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">token</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">NotLoggedIn</span><span class="p">()</span>
+
+        <span class="n">request</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">search_service</span><span class="o">.</span><span class="n">request</span><span class="p">(</span>
+            <span class="s2">u&quot;opensearch&quot;</span><span class="p">,</span>
+
+            <span class="n">method</span><span class="o">=</span><span class="s2">u&quot;GET&quot;</span><span class="p">,</span>
+            <span class="n">base</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="o">.</span><span class="n">url</span><span class="p">,</span>
+            <span class="n">values</span><span class="o">=</span><span class="p">{</span>
+                <span class="c1"># search terms</span>
+                <span class="s2">&quot;q&quot;</span><span class="p">:</span> <span class="n">query</span><span class="p">,</span>
+                <span class="c1"># starting page, default 0</span>
+                <span class="s2">&quot;si&quot;</span><span class="p">:</span> <span class="n">start_page</span><span class="p">,</span>
+                <span class="c1"># number of records per page, default 20</span>
+                <span class="s2">&quot;c&quot;</span><span class="p">:</span> <span class="n">page_size</span><span class="p">,</span>
+                <span class="c1"># search category, LC or DOC</span>
+                <span class="s2">&quot;cat&quot;</span><span class="p">:</span> <span class="n">category</span><span class="p">,</span>
+            <span class="p">},</span>
+            <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">(),</span>
+        <span class="p">)</span>
+        <span class="n">transfer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Result</span><span class="p">(</span><span class="n">transfer</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">search_service</span><span class="o">.</span><span class="n">parse_opensearch</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Frontend.search_data"><a class="viewcode-back" href="../../reference/because.frontend.html#because.frontend.Frontend.search_data">[docs]</a>    <span class="k">def</span> <span class="nf">search_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">token</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">NotLoggedIn</span><span class="p">()</span>
+
+        <span class="c1"># TODO: to use this, need to figure out the syntax of the POST body</span>
+
+        <span class="n">request</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">search_service</span><span class="o">.</span><span class="n">request</span><span class="p">(</span>
+            <span class="c1"># This tells us that GET isn&#39;t allowed, 405</span>
+            <span class="c1"># what should I use then?</span>
+            <span class="s2">u&quot;data&quot;</span><span class="p">,</span>
+            <span class="n">method</span><span class="o">=</span><span class="s2">u&quot;POST&quot;</span><span class="p">,</span>
+            <span class="n">base</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="o">.</span><span class="n">url</span><span class="p">,</span>
+            <span class="n">values</span><span class="o">=</span><span class="p">{</span>
+                <span class="c1"># ???</span>
+            <span class="p">},</span>
+            <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">(),</span>
+        <span class="p">)</span>
+        <span class="n">transfer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Result</span><span class="p">(</span><span class="n">transfer</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">search_service</span><span class="o">.</span><span class="n">parse_data</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Frontend.search_osd"><a class="viewcode-back" href="../../reference/because.frontend.html#because.frontend.Frontend.search_osd">[docs]</a>    <span class="k">def</span> <span class="nf">search_osd</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">token</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">NotLoggedIn</span><span class="p">()</span>
+
+        <span class="n">request</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">search_service</span><span class="o">.</span><span class="n">request</span><span class="p">(</span>
+            <span class="c1"># This makes a cool stack trace</span>
+            <span class="s2">u&quot;opensearchdescription.xml&quot;</span><span class="p">,</span>
+            <span class="n">method</span><span class="o">=</span><span class="s2">u&quot;GET&quot;</span><span class="p">,</span>
+            <span class="n">base</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">host</span><span class="o">.</span><span class="n">url</span><span class="p">,</span>
+            <span class="n">values</span><span class="o">=</span><span class="p">{</span>
+            <span class="p">},</span>
+            <span class="n">headers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">headers</span><span class="p">(),</span>
+        <span class="p">)</span>
+        <span class="n">transfer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Result</span><span class="p">(</span><span class="n">transfer</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">search_service</span><span class="o">.</span><span class="n">parse_osd</span><span class="p">)</span></div></div>
 </pre></div>
 
           </div>

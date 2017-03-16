@@ -211,15 +211,22 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">values</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">values</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="c1"># TODO: check parameters before liftoff</span>
+
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">values</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
             <span class="n">expected_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
             <span class="n">value</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+            <span class="c1"># TODO</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
             <span class="c1"># Ensure Text gets urlencoded</span>
             <span class="k">if</span> <span class="n">expected_type</span> <span class="o">==</span> <span class="n">Text</span><span class="p">:</span>
                 <span class="n">value</span> <span class="o">=</span> <span class="n">quote</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
             <span class="n">values</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
 
-        <span class="c1"># TODO: we have to split off the query from the rest as long as the</span>
+        <span class="c1"># TODO: we may have to split off the query from the rest as long as the</span>
         <span class="c1"># query is possibly part of the path template.</span>
         <span class="c1"># the first stuff just gets used as-is (and if the path sucks so be it)</span>
         <span class="c1"># but the query stuff has to be urlencode() instead of format()</span>
@@ -238,8 +245,7 @@
 <span class="sd">        :arg values:</span>
 <span class="sd">            Dictionary of arguments.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># TODO: probably want to check for a scheme etc.</span>
-
+        <span class="c1"># TODO: error message</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">base</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">base</span><span class="o">.</span><span class="n">startswith</span><span class="p">((</span><span class="s2">&quot;http://&quot;</span><span class="p">,</span> <span class="s2">&quot;https://&quot;</span><span class="p">)):</span>
             <span class="k">raise</span> <span class="n">URLError</span><span class="p">()</span>
         <span class="k">return</span> <span class="s2">&quot;/&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span>
@@ -249,7 +255,7 @@
 
 <div class="viewcode-block" id="Endpoint.headers"><a class="viewcode-back" href="../../reference/because.service.html#because.service.Endpoint.headers">[docs]</a>    <span class="k">def</span> <span class="nf">headers</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        This can be overridden to specify headres as a function of passed</span>
+<span class="sd">        This can be overridden to specify headers as a function of passed</span>
 <span class="sd">        parameters.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_headers</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>

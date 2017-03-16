@@ -55,6 +55,7 @@
     <span class="n">timedelta</span> <span class="k">as</span> <span class="n">Timedelta</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="n">errors</span> <span class="kn">import</span> <span class="nn">InvalidObject</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="n">future</span> <span class="kn">import</span> <span class="nn">Future</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="n">request</span> <span class="kn">import</span> <span class="nn">Request</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="n">response</span> <span class="kn">import</span> <span class="nn">Response</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="n">ssl_config</span> <span class="kn">import</span> <span class="nn">SSLConfig</span>
@@ -62,9 +63,16 @@
 <span class="n">LOG</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">__name__</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="TransferError"><a class="viewcode-back" href="../../reference/because.transfer.html#because.transfer.TransferError">[docs]</a><span class="k">class</span> <span class="nc">TransferError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Base exception class for problems preventing a good response returning.</span>
+<div class="viewcode-block" id="TransferError"><a class="viewcode-back" href="../../reference/because.transfer.html#because.client.TransferError">[docs]</a><span class="k">class</span> <span class="nc">TransferError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Represents an error which happened while trying to execute a transfer.</span>
+
+<span class="sd">    This should not represent HTTP errors, which are successful transfers that</span>
+<span class="sd">    return valid Response objects (so caller can look at the specific code,</span>
+<span class="sd">    look at the error body, etc.)</span>
+
+<span class="sd">    This can be used as a base class for exceptions indicating more specific</span>
+<span class="sd">    reasons why a good response couldn&#39;t be returned. However, problems in</span>
+<span class="sd">    Response.__init__ should raise InvalidResponse instead.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># TODO: why not HTTP also? As long as the two aren&#39;t confused, that is.</span>
     <span class="c1"># I suppose the HTTP one is a property of the response instead.</span>
@@ -75,12 +83,12 @@
         <span class="nb">super</span><span class="p">(</span><span class="n">TransferError</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">text</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="InvalidTransfer"><a class="viewcode-back" href="../../reference/because.transfer.html#because.transfer.InvalidTransfer">[docs]</a><span class="k">class</span> <span class="nc">InvalidTransfer</span><span class="p">(</span><span class="n">InvalidObject</span><span class="p">):</span>
+<div class="viewcode-block" id="InvalidTransfer"><a class="viewcode-back" href="../../reference/because.transfer.html#because.client.InvalidTransfer">[docs]</a><span class="k">class</span> <span class="nc">InvalidTransfer</span><span class="p">(</span><span class="n">InvalidObject</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Raised instead of creating an invalid Transfer instance.</span>
 <span class="sd">    &quot;&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="Transfer"><a class="viewcode-back" href="../../reference/because.transfer.html#because.transfer.Transfer">[docs]</a><span class="k">class</span> <span class="nc">Transfer</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Transfer"><a class="viewcode-back" href="../../reference/because.transfer.html#because.client.Transfer">[docs]</a><span class="k">class</span> <span class="nc">Transfer</span><span class="p">(</span><span class="n">Future</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Hold per-request state for one ongoing HTTP request cycle.</span>
 
 <span class="sd">    This can play a role like a future or promise in implementations that</span>
@@ -90,7 +98,7 @@
 <span class="sd">    a transfer&#39;s state to be handled by e.g. one callback, instead of requiring</span>
 <span class="sd">    many separate callbacks to handle many different state notifications.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">ssl_config_cls</span> <span class="o">=</span> <span class="n">SSLConfig</span>
+    <span class="n">ssl_config_cls</span> <span class="o">=</span> <span class="n">SSLConfig</span>  <span class="c1"># type: type</span>
 
     <span class="c1"># n.b.: can&#39;t define signals here since this is not a QObject. The</span>
     <span class="c1"># workaround would be to have this instantiate a QObject subclass that</span>
@@ -134,45 +142,52 @@
         <span class="c1"># Indicate whether the transfer was timed out</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">timed_out</span> <span class="o">=</span> <span class="kc">None</span>           <span class="c1"># type: bool</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">finish</span> <span class="o">=</span> <span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="kc">None</span><span class="p">)</span>
-
-<div class="viewcode-block" id="Transfer.start"><a class="viewcode-back" href="../../reference/because.transfer.html#because.transfer.Transfer.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">finish</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="c1"># type: (Callable) -&gt; None</span>
+<div class="viewcode-block" id="Transfer.start"><a class="viewcode-back" href="../../reference/because.transfer.html#because.client.Transfer.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># type: () -&gt; None</span>
         <span class="sd">&quot;&quot;&quot;Begin the transfer.</span>
 
 <span class="sd">        This method allows execution of a transfer to be deferred after its</span>
 <span class="sd">        construction, which couldn&#39;t be done if __init__ started it.</span>
-
-<span class="sd">        :arg finish:</span>
-<span class="sd">            A callback for the implementation to call when response is done.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">started_at</span> <span class="o">=</span> <span class="n">Datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">finish</span> <span class="o">=</span> <span class="n">finish</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">finish</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">started_at</span> <span class="o">=</span> <span class="n">Datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Transfer.wait"><a class="viewcode-back" href="../../reference/because.transfer.html#because.transfer.Transfer.wait">[docs]</a>    <span class="k">def</span> <span class="nf">wait</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Transfer.result"><a class="viewcode-back" href="../../reference/because.transfer.html#because.client.Transfer.result">[docs]</a>    <span class="k">def</span> <span class="nf">result</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># This should raise if anything happened.</span>
+
+        <span class="c1"># Base class has nothing useful to return.</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="Transfer.wait"><a class="viewcode-back" href="../../reference/because.transfer.html#because.client.Transfer.wait">[docs]</a>    <span class="k">def</span> <span class="nf">wait</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># type: () -&gt; Response</span>
         <span class="sd">&quot;&quot;&quot;Block until the transfer is finished, then give a result.</span>
 
 <span class="sd">        Returns a Response or raises a TransferError.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">stopped_at</span> <span class="o">=</span> <span class="n">Datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span>
-        <span class="c1"># Base class has nothing useful to return</span>
-        <span class="k">return</span> <span class="kc">None</span></div>
 
-<div class="viewcode-block" id="Transfer.cancel"><a class="viewcode-back" href="../../reference/because.transfer.html#because.transfer.Transfer.cancel">[docs]</a>    <span class="k">def</span> <span class="nf">cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Abort the transfer.</span>
+        <span class="c1"># Normally we&#39;d block here, but this base class has no way to block,</span>
+        <span class="c1"># and nothing to block on. Subclasses should do something here.</span>
+
+        <span class="c1"># NOTE: this call should probably raise if we got an exception.</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">result</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Transfer.cancel"><a class="viewcode-back" href="../../reference/because.transfer.html#because.client.Transfer.cancel">[docs]</a>    <span class="k">def</span> <span class="nf">cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Cancel ongoing work and abort the transfer.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Time roughly when the transfer stopped, for logging purposes</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">stopped_at</span> <span class="o">=</span> <span class="n">Datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stopped_at</span> <span class="o">=</span> <span class="n">Datetime</span><span class="o">.</span><span class="n">utcnow</span><span class="p">()</span>
 
-<div class="viewcode-block" id="Transfer.close"><a class="viewcode-back" href="../../reference/because.transfer.html#because.transfer.Transfer.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># This should return True if anything was actually cancelled.</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="Transfer.close"><a class="viewcode-back" href="../../reference/because.transfer.html#because.client.Transfer.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># type: () -&gt; None</span>
-        <span class="sd">&quot;&quot;&quot;Clean up state and disable the transfer.</span>
+        <span class="sd">&quot;&quot;&quot;Cancel ongoing work, clean up state and disable the instance.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Ensure nothing is still in process when we clean up.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span></div>
 
-<div class="viewcode-block" id="Transfer.duration"><a class="viewcode-back" href="../../reference/because.transfer.html#because.transfer.Transfer.duration">[docs]</a>    <span class="k">def</span> <span class="nf">duration</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Transfer.duration"><a class="viewcode-back" href="../../reference/because.transfer.html#because.client.Transfer.duration">[docs]</a>    <span class="k">def</span> <span class="nf">duration</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># type: () -&gt; float</span>
         <span class="sd">&quot;&quot;&quot;Compute the duration of the transfer, in seconds.</span>
 
@@ -191,6 +206,7 @@
         <span class="k">return</span> <span class="bp">self</span>
 
     <span class="k">def</span> <span class="nf">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">type_</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">traceback</span><span class="p">):</span>
+        <span class="c1"># type: (type, Exception, Any) -&gt; None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
 </pre></div>
 
