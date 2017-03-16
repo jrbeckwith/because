@@ -13,5 +13,6 @@ Submodules
 
    because.interfaces.qgis.basemap_gdal
    because.interfaces.qgis.client
+   because.interfaces.qgis.symbology
    because.interfaces.qgis.transfer
 

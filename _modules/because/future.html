@@ -1,0 +1,217 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>because.future &#8212; because 0.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for because.future</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Base future interfaces/traits.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="p">(</span>
+    <span class="n">Any</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<div class="viewcode-block" id="Future"><a class="viewcode-back" href="../../reference/because.future.html#because.future.Future">[docs]</a><span class="k">class</span> <span class="nc">Future</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Base class for the version-portable future-like objects used in because.</span>
+
+<span class="sd">    Subclass __init__ may have any signature and is not required to call super</span>
+<span class="sd">    __init__. After all, it is the instances which must be substitutable.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Future.start"><a class="viewcode-back" href="../../reference/because.future.html#because.future.Future.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># type: () -&gt; None</span>
+        <span class="sd">&quot;&quot;&quot;Start work without blocking.</span>
+
+<span class="sd">        This method provides a way for the caller to cue the future that it is</span>
+<span class="sd">        about to do other things during which it would like progress to be</span>
+<span class="sd">        made, if possible.</span>
+
+<span class="sd">        The contract of this class, especially this method, is very particular</span>
+<span class="sd">        about when futures should do &quot;real work.&quot; For present purposes, &quot;real</span>
+<span class="sd">        work&quot; is defined as anything which involves I/O waits, significant lock</span>
+<span class="sd">        waits, significant amounts of compute time, or externally visible side</span>
+<span class="sd">        effects.</span>
+
+<span class="sd">        Avoiding real work in __init__ allows execution to be deferred until</span>
+<span class="sd">        after construction. This allows us to go ahead and create the</span>
+<span class="sd">        representation of the work to be performed ahead of performing it,</span>
+<span class="sd">        whenever it&#39;s convenient; so we don&#39;t have to hold separate</span>
+<span class="sd">        representations of work to be done.</span>
+
+<span class="sd">        In particular, a future should not do real work unless and until the</span>
+<span class="sd">        first call to start(). If the future can make background progress at</span>
+<span class="sd">        this time, then it should begin work. But that work should never block</span>
+<span class="sd">        start() itself from returning as soon as it reasonably can. And any</span>
+<span class="sd">        real work that the future cannot make background progress on should not</span>
+<span class="sd">        be done in start(). So if the future cannot really do anything without</span>
+<span class="sd">        blocking, it should just ignore start().</span>
+
+<span class="sd">        This preserves the usefulness of start() as a mere cue to start</span>
+<span class="sd">        working, and avoids encouraging usages which rely on blocking</span>
+<span class="sd">        implementations by skipping calls to wait() or the like.</span>
+<span class="sd">        &quot;&quot;&quot;</span></div>
+
+<div class="viewcode-block" id="Future.wait"><a class="viewcode-back" href="../../reference/because.future.html#because.future.Future.wait">[docs]</a>    <span class="k">def</span> <span class="nf">wait</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># type: () -&gt; Any</span>
+        <span class="sd">&quot;&quot;&quot;Block until the future is ready, then return its result.</span>
+
+<span class="sd">        Subclasses have to decide how to implement this. For blocking</span>
+<span class="sd">        implementations, this is the only way to get a result. For asynchronous</span>
+<span class="sd">        implementations, blocking is usually undesirable and so this should</span>
+<span class="sd">        almost never be called; but sometimes it is useful to have an adapter</span>
+<span class="sd">        from an asynchronous world to a synchronous world, and providing this</span>
+<span class="sd">        allows blocking implementations as a &quot;lowest common denominator.&quot;</span>
+
+<span class="sd">        The base class method returns self, but others will generally want to</span>
+<span class="sd">        return whatever the future computed instead.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+<div class="viewcode-block" id="Future.cancel"><a class="viewcode-back" href="../../reference/because.future.html#because.future.Future.cancel">[docs]</a>    <span class="k">def</span> <span class="nf">cancel</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># type: () -&gt; bool</span>
+        <span class="sd">&quot;&quot;&quot;Attempt to cancel any ongoing work.</span>
+
+<span class="sd">        This is primarily a way to communicate to the future that any ongoing</span>
+<span class="sd">        work should be stopped if reasonably possible. No guarantees are made</span>
+<span class="sd">        as to the resulting state, or whether canceling is a good idea;</span>
+<span class="sd">        though the future might ignore cancels if they are a bad idea.</span>
+
+<span class="sd">        If the future had no problem canceling ongoing work, this should return</span>
+<span class="sd">        True. If it couldn&#39;t be canceled, this should return False.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># TODO: but is it allowed to block? curio just exposes a parameter.</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+<div class="viewcode-block" id="Future.close"><a class="viewcode-back" href="../../reference/because.future.html#because.future.Future.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># type: () -&gt; None</span>
+        <span class="sd">&quot;&quot;&quot;Clean up state.</span>
+
+<span class="sd">        This method is not guaranteed to be called unless the instance is used</span>
+<span class="sd">        as a context manager (even then, the process can crash or the power can</span>
+<span class="sd">        go out).</span>
+<span class="sd">        &quot;&quot;&quot;</span></div>
+
+    <span class="k">def</span> <span class="nf">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># type: () -&gt; Future</span>
+        <span class="sd">&quot;&quot;&quot;Called when entering the context managed by this instance.</span>
+
+<span class="sd">        Along with __exit__, this permits usage of the Future as a context</span>
+<span class="sd">        manager, permitting deterministic cleanup.</span>
+
+<span class="sd">        This method may block. Individual futures can customize what they</span>
+<span class="sd">        return here, and may normally block to get the needed result.</span>
+
+<span class="sd">        In Python 3.5, &quot;async with&quot; can be supported with an __aenter__ method</span>
+<span class="sd">        to allow the caller to wait locally without globally blocking.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exception_type</span><span class="p">,</span> <span class="n">exception</span><span class="p">,</span> <span class="n">traceback</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Called when editing the context managed by this instance.</span>
+
+<span class="sd">        Along with __enter__, this permits usage of the Future as a context</span>
+<span class="sd">        manager, permitting deterministic cleanup.</span>
+
+<span class="sd">        This method may block. If this future was not waited on, then the close</span>
+<span class="sd">        may prevent or cancel it, or it may wait until it is completed before</span>
+<span class="sd">        this method returns.</span>
+
+<span class="sd">        In Python 3.5, &quot;async with&quot; can be supported with an __aexit__ method</span>
+<span class="sd">        to allow the caller to wait locally for the exit without globally</span>
+<span class="sd">        blocking.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span> <span class="o">&gt;=</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">):</span>
+    <span class="kn">from</span> <span class="nn">.</span> <span class="n">_future_py3</span> <span class="kn">import</span> <span class="nn">Result</span><span class="o">,</span> <span class="nn">Present</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">.</span> <span class="n">_future_py2</span> <span class="kn">import</span> <span class="nn">Result</span><span class="o">,</span> <span class="nn">Present</span>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Future&quot;</span><span class="p">,</span> <span class="s2">&quot;Present&quot;</span><span class="p">,</span> <span class="s2">&quot;Result&quot;</span><span class="p">]</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  <li><a href="../because.html">because</a><ul>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Boundless.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

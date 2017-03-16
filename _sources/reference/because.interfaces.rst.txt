@@ -11,6 +11,7 @@ Subpackages
 
 .. toctree::
 
+    because.interfaces.concurrent
     because.interfaces.python
     because.interfaces.qgis
     because.interfaces.qt

@@ -1,0 +1,193 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>because.future module &#8212; because 0.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="because.headers module" href="because.headers.html" />
+    <link rel="prev" title="because.frontend module" href="because.frontend.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-because.future">
+<span id="because-future-module"></span><h1>because.future module<a class="headerlink" href="#module-because.future" title="Permalink to this headline">¶</a></h1>
+<p>Base future interfaces/traits.</p>
+<dl class="class">
+<dt id="because.future.Future">
+<em class="property">class </em><code class="descclassname">because.future.</code><code class="descname">Future</code><a class="reference internal" href="../_modules/because/future.html#Future"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.future.Future" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<p>Base class for the version-portable future-like objects used in because.</p>
+<p>Subclass __init__ may have any signature and is not required to call super
+__init__. After all, it is the instances which must be substitutable.</p>
+<dl class="method">
+<dt id="because.future.Future.cancel">
+<code class="descname">cancel</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/future.html#Future.cancel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.future.Future.cancel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Attempt to cancel any ongoing work.</p>
+<p>This is primarily a way to communicate to the future that any ongoing
+work should be stopped if reasonably possible. No guarantees are made
+as to the resulting state, or whether canceling is a good idea;
+though the future might ignore cancels if they are a bad idea.</p>
+<p>If the future had no problem canceling ongoing work, this should return
+True. If it couldn&#8217;t be canceled, this should return False.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="because.future.Future.close">
+<code class="descname">close</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/future.html#Future.close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.future.Future.close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clean up state.</p>
+<p>This method is not guaranteed to be called unless the instance is used
+as a context manager (even then, the process can crash or the power can
+go out).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="because.future.Future.start">
+<code class="descname">start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/future.html#Future.start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.future.Future.start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start work without blocking.</p>
+<p>This method provides a way for the caller to cue the future that it is
+about to do other things during which it would like progress to be
+made, if possible.</p>
+<p>The contract of this class, especially this method, is very particular
+about when futures should do &#8220;real work.&#8221; For present purposes, &#8220;real
+work&#8221; is defined as anything which involves I/O waits, significant lock
+waits, significant amounts of compute time, or externally visible side
+effects.</p>
+<p>Avoiding real work in __init__ allows execution to be deferred until
+after construction. This allows us to go ahead and create the
+representation of the work to be performed ahead of performing it,
+whenever it&#8217;s convenient; so we don&#8217;t have to hold separate
+representations of work to be done.</p>
+<p>In particular, a future should not do real work unless and until the
+first call to start(). If the future can make background progress at
+this time, then it should begin work. But that work should never block
+start() itself from returning as soon as it reasonably can. And any
+real work that the future cannot make background progress on should not
+be done in start(). So if the future cannot really do anything without
+blocking, it should just ignore start().</p>
+<p>This preserves the usefulness of start() as a mere cue to start
+working, and avoids encouraging usages which rely on blocking
+implementations by skipping calls to wait() or the like.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="because.future.Future.wait">
+<code class="descname">wait</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/future.html#Future.wait"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.future.Future.wait" title="Permalink to this definition">¶</a></dt>
+<dd><p>Block until the future is ready, then return its result.</p>
+<p>Subclasses have to decide how to implement this. For blocking
+implementations, this is the only way to get a result. For asynchronous
+implementations, blocking is usually undesirable and so this should
+almost never be called; but sometimes it is useful to have an adapter
+from an asynchronous world to a synchronous world, and providing this
+allows blocking implementations as a &#8220;lowest common denominator.&#8221;</p>
+<p>The base class method returns self, but others will generally want to
+return whatever the future computed instead.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="because.future.Present">
+<em class="property">class </em><code class="descclassname">because.future.</code><code class="descname">Present</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/_future_py3.html#Present"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.future.Present" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">because._future_base._Present</span></code></p>
+<p>Returned when we need a future which always just gives a value.</p>
+<p>The value is just given away for free. It&#8217;s a present, and all you have
+to do is unwrap it. The future is now!</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="because.future.Result">
+<em class="property">class </em><code class="descclassname">because.future.</code><code class="descname">Result</code><span class="sig-paren">(</span><em>future</em>, <em>callback</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/_future_py3.html#Result"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.future.Result" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">because._future_base._Result</span></code></p>
+<p>A future which waits for another future, then applies a callback.</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="because.html">because package</a><ul>
+      <li>Previous: <a href="because.frontend.html" title="previous chapter">because.frontend module</a></li>
+      <li>Next: <a href="because.headers.html" title="next chapter">because.headers module</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/reference/because.future.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Boundless.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+      |
+      <a href="../_sources/reference/because.future.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

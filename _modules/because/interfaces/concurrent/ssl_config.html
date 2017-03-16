@@ -1,0 +1,258 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>because.interfaces.concurrent.ssl_config &#8212; because 0.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../../../',
+        VERSION:     '0.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for because.interfaces.concurrent.ssl_config</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Helpers for doing HTTP using SSL using the Python stdlib: ssl and httplib.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">ssl</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="p">(</span>
+    <span class="n">Optional</span><span class="p">,</span>
+    <span class="n">Text</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">because.ssl_config</span> <span class="k">import</span> <span class="p">(</span>
+    <span class="n">InvalidSSLConfig</span><span class="p">,</span>
+    <span class="n">SSLKey</span> <span class="k">as</span> <span class="n">_SSLKey</span><span class="p">,</span>
+    <span class="n">SSLConfig</span> <span class="k">as</span> <span class="n">_SSLConfig</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># SSL/TLS versions</span>
+<span class="c1"># (ssl.PROTOCOL_*)</span>
+<span class="c1"># For now, don&#39;t offer a choice, see if anything else is needed</span>
+<span class="n">_PROTOCOL_CHOICES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="c1"># Default option recommended in Python docs, but not avail &lt; 2.7.13!</span>
+    <span class="c1"># u&quot;default&quot;: ssl.PROTOCOL_SSLv23,</span>
+
+    <span class="c1"># same as PROTOCOL_TLS, deprecated in 3.6+</span>
+    <span class="c1"># &quot;ssl v2.3&quot;: ssl.PROTOCOL_SSLv23,</span>
+
+    <span class="c1"># preferred alias only available in 3.6+</span>
+    <span class="c1"># &quot;tls&quot;: ssl.PROTOCOL_TLS,</span>
+<span class="p">}</span>
+<span class="c1"># In 3.6+ the preferred name is PROTOCOL_TLS, try to avoid deprecated names here</span>
+<span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span> <span class="o">&gt;=</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">):</span>
+    <span class="n">_PROTOCOL_CHOICES</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
+        <span class="s2">u&quot;default&quot;</span><span class="p">:</span> <span class="n">ssl</span><span class="o">.</span><span class="n">PROTOCOL_TLS</span><span class="p">,</span>
+    <span class="p">})</span>
+<span class="c1"># In 2.7 to 3.5, the available name is PROTOCOL_SSLv23</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">_PROTOCOL_CHOICES</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
+        <span class="s2">u&quot;default&quot;</span><span class="p">:</span> <span class="n">ssl</span><span class="o">.</span><span class="n">PROTOCOL_SSLv23</span><span class="p">,</span>
+    <span class="p">})</span>
+<span class="n">_PROTOCOL_CHOICES_REVERSE</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">value</span><span class="p">:</span> <span class="n">key</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">_PROTOCOL_CHOICES</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+<span class="p">}</span>
+
+<span class="c1"># SSL Options</span>
+<span class="n">_PROTOCOL_OPTIONS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="c1"># NOTE: inverted</span>
+
+    <span class="c1"># this option wants OpenSSL 1.0.0+.</span>
+    <span class="s2">&quot;compression&quot;</span><span class="p">:</span> <span class="n">ssl</span><span class="o">.</span><span class="n">OP_NO_COMPRESSION</span><span class="p">,</span>
+
+    <span class="s2">&quot;no ssl v2&quot;</span><span class="p">:</span> <span class="n">ssl</span><span class="o">.</span><span class="n">OP_NO_SSLv2</span><span class="p">,</span>
+    <span class="s2">&quot;no ssl v3&quot;</span><span class="p">:</span> <span class="n">ssl</span><span class="o">.</span><span class="n">OP_NO_SSLv3</span><span class="p">,</span>
+    <span class="s2">&quot;no tls v1&quot;</span><span class="p">:</span> <span class="n">ssl</span><span class="o">.</span><span class="n">OP_NO_TLSv1</span><span class="p">,</span>
+    <span class="s2">&quot;no tls v1.1&quot;</span><span class="p">:</span> <span class="n">ssl</span><span class="o">.</span><span class="n">OP_NO_TLSv1_1</span><span class="p">,</span>
+    <span class="s2">&quot;no tls v1.2&quot;</span><span class="p">:</span> <span class="n">ssl</span><span class="o">.</span><span class="n">OP_NO_TLSv1_2</span><span class="p">,</span>
+
+    <span class="c1"># NOTE: these not inverted (not _NO_WHATEVER). Also, only for server</span>
+    <span class="c1"># sockets, but just to be scrupulous with defaults...</span>
+    <span class="s2">&quot;server cipher preference&quot;</span><span class="p">:</span> <span class="n">ssl</span><span class="o">.</span><span class="n">OP_CIPHER_SERVER_PREFERENCE</span><span class="p">,</span>
+    <span class="s2">&quot;single dh use&quot;</span><span class="p">:</span> <span class="n">ssl</span><span class="o">.</span><span class="n">OP_SINGLE_DH_USE</span><span class="p">,</span>
+    <span class="s2">&quot;single ecdh use&quot;</span><span class="p">:</span> <span class="n">ssl</span><span class="o">.</span><span class="n">OP_SINGLE_ECDH_USE</span><span class="p">,</span>
+<span class="p">}</span>
+<span class="c1"># All the options but these are inverted</span>
+<span class="n">_UNINVERTED_OPTIONS</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span>
+    <span class="s2">&quot;server cipher preference&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;single dh use&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;single ecdh use&quot;</span><span class="p">,</span>
+<span class="p">])</span>
+<span class="c1"># 3.6+ exclusive options :(</span>
+<span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span> <span class="o">&gt;=</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">):</span>
+    <span class="n">_PROTOCOL_OPTIONS</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
+    <span class="p">})</span>
+
+
+<div class="viewcode-block" id="SSLKey"><a class="viewcode-back" href="../../../../reference/because.interfaces.concurrent.ssl_config.html#because.interfaces.concurrent.ssl_config.SSLKey">[docs]</a><span class="k">class</span> <span class="nc">SSLKey</span><span class="p">(</span><span class="n">_SSLKey</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;httplib implementation of SSLKey.</span>
+<span class="sd">    &quot;&quot;&quot;</span></div>
+    <span class="c1"># TODO: work out what uses keys and then have this provide what that needs</span>
+
+
+<div class="viewcode-block" id="SSLConfig"><a class="viewcode-back" href="../../../../reference/because.interfaces.concurrent.ssl_config.html#because.interfaces.concurrent.ssl_config.SSLConfig">[docs]</a><span class="k">class</span> <span class="nc">SSLConfig</span><span class="p">(</span><span class="n">_SSLConfig</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;httplib implementation of SSLConfig.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">default_options</span> <span class="o">=</span> <span class="n">_SSLConfig</span><span class="o">.</span><span class="n">default_options</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">default_options</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
+        <span class="c1"># default options specific to this implementation go here.</span>
+
+        <span class="c1"># after ssl.create_default_context default options.</span>
+        <span class="s2">&quot;compression&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;server cipher preference&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s2">&quot;single dh use&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s2">&quot;single ecdh use&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">})</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">protocol</span><span class="o">=</span><span class="s2">u&quot;default&quot;</span><span class="p">,</span>
+            <span class="n">key</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="c1"># type: (Text, Optional[SSLKey], Optional[dict]) -&gt; None</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">SSLConfig</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span>
+            <span class="n">protocol</span><span class="o">=</span><span class="n">protocol</span><span class="p">,</span>
+            <span class="n">key</span><span class="o">=</span><span class="n">key</span><span class="p">,</span>
+            <span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Set up implementation-specific state...</span>
+
+        <span class="c1"># If user didn&#39;t specify anything custom, use create_default_context</span>
+        <span class="c1"># as the Python docs recommend to get what Python devs thought secure.</span>
+        <span class="k">if</span> <span class="n">protocol</span> <span class="o">==</span> <span class="s2">u&quot;default&quot;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">options</span><span class="p">:</span>
+            <span class="c1"># &quot;Passing SERVER_AUTH as purpose sets verify_mode to CERT_REQUIRED</span>
+            <span class="c1"># and either loads CA certificates (when at least one of cafile,</span>
+            <span class="c1"># capath or cadata is given) or uses</span>
+            <span class="c1"># SSLContext.load_default_certs() to load default CA certificates.&quot;</span>
+            <span class="n">purpose</span> <span class="o">=</span> <span class="n">ssl</span><span class="o">.</span><span class="n">Purpose</span><span class="o">.</span><span class="n">SERVER_AUTH</span>
+            <span class="n">context</span> <span class="o">=</span> <span class="n">ssl</span><span class="o">.</span><span class="n">create_default_context</span><span class="p">(</span><span class="n">purpose</span><span class="p">)</span>
+
+        <span class="c1"># Otherwise, the user wanted to specify their own stuff</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">protocol_constant</span> <span class="o">=</span> <span class="n">_PROTOCOL_CHOICES</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">protocol</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">protocol_constant</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">InvalidSSLConfig</span><span class="p">(</span>
+                    <span class="s2">&quot;unknown protocol for Python ssl: </span><span class="si">{0!r}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">protocol</span><span class="p">)</span>
+                <span class="p">)</span>
+            <span class="c1"># Only in 3.6+ this is created with secure default values.</span>
+            <span class="c1"># That&#39;s why similar options are set in default_options</span>
+            <span class="n">context</span> <span class="o">=</span> <span class="n">ssl</span><span class="o">.</span><span class="n">SSLContext</span><span class="p">(</span><span class="n">protocol</span><span class="o">=</span><span class="n">protocol_constant</span><span class="p">)</span>
+
+            <span class="c1"># Special case for mimicking create_default_context doc behavior</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span> <span class="o">!=</span> <span class="s2">&quot;ssl v2&quot;</span> <span class="ow">and</span> <span class="s2">&quot;no ssl v2&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">[</span><span class="s2">&quot;no ssl v2&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span> <span class="o">!=</span> <span class="s2">&quot;ssl v3&quot;</span> <span class="ow">and</span> <span class="s2">&quot;no ssl v3&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="p">[</span><span class="s2">&quot;no ssl v3&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_context</span> <span class="o">=</span> <span class="n">context</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_set_options</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_set_options</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># type: () -&gt; None</span>
+        <span class="sd">&quot;&quot;&quot;Internal: convert options to set QSSLConfiguration option flags.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># We can safely set options, but we can&#39;t safely unset them... so we</span>
+        <span class="c1"># only have one shot to change these, otherwise just grab a new</span>
+        <span class="c1"># context.</span>
+
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+
+            <span class="c1"># Get the constant used by the ssl module</span>
+            <span class="n">option</span> <span class="o">=</span> <span class="n">_PROTOCOL_OPTIONS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+
+            <span class="c1"># Make sure we don&#39;t fail silently with unrecognized options</span>
+            <span class="k">if</span> <span class="n">option</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">InvalidSSLConfig</span><span class="p">(</span>
+                    <span class="s2">&quot;unknown option for Python ssl: </span><span class="si">{0!r}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+                <span class="p">)</span>
+
+            <span class="c1"># option flags normally NO_WHATEVER, inverting the logic</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">_UNINVERTED_OPTIONS</span><span class="p">:</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">value</span>
+            <span class="k">if</span> <span class="n">value</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_context</span><span class="o">.</span><span class="n">options</span> <span class="o">|=</span> <span class="n">option</span>
+
+<div class="viewcode-block" id="SSLConfig.to_ssl_context"><a class="viewcode-back" href="../../../../reference/because.interfaces.concurrent.ssl_config.html#because.interfaces.concurrent.ssl_config.SSLConfig.to_ssl_context">[docs]</a>    <span class="k">def</span> <span class="nf">to_ssl_context</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># type: () -&gt; ssl.SSLContext</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_context</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../index.html">Module code</a><ul>
+  <li><a href="../../../because.html">because</a><ul>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Boundless.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.5.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

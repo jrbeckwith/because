@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>because.interfaces.qgis.transfer module &#8212; because 0.0.0 documentation</title>
+    <title>because.interfaces.qgis.symbology module &#8212; because 0.0.0 documentation</title>
     
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -26,8 +26,8 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="because.interfaces.qt package" href="because.interfaces.qt.html" />
-    <link rel="prev" title="because.interfaces.qgis.symbology module" href="because.interfaces.qgis.symbology.html" />
+    <link rel="next" title="because.interfaces.qgis.transfer module" href="because.interfaces.qgis.transfer.html" />
+    <link rel="prev" title="because.interfaces.qgis.client module" href="because.interfaces.qgis.client.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -43,25 +43,20 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="module-because.interfaces.qgis.transfer">
-<span id="because-interfaces-qgis-transfer-module"></span><h1>because.interfaces.qgis.transfer module<a class="headerlink" href="#module-because.interfaces.qgis.transfer" title="Permalink to this headline">¶</a></h1>
-<p>Transfer implementation for QGIS.</p>
-<dl class="data">
-<dt id="because.interfaces.qgis.transfer.LOG">
-<code class="descclassname">because.interfaces.qgis.transfer.</code><code class="descname">LOG</code><em class="property"> = &lt;logging.Logger object&gt;</em><a class="headerlink" href="#because.interfaces.qgis.transfer.LOG" title="Permalink to this definition">¶</a></dt>
-<dd><p>Default logger for this module.</p>
+  <div class="section" id="module-because.interfaces.qgis.symbology">
+<span id="because-interfaces-qgis-symbology-module"></span><h1>because.interfaces.qgis.symbology module<a class="headerlink" href="#module-because.interfaces.qgis.symbology" title="Permalink to this headline">¶</a></h1>
+<dl class="exception">
+<dt id="because.interfaces.qgis.symbology.InvalidSymbology">
+<em class="property">exception </em><code class="descclassname">because.interfaces.qgis.symbology.</code><code class="descname">InvalidSymbology</code><span class="sig-paren">(</span><em>message</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/interfaces/qgis/symbology.html#InvalidSymbology"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.interfaces.qgis.symbology.InvalidSymbology" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="because.errors.html#because.errors.InvalidObject" title="because.errors.InvalidObject"><code class="xref py py-class docutils literal"><span class="pre">because.errors.InvalidObject</span></code></a></p>
+<p>Symbology instance could not be created.</p>
 </dd></dl>
 
 <dl class="class">
-<dt id="because.interfaces.qgis.transfer.Transfer">
-<em class="property">class </em><code class="descclassname">because.interfaces.qgis.transfer.</code><code class="descname">Transfer</code><span class="sig-paren">(</span><em>request</em>, <em>log=None</em>, <em>parent=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/interfaces/qgis/transfer.html#Transfer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.interfaces.qgis.transfer.Transfer" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="because.interfaces.qt.transfer.html#because.interfaces.qt.transfer.Transfer" title="because.interfaces.qt.transfer.Transfer"><code class="xref py py-class docutils literal"><span class="pre">because.interfaces.qt.transfer.Transfer</span></code></a></p>
-<dl class="attribute">
-<dt id="because.interfaces.qgis.transfer.Transfer.log">
-<code class="descname">log</code><em class="property"> = &lt;logging.Logger object&gt;</em><a class="headerlink" href="#because.interfaces.qgis.transfer.Transfer.log" title="Permalink to this definition">¶</a></dt>
-<dd><p>Default logger for this class.</p>
-</dd></dl>
-
+<dt id="because.interfaces.qgis.symbology.Symbology">
+<em class="property">class </em><code class="descclassname">because.interfaces.qgis.symbology.</code><code class="descname">Symbology</code><a class="reference internal" href="../_modules/because/interfaces/qgis/symbology.html#Symbology"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.interfaces.qgis.symbology.Symbology" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/2/library/functions.html#object" title="(in Python v2.7)"><code class="xref py py-class docutils literal"><span class="pre">object</span></code></a></p>
+<p>Base class for representations of symbology.</p>
 </dd></dl>
 
 </div>
@@ -78,8 +73,8 @@
   <li><a href="because.html">because package</a><ul>
   <li><a href="because.interfaces.html">because.interfaces package</a><ul>
   <li><a href="because.interfaces.qgis.html">because.interfaces.qgis package</a><ul>
-      <li>Previous: <a href="because.interfaces.qgis.symbology.html" title="previous chapter">because.interfaces.qgis.symbology module</a></li>
-      <li>Next: <a href="because.interfaces.qt.html" title="next chapter">because.interfaces.qt package</a></li>
+      <li>Previous: <a href="because.interfaces.qgis.client.html" title="previous chapter">because.interfaces.qgis.client module</a></li>
+      <li>Next: <a href="because.interfaces.qgis.transfer.html" title="next chapter">because.interfaces.qgis.transfer module</a></li>
   </ul></li>
   </ul></li>
   </ul></li>
@@ -89,7 +84,7 @@
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="../_sources/reference/because.interfaces.qgis.transfer.rst.txt"
+      <li><a href="../_sources/reference/because.interfaces.qgis.symbology.rst.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
@@ -115,7 +110,7 @@
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
       
       |
-      <a href="../_sources/reference/because.interfaces.qgis.transfer.rst.txt"
+      <a href="../_sources/reference/because.interfaces.qgis.symbology.rst.txt"
           rel="nofollow">Page source</a>
     </div>
 

@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>because.hosts module &#8212; because 0.0.0 documentation</title>
+    <title>because.interfaces.concurrent package &#8212; because 0.0.0 documentation</title>
     
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -26,8 +26,8 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="because.point module" href="because.point.html" />
-    <link rel="prev" title="because.headers module" href="because.headers.html" />
+    <link rel="next" title="because.interfaces.concurrent.client module" href="because.interfaces.concurrent.client.html" />
+    <link rel="prev" title="because.interfaces package" href="because.interfaces.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -43,19 +43,19 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="module-because.hosts">
-<span id="because-hosts-module"></span><h1>because.hosts module<a class="headerlink" href="#module-because.hosts" title="Permalink to this headline">¶</a></h1>
-<p>Define locations and metadata for hosts running public BCS services.</p>
-<p>This module contains only a dictionary called HOSTS. Each key is a short alias
-for a host giving its role, e.g. &#8220;dev&#8221;, &#8220;test&#8221;, or &#8220;prod&#8221;. Each value is an
-instance of boundless.service.Host, containing a base URL and any
-associated information necessary to use it, aside from information about
-services and endpoints.</p>
-<dl class="data">
-<dt id="because.hosts.HOSTS">
-<code class="descclassname">because.hosts.</code><code class="descname">HOSTS</code><em class="property"> = {'dev': &lt;because.service.Host object&gt;, 'local': &lt;because.service.Host object&gt;, 'test': &lt;because.service.Host object&gt;, 'prod': &lt;because.service.Host object&gt;}</em><a class="headerlink" href="#because.hosts.HOSTS" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
+  <div class="section" id="module-because.interfaces.concurrent">
+<span id="because-interfaces-concurrent-package"></span><h1>because.interfaces.concurrent package<a class="headerlink" href="#module-because.interfaces.concurrent" title="Permalink to this headline">¶</a></h1>
+<p>Interface using concurrent.futures in the Python 3 stdlib.</p>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="because.interfaces.concurrent.client.html">because.interfaces.concurrent.client module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="because.interfaces.concurrent.ssl_config.html">because.interfaces.concurrent.ssl_config module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="because.interfaces.concurrent.transfer.html">because.interfaces.concurrent.transfer module</a></li>
+</ul>
+</div>
+</div>
 </div>
 
 
@@ -63,13 +63,23 @@ services and endpoints.</p>
         </div>
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper"><div class="relations">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">because.interfaces.concurrent package</a><ul>
+<li><a class="reference internal" href="#submodules">Submodules</a></li>
+</ul>
+</li>
+</ul>
+<div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
   <li><a href="because.html">because package</a><ul>
-      <li>Previous: <a href="because.headers.html" title="previous chapter">because.headers module</a></li>
-      <li>Next: <a href="because.point.html" title="next chapter">because.point module</a></li>
+  <li><a href="because.interfaces.html">because.interfaces package</a><ul>
+      <li>Previous: <a href="because.interfaces.html" title="previous chapter">because.interfaces package</a></li>
+      <li>Next: <a href="because.interfaces.concurrent.client.html" title="next chapter">because.interfaces.concurrent.client module</a></li>
+  </ul></li>
   </ul></li>
   </ul></li>
 </ul>
@@ -77,7 +87,7 @@ services and endpoints.</p>
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="../_sources/reference/because.hosts.rst.txt"
+      <li><a href="../_sources/reference/because.interfaces.concurrent.rst.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
@@ -103,7 +113,7 @@ services and endpoints.</p>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
       
       |
-      <a href="../_sources/reference/because.hosts.rst.txt"
+      <a href="../_sources/reference/because.interfaces.concurrent.rst.txt"
           rel="nofollow">Page source</a>
     </div>
 

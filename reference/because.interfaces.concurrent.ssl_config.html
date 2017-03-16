@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>because.interfaces.python.ssl_config module &#8212; because 0.0.0 documentation</title>
+    <title>because.interfaces.concurrent.ssl_config module &#8212; because 0.0.0 documentation</title>
     
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -26,8 +26,8 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="because.interfaces.python.transfer module" href="because.interfaces.python.transfer.html" />
-    <link rel="prev" title="because.interfaces.python.client module" href="because.interfaces.python.client.html" />
+    <link rel="next" title="because.interfaces.concurrent.transfer module" href="because.interfaces.concurrent.transfer.html" />
+    <link rel="prev" title="because.interfaces.concurrent.client module" href="because.interfaces.concurrent.client.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -43,29 +43,29 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="module-because.interfaces.python.ssl_config">
-<span id="because-interfaces-python-ssl-config-module"></span><h1>because.interfaces.python.ssl_config module<a class="headerlink" href="#module-because.interfaces.python.ssl_config" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="module-because.interfaces.concurrent.ssl_config">
+<span id="because-interfaces-concurrent-ssl-config-module"></span><h1>because.interfaces.concurrent.ssl_config module<a class="headerlink" href="#module-because.interfaces.concurrent.ssl_config" title="Permalink to this headline">¶</a></h1>
 <p>Helpers for doing HTTP using SSL using the Python stdlib: ssl and httplib.</p>
 <dl class="class">
-<dt id="because.interfaces.python.ssl_config.SSLConfig">
-<em class="property">class </em><code class="descclassname">because.interfaces.python.ssl_config.</code><code class="descname">SSLConfig</code><span class="sig-paren">(</span><em>protocol='default'</em>, <em>key=None</em>, <em>options=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/interfaces/python/ssl_config.html#SSLConfig"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.interfaces.python.ssl_config.SSLConfig" title="Permalink to this definition">¶</a></dt>
+<dt id="because.interfaces.concurrent.ssl_config.SSLConfig">
+<em class="property">class </em><code class="descclassname">because.interfaces.concurrent.ssl_config.</code><code class="descname">SSLConfig</code><span class="sig-paren">(</span><em>protocol='default'</em>, <em>key=None</em>, <em>options=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/interfaces/concurrent/ssl_config.html#SSLConfig"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.interfaces.concurrent.ssl_config.SSLConfig" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="because.ssl_config.html#because.ssl_config.SSLConfig" title="because.ssl_config.SSLConfig"><code class="xref py py-class docutils literal"><span class="pre">because.ssl_config.SSLConfig</span></code></a></p>
 <p>httplib implementation of SSLConfig.</p>
 <dl class="attribute">
-<dt id="because.interfaces.python.ssl_config.SSLConfig.default_options">
-<code class="descname">default_options</code><em class="property"> = {'single dh use': True, 'compression': False, 'server cipher preference': True, 'single ecdh use': True}</em><a class="headerlink" href="#because.interfaces.python.ssl_config.SSLConfig.default_options" title="Permalink to this definition">¶</a></dt>
+<dt id="because.interfaces.concurrent.ssl_config.SSLConfig.default_options">
+<code class="descname">default_options</code><em class="property"> = {'single dh use': True, 'compression': False, 'server cipher preference': True, 'single ecdh use': True}</em><a class="headerlink" href="#because.interfaces.concurrent.ssl_config.SSLConfig.default_options" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="because.interfaces.python.ssl_config.SSLConfig.to_ssl_context">
-<code class="descname">to_ssl_context</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/interfaces/python/ssl_config.html#SSLConfig.to_ssl_context"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.interfaces.python.ssl_config.SSLConfig.to_ssl_context" title="Permalink to this definition">¶</a></dt>
+<dt id="because.interfaces.concurrent.ssl_config.SSLConfig.to_ssl_context">
+<code class="descname">to_ssl_context</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/interfaces/concurrent/ssl_config.html#SSLConfig.to_ssl_context"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.interfaces.concurrent.ssl_config.SSLConfig.to_ssl_context" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="class">
-<dt id="because.interfaces.python.ssl_config.SSLKey">
-<em class="property">class </em><code class="descclassname">because.interfaces.python.ssl_config.</code><code class="descname">SSLKey</code><span class="sig-paren">(</span><em>data</em>, <em>pass_phrase=b''</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/interfaces/python/ssl_config.html#SSLKey"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.interfaces.python.ssl_config.SSLKey" title="Permalink to this definition">¶</a></dt>
+<dt id="because.interfaces.concurrent.ssl_config.SSLKey">
+<em class="property">class </em><code class="descclassname">because.interfaces.concurrent.ssl_config.</code><code class="descname">SSLKey</code><span class="sig-paren">(</span><em>data</em>, <em>pass_phrase=b''</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/interfaces/concurrent/ssl_config.html#SSLKey"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.interfaces.concurrent.ssl_config.SSLKey" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="because.ssl_config.html#because.ssl_config.SSLKey" title="because.ssl_config.SSLKey"><code class="xref py py-class docutils literal"><span class="pre">because.ssl_config.SSLKey</span></code></a></p>
 <p>httplib implementation of SSLKey.</p>
 </dd></dl>
@@ -83,9 +83,9 @@
   <li><a href="../index.html">Documentation overview</a><ul>
   <li><a href="because.html">because package</a><ul>
   <li><a href="because.interfaces.html">because.interfaces package</a><ul>
-  <li><a href="because.interfaces.python.html">because.interfaces.python package</a><ul>
-      <li>Previous: <a href="because.interfaces.python.client.html" title="previous chapter">because.interfaces.python.client module</a></li>
-      <li>Next: <a href="because.interfaces.python.transfer.html" title="next chapter">because.interfaces.python.transfer module</a></li>
+  <li><a href="because.interfaces.concurrent.html">because.interfaces.concurrent package</a><ul>
+      <li>Previous: <a href="because.interfaces.concurrent.client.html" title="previous chapter">because.interfaces.concurrent.client module</a></li>
+      <li>Next: <a href="because.interfaces.concurrent.transfer.html" title="next chapter">because.interfaces.concurrent.transfer module</a></li>
   </ul></li>
   </ul></li>
   </ul></li>
@@ -95,7 +95,7 @@
   <div role="note" aria-label="source link">
     <h3>This Page</h3>
     <ul class="this-page-menu">
-      <li><a href="../_sources/reference/because.interfaces.python.ssl_config.rst.txt"
+      <li><a href="../_sources/reference/because.interfaces.concurrent.ssl_config.rst.txt"
             rel="nofollow">Show Source</a></li>
     </ul>
    </div>
@@ -121,7 +121,7 @@
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.9</a>
       
       |
-      <a href="../_sources/reference/because.interfaces.python.ssl_config.rst.txt"
+      <a href="../_sources/reference/because.interfaces.concurrent.ssl_config.rst.txt"
           rel="nofollow">Page source</a>
     </div>
 

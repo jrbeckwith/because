@@ -6,7 +6,10 @@ because
 :doc:`BCS HTTP services <services>` including 
 :doc:`routing <services/routing>`,
 :doc:`geocoding <services/geocoding>`,
-and :doc:`basemaps <services/basemaps>`.
+:doc:`basemaps <services/basemaps>`,
+and
+:doc:`search <services/search>`.
+
 It wraps these services in high-level interfaces that abstract away
 many of the ugly details, so you can get started quickly and focus on how you
 want to use the data.
