@@ -42,8 +42,7 @@
           <div class="body" role="main">
             
   <h1>Source code for because.interfaces.qt.transfer</h1><div class="highlight"><pre>
-<span></span><span class="c1"># TODO: can we eliminate on_finished? on_* more generally? might as well try.</span>
-<span class="kn">import</span> <span class="nn">logging</span>
+<span></span><span class="kn">import</span> <span class="nn">logging</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="k">import</span> <span class="n">datetime</span> <span class="k">as</span> <span class="n">Datetime</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="p">(</span>
     <span class="n">Any</span><span class="p">,</span>
@@ -232,9 +231,6 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_emitted</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>  <span class="c1"># type: set[Any]</span>
 
-        <span class="c1"># If no finish callbabck is ever set, do nothing</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">finish</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pass</span>
-
         <span class="c1"># note: error is indicated per QNetworkReply.NetworkError enum</span>
 
         <span class="nb">super</span><span class="p">(</span><span class="n">Transfer</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span>
@@ -244,11 +240,6 @@
         <span class="p">)</span>
 
         <span class="c1"># TODO: check for QNetworkReply.TimeoutError, ProxyTimeoutError</span>
-
-    <span class="k">def</span> <span class="nf">_pass</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1"># type: () -&gt; None</span>
-        <span class="sd">&quot;&quot;&quot;Do nothing.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">_set_reply</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reply</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Associate to the given QNetworkReply and connect signals.</span>
@@ -356,10 +347,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">response</span> <span class="o">=</span> <span class="n">response</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">error</span> <span class="o">=</span> <span class="n">error</span>
 
-        <span class="c1"># If we have a callback for a synchronous consumer, notify them by</span>
-        <span class="c1"># calling that callback.</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">finish</span><span class="p">(</span><span class="n">error</span> <span class="ow">or</span> <span class="n">response</span><span class="p">)</span>
-
         <span class="k">if</span> <span class="ow">not</span> <span class="n">error</span><span class="p">:</span>
             <span class="c1"># We don&#39;t just forward &quot;finished&quot; so that subscribers don&#39;t run</span>
             <span class="c1"># when the QNetworkReply is in but before we have response ready</span>
@@ -371,10 +358,8 @@
         <span class="c1"># Emit a courtesy finished in case that&#39;s all caller cares about</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">signals</span><span class="o">.</span><span class="n">finished</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span>
 
-<div class="viewcode-block" id="Transfer.start"><a class="viewcode-back" href="../../../../reference/because.interfaces.qt.transfer.html#because.interfaces.qt.client.Transfer.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">finish</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="c1"># type: (Callable) -&gt; None</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">finish</span> <span class="o">=</span> <span class="n">finish</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">finish</span>
+<div class="viewcode-block" id="Transfer.start"><a class="viewcode-back" href="../../../../reference/because.interfaces.qt.transfer.html#because.interfaces.qt.client.Transfer.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># type: () -&gt; None</span>
 
         <span class="n">request</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span>
         <span class="c1"># Pack the request body for Qt.</span>
@@ -440,10 +425,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_reply</span><span class="o">.</span><span class="n">finished</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">loop</span><span class="o">.</span><span class="n">quit</span><span class="p">)</span>
         <span class="n">loop</span><span class="o">.</span><span class="n">exec_</span><span class="p">()</span>
 
-        <span class="c1"># TODO: return something!</span>
-
         <span class="c1"># Update base class state</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">Transfer</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span></div>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Transfer</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">wait</span><span class="p">()</span>
+
+        <span class="c1"># I guess this works</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">error</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="bp">self</span><span class="o">.</span><span class="n">error</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">response</span>  <span class="c1"># is there one though</span></div>
 
     <span class="k">def</span> <span class="nf">_abort</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># type: () -&gt; None</span>
@@ -476,9 +464,6 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># If any work is ongoing, stop it</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">cancel</span><span class="p">()</span>
-
-        <span class="c1"># Prevent further callback access through self</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">finish</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="c1"># Close the QBuffer</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_buffer</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>

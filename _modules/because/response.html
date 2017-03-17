@@ -42,17 +42,18 @@
           <div class="body" role="main">
             
   <h1>Source code for because.response</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="p">(</span>
+<span></span><span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">collections</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="p">(</span>
     <span class="n">Any</span><span class="p">,</span>
     <span class="n">Optional</span><span class="p">,</span>
     <span class="n">Tuple</span><span class="p">,</span>
     <span class="n">List</span><span class="p">,</span>
     <span class="n">Text</span><span class="p">,</span>
 <span class="p">)</span>
-<span class="kn">import</span> <span class="nn">collections</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="n">reprs</span> <span class="kn">import</span> <span class="nn">ReprMixin</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="n">pretty</span> <span class="kn">import</span> <span class="nn">PrettyMixin</span>
-<span class="kn">from</span> <span class="nn">.</span> <span class="n">errors</span> <span class="kn">import</span> <span class="nn">InvalidObject</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="n">errors</span> <span class="kn">import</span> <span class="nn">InvalidObject</span><span class="o">,</span> <span class="nn">ParseError</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="n">headers</span> <span class="kn">import</span> <span class="nn">Headers</span>
 
 
@@ -163,6 +164,76 @@
         <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">u&quot;body</span><span class="si">{0}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">pair_sep</span><span class="p">))</span>
         <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">u&quot;</span><span class="si">{0}{1}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">line_start</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">body</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">lines</span></div></div>
+
+
+<div class="viewcode-block" id="parse_json"><a class="viewcode-back" href="../../reference/because.response.html#because.response.parse_json">[docs]</a><span class="k">def</span> <span class="nf">parse_json</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="n">required_keys</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="c1"># type: (Response, List[Text]) -&gt; dict[Text, Any]</span>
+    <span class="sd">&quot;&quot;&quot;Parse the given response object as JSON, returning data.</span>
+
+<span class="sd">    The advantage of using this is that it does all the customary pre-checks on</span>
+<span class="sd">    the response, raising ParseError for any that fail. Callers would therefore</span>
+<span class="sd">    be advised to handle these exceptions in whatever way was appropriate to</span>
+<span class="sd">    the context.</span>
+
+<span class="sd">    :arg response:</span>
+<span class="sd">        The response to parse.</span>
+<span class="sd">    :arg caller:</span>
+<span class="sd">        If supplied, this should be the service object doing the parse, to help</span>
+<span class="sd">        with debugging.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">response</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">ParseError</span><span class="p">(</span>
+            <span class="s2">&quot;response was falsy&quot;</span><span class="p">,</span>
+            <span class="n">response</span><span class="o">=</span><span class="n">response</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">ParseError</span><span class="p">(</span>
+            <span class="s2">&quot;response had error status </span><span class="si">{0!r}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status</span><span class="p">),</span>
+            <span class="n">response</span><span class="o">=</span><span class="n">response</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="n">blob</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">body</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">blob</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">ParseError</span><span class="p">(</span>
+            <span class="s2">&quot;response had empty body&quot;</span><span class="p">,</span>
+            <span class="n">response</span><span class="o">=</span><span class="n">response</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="c1"># JSON requires utf-8, so this hardcoding is judicious</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">blob</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">UnicodeDecodeError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">ParseError</span><span class="p">(</span>
+            <span class="s2">&quot;cannot decode bytes in response body as utf-8&quot;</span><span class="p">,</span>
+            <span class="n">response</span><span class="o">=</span><span class="n">response</span><span class="p">,</span>
+            <span class="n">error</span><span class="o">=</span><span class="n">error</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+    <span class="c1"># n.b.: JSONDecodeError, in Python 3 only, subclasses of ValueError.</span>
+    <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">ParseError</span><span class="p">(</span>
+            <span class="s2">&quot;cannot decode response body as JSON&quot;</span><span class="p">,</span>
+            <span class="n">response</span><span class="o">=</span><span class="n">response</span><span class="p">,</span>
+            <span class="n">error</span><span class="o">=</span><span class="n">error</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">required_keys</span><span class="p">:</span>
+        <span class="n">missing_keys</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">([</span>
+            <span class="n">key</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">required_keys</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">data</span>
+        <span class="p">])</span>
+        <span class="k">if</span> <span class="n">missing_keys</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ParseError</span><span class="p">(</span>
+                <span class="s2">&quot;JSON response missing required keys: </span><span class="si">{0!r}</span><span class="s2">&quot;</span>
+                <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">missing_keys</span><span class="p">),</span>
+                <span class="n">response</span><span class="o">=</span><span class="n">response</span><span class="p">,</span>
+            <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">data</span></div>
 </pre></div>
 
           </div>

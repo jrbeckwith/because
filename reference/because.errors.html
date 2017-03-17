@@ -47,9 +47,16 @@
 <span id="because-errors-module"></span><h1>because.errors module<a class="headerlink" href="#module-because.errors" title="Permalink to this headline">¶</a></h1>
 <p>Common and base exception classes for the package.</p>
 <dl class="exception">
+<dt id="because.errors.BecauseError">
+<em class="property">exception </em><code class="descclassname">because.errors.</code><code class="descname">BecauseError</code><a class="reference internal" href="../_modules/because/errors.html#BecauseError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.errors.BecauseError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">Exception</span></code></p>
+<p>Base class for exceptions raised from inside the package.</p>
+</dd></dl>
+
+<dl class="exception">
 <dt id="because.errors.InvalidObject">
 <em class="property">exception </em><code class="descclassname">because.errors.</code><code class="descname">InvalidObject</code><span class="sig-paren">(</span><em>message</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/errors.html#InvalidObject"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.errors.InvalidObject" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">Exception</span></code></p>
+<dd><p>Bases: <a class="reference internal" href="#because.errors.BecauseError" title="because.errors.BecauseError"><code class="xref py py-class docutils literal"><span class="pre">because.errors.BecauseError</span></code></a></p>
 <p>Base class for errors where a valid object could not be created.</p>
 <p>This is meant to be raised from __init__ to prevent instances with bizarre
 states from ever being exposed for use. When used in this way, the
@@ -57,6 +64,14 @@ expression invoking the constructor does not return an object to bind a
 name to. So the silly instance does not cause downstream exceptions far
 from the cause of the problem. Also, code consuming instances can safely
 assume that the instances are not completely bizarre.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="because.errors.ParseError">
+<em class="property">exception </em><code class="descclassname">because.errors.</code><code class="descname">ParseError</code><span class="sig-paren">(</span><em>message</em>, <em>response=None</em>, <em>error=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/errors.html#ParseError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.errors.ParseError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#because.errors.BecauseError" title="because.errors.BecauseError"><code class="xref py py-class docutils literal"><span class="pre">because.errors.BecauseError</span></code></a></p>
+<p>An error happened while parsing a response body.</p>
+<p>E.g. a JSONDecodeError</p>
 </dd></dl>
 
 </div>

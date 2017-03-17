@@ -47,9 +47,12 @@
 
 <span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Text</span>
 <span class="kn">from</span> <span class="nn">decimal</span> <span class="k">import</span> <span class="n">Decimal</span>
+<span class="kn">from</span> <span class="nn">because.errors</span> <span class="k">import</span> <span class="n">ParseError</span>
+<span class="kn">from</span> <span class="nn">because.response</span> <span class="k">import</span> <span class="n">parse_json</span>
 <span class="kn">from</span> <span class="nn">because.services.headers</span> <span class="k">import</span> <span class="n">DEFAULT_HEADERS</span>
 <span class="kn">from</span> <span class="nn">because.service</span> <span class="k">import</span> <span class="n">Service</span><span class="p">,</span> <span class="n">Endpoint</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="n">candidate</span> <span class="kn">import</span> <span class="nn">Candidate</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">parse</span>
 
 
 <span class="n">WRAPPED_SERVICES</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span>
@@ -80,8 +83,8 @@
                 <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/geocode/</span><span class="si">{service}</span><span class="s2">/address/x/</span><span class="si">{x}</span><span class="s2">/y/</span><span class="si">{y}</span><span class="s2">&quot;</span><span class="p">,</span>
                 <span class="n">parameters</span><span class="o">=</span><span class="p">{</span>
                     <span class="s2">&quot;service&quot;</span><span class="p">:</span> <span class="n">WRAPPED_SERVICES</span><span class="p">,</span>
-                    <span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">Decimal</span><span class="p">,</span>
-                    <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="n">Decimal</span><span class="p">,</span>
+                    <span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">Decimal</span><span class="p">,</span> <span class="nb">float</span><span class="p">),</span>
+                    <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">Decimal</span><span class="p">,</span> <span class="nb">float</span><span class="p">),</span>
                 <span class="p">},</span>
             <span class="p">),</span>
 
@@ -99,58 +102,20 @@
         <span class="p">)</span>
 
 <div class="viewcode-block" id="GeocodingService.parse_forward"><a class="viewcode-back" href="../../../../reference/because.services.geocoding.service.html#because.services.geocoding.service.GeocodingService.parse_forward">[docs]</a>    <span class="k">def</span> <span class="nf">parse_forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
-        <span class="c1"># TODO: split this into parse.py</span>
-        <span class="kn">import</span> <span class="nn">json</span>
-        <span class="n">blob</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">body</span>
-        <span class="n">text</span> <span class="o">=</span> <span class="n">blob</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
-
-        <span class="c1"># TODO: check errorCode, errorMessage</span>
-
-        <span class="n">records</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;geocodePoints&quot;</span><span class="p">)</span>
-        <span class="n">mapping</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;candidatePlace&quot;</span><span class="p">:</span> <span class="s2">&quot;address&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;candidateSource&quot;</span><span class="p">:</span> <span class="s2">&quot;source&quot;</span><span class="p">,</span>
-        <span class="p">}</span>
-        <span class="n">records</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="p">{</span>
-                <span class="n">mapping</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span> <span class="n">value</span>
-                <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">record</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
-            <span class="p">}</span>
-            <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="n">records</span>
-        <span class="p">]</span>
-        <span class="n">candidates</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="n">Candidate</span><span class="p">(</span><span class="o">**</span><span class="n">record</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="n">records</span>
-        <span class="p">]</span>
-        <span class="k">return</span> <span class="n">candidates</span></div>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">results</span> <span class="o">=</span> <span class="n">parse</span><span class="o">.</span><span class="n">parse_forward_geocodes</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">ParseError</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">pretty_text</span><span class="p">())</span>
+            <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">return</span> <span class="n">results</span></div>
 
 <div class="viewcode-block" id="GeocodingService.parse_reverse"><a class="viewcode-back" href="../../../../reference/because.services.geocoding.service.html#because.services.geocoding.service.GeocodingService.parse_reverse">[docs]</a>    <span class="k">def</span> <span class="nf">parse_reverse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
-        <span class="c1"># TODO: split this into parse.py</span>
-        <span class="kn">import</span> <span class="nn">json</span>
-        <span class="n">blob</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">body</span>
-        <span class="n">text</span> <span class="o">=</span> <span class="n">blob</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
-
-        <span class="c1"># TODO: check errorCode, errorMessage</span>
-
-        <span class="n">records</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;geocodePoints&quot;</span><span class="p">)</span>
-        <span class="n">mapping</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s2">&quot;candidatePlace&quot;</span><span class="p">:</span> <span class="s2">&quot;address&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;candidateSource&quot;</span><span class="p">:</span> <span class="s2">&quot;source&quot;</span><span class="p">,</span>
-        <span class="p">}</span>
-        <span class="n">records</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="p">{</span>
-                <span class="n">mapping</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span> <span class="n">value</span>
-                <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">record</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
-            <span class="p">}</span>
-            <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="n">records</span>
-        <span class="p">]</span>
-        <span class="n">candidates</span> <span class="o">=</span> <span class="p">[</span>
-            <span class="n">Candidate</span><span class="p">(</span><span class="o">**</span><span class="n">record</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">record</span> <span class="ow">in</span> <span class="n">records</span>
-        <span class="p">]</span>
-        <span class="k">return</span> <span class="n">candidates</span></div></div>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">results</span> <span class="o">=</span> <span class="n">parse</span><span class="o">.</span><span class="n">parse_reverse_geocodes</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">ParseError</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">pretty_text</span><span class="p">())</span>
+            <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">return</span> <span class="n">results</span></div></div>
 </pre></div>
 
           </div>

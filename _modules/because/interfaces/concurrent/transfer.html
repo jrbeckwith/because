@@ -54,7 +54,6 @@
     <span class="n">Tuple</span><span class="p">,</span>
     <span class="n">List</span><span class="p">,</span>
     <span class="n">Text</span><span class="p">,</span>
-    <span class="n">Callable</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="kn">import</span> <span class="nn">asyncio</span>
@@ -64,9 +63,11 @@
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
     <span class="kn">import</span> <span class="nn">httplib</span>  <span class="c1"># type: ignore</span>
 <span class="k">try</span><span class="p">:</span>
-    <span class="kn">import</span> <span class="nn">urllib.parse</span> <span class="k">as</span> <span class="nn">urlparse</span>
+    <span class="kn">import</span> <span class="nn">urllib.parse</span>
+    <span class="n">URLPARSE</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
     <span class="kn">import</span> <span class="nn">urlparse</span>
+    <span class="n">URLPARSE</span> <span class="o">=</span> <span class="n">urlparse</span>
 
 
 <span class="kn">from</span> <span class="nn">because.errors</span> <span class="k">import</span> <span class="n">InvalidObject</span>
@@ -80,7 +81,7 @@
 
 
 <span class="k">def</span> <span class="nf">_connection</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">ssl_config</span><span class="p">):</span>
-    <span class="n">parsed</span> <span class="o">=</span> <span class="n">urlparse</span><span class="o">.</span><span class="n">urlparse</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+    <span class="n">parsed</span> <span class="o">=</span> <span class="n">URLPARSE</span><span class="o">.</span><span class="n">urlparse</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="n">parsed</span><span class="o">.</span><span class="n">scheme</span> <span class="o">==</span> <span class="s2">&quot;http&quot;</span><span class="p">:</span>
         <span class="n">connection</span> <span class="o">=</span> <span class="n">httplib</span><span class="o">.</span><span class="n">HTTPConnection</span><span class="p">(</span>
@@ -184,7 +185,7 @@
     <span class="c1"># serializable.</span>
 
 <div class="viewcode-block" id="Transfer.start"><a class="viewcode-back" href="../../../../reference/because.interfaces.concurrent.transfer.html#because.interfaces.concurrent.client.Transfer.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="c1"># type: (Optional[Callable]) -&gt; Any</span>
+        <span class="c1"># type: () -&gt; Any</span>
         <span class="sd">&quot;&quot;&quot;Begin the transfer.</span>
 
 <span class="sd">        This method allows execution of a transfer to be deferred after its</span>

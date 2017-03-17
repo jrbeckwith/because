@@ -49,12 +49,16 @@
     <span class="n">Optional</span><span class="p">,</span>
     <span class="n">Sequence</span><span class="p">,</span>
     <span class="n">List</span><span class="p">,</span>
+    <span class="n">Set</span><span class="p">,</span>
+    <span class="n">FrozenSet</span><span class="p">,</span>
     <span class="n">Text</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="k">try</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">urllib.parse</span> <span class="k">import</span> <span class="n">quote</span>
+    <span class="kn">import</span> <span class="nn">urllib.parse</span>
+    <span class="n">quote</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">quote</span>
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">urllib</span> <span class="k">import</span> <span class="n">quote</span>
+    <span class="kn">import</span> <span class="nn">urllib</span>
+    <span class="n">quote</span> <span class="o">=</span> <span class="n">urllib</span><span class="o">.</span><span class="n">quote</span>
 
 <span class="kn">from</span> <span class="nn">.</span> <span class="n">errors</span> <span class="kn">import</span> <span class="nn">InvalidObject</span>
 <span class="kn">from</span> <span class="nn">.</span> <span class="n">headers</span> <span class="kn">import</span> <span class="nn">Headers</span>
@@ -72,7 +76,7 @@
 
 
 <div class="viewcode-block" id="URLError"><a class="viewcode-back" href="../../reference/because.service.html#because.service.URLError">[docs]</a><span class="k">class</span> <span class="nc">URLError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Insufficient information to build a URL.</span>
+    <span class="sd">&quot;&quot;&quot;Insufficient or valid information to build an endpoint URL.</span>
 <span class="sd">    &quot;&quot;&quot;</span></div>
 
 
@@ -176,12 +180,22 @@
 <span class="sd">    Base URLs are specified separately, allowing the same endpoint definition</span>
 <span class="sd">    to be used against different deployments, e.g. test vs. prod.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="c1"># type: (Text, Optional[dict], Optional[List[Text]], Optional[Headers]) -&gt; None</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">path</span><span class="p">,</span>               <span class="c1"># type: Text</span>
+            <span class="n">query</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>         <span class="c1"># type: Optional[Text]</span>
+            <span class="n">parameters</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>    <span class="c1"># type: Optional[dict[Text, Any]]</span>
+            <span class="n">methods</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>       <span class="c1"># type: Optional[List[Text]]</span>
+            <span class="n">headers</span><span class="o">=</span><span class="kc">None</span>        <span class="c1"># type: Optional[Headers]</span>
+    <span class="p">):</span>
+        <span class="c1"># type: (...) -&gt; None</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        :arg path:</span>
 <span class="sd">            A template for constructing relative URIs, as a format string</span>
-<span class="sd">            (str.format).</span>
+<span class="sd">            (str.format). This should not include the query. The query should</span>
+<span class="sd">            be specified separately.</span>
+<span class="sd">        :arg query:</span>
+<span class="sd">            A template for constructing the query.</span>
 <span class="sd">        :arg parameters:</span>
 <span class="sd">            Dict mapping names of parameters in the path template to Parameter</span>
 <span class="sd">            objects describing their type. This defines how to fill in the</span>
@@ -198,12 +212,18 @@
                 <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
             <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">path</span>
+        <span class="k">if</span> <span class="s2">&quot;?&quot;</span> <span class="ow">in</span> <span class="n">path</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidEndpoint</span><span class="p">(</span>
+                <span class="s2">&quot;path contains ?, use the query parameter instead: </span><span class="si">{0!r}</span><span class="s2">&quot;</span>
+                <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">query</span> <span class="o">=</span> <span class="n">query</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span> <span class="o">=</span> <span class="n">parameters</span> <span class="ow">or</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">methods</span> <span class="o">=</span> <span class="n">methods</span> <span class="ow">or</span> <span class="p">[]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_headers</span> <span class="o">=</span> <span class="n">headers</span> <span class="ow">or</span> <span class="n">Headers</span><span class="p">()</span>
 
 <div class="viewcode-block" id="Endpoint.uri"><a class="viewcode-back" href="../../reference/because.service.html#because.service.Endpoint.uri">[docs]</a>    <span class="k">def</span> <span class="nf">uri</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">values</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-        <span class="c1"># type: (Optional[dict]) -&gt; Text</span>
+        <span class="c1"># type: (Optional[dict[Text, Any]]) -&gt; Text</span>
         <span class="sd">&quot;&quot;&quot;Generate a relative URI that can be appended to a base URL.</span>
 
 <span class="sd">        :arg values:</span>
@@ -212,19 +232,40 @@
         <span class="k">if</span> <span class="n">values</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">values</span> <span class="o">=</span> <span class="p">{}</span>
 
-        <span class="c1"># TODO: check parameters before liftoff</span>
-
-        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">values</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="c1"># Check args against parameter types before liftoff</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">values</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
             <span class="n">expected_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
-            <span class="n">value</span> <span class="o">=</span> <span class="n">values</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
-            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
-                <span class="n">value</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-            <span class="c1"># TODO</span>
-            <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+
+            <span class="c1"># expectation was communicated as a set of values</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">expected_type</span><span class="p">,</span> <span class="p">(</span><span class="n">Set</span><span class="p">,</span> <span class="n">FrozenSet</span><span class="p">)):</span>
+                <span class="k">if</span> <span class="n">arg</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">expected_type</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">URLError</span><span class="p">(</span>
+                        <span class="s2">&quot;invalid value for arg </span><span class="si">{0}</span><span class="s2">: got </span><span class="si">{1}</span><span class="s2">, expected </span><span class="si">{2}</span><span class="s2">&quot;</span>
+                        <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">arg</span><span class="p">,</span> <span class="n">expected_type</span><span class="p">)</span>
+                    <span class="p">)</span>
+
+            <span class="c1"># expectation was communicated as a type</span>
+            <span class="k">elif</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="n">expected_type</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="n">URLError</span><span class="p">(</span>
+                    <span class="s2">&quot;invalid type for arg </span><span class="si">{0}</span><span class="s2">: got </span><span class="si">{1}</span><span class="s2"> of </span><span class="si">{2}</span><span class="s2">, expected </span><span class="si">{3}</span><span class="s2">&quot;</span>
+                    <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">arg</span><span class="p">,</span> <span class="nb">type</span><span class="p">(</span><span class="n">arg</span><span class="p">),</span> <span class="n">expected_type</span><span class="p">)</span>
+                <span class="p">)</span>
+
+        <span class="c1"># Build a dict of args suitable for str.format()</span>
+        <span class="n">converted</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">values</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">arg</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">arg</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># ugh</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
             <span class="c1"># Ensure Text gets urlencoded</span>
-            <span class="k">if</span> <span class="n">expected_type</span> <span class="o">==</span> <span class="n">Text</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">Text</span><span class="p">):</span>
                 <span class="n">value</span> <span class="o">=</span> <span class="n">quote</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
-            <span class="n">values</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+            <span class="n">converted</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
 
         <span class="c1"># TODO: we may have to split off the query from the rest as long as the</span>
         <span class="c1"># query is possibly part of the path template.</span>
@@ -234,7 +275,8 @@
         <span class="c1"># maybe we just need to separate path parameters from query parameters</span>
         <span class="c1"># from body parameters. but for now that much design is too much time</span>
 
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">values</span><span class="p">)</span></div>
+        <span class="n">template</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">+</span> <span class="p">(</span><span class="s2">&quot;?</span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">query</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">query</span> <span class="k">else</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">template</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">**</span><span class="n">converted</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Endpoint.url"><a class="viewcode-back" href="../../reference/because.service.html#because.service.Endpoint.url">[docs]</a>    <span class="k">def</span> <span class="nf">url</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base</span><span class="p">,</span> <span class="n">values</span><span class="p">):</span>
         <span class="c1"># type: (Text, dict[Text, Text]) -&gt; Text</span>

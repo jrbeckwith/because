@@ -44,10 +44,39 @@
   <h1>Source code for because.errors</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Common and base exception classes for the package.</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Text</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="p">(</span>
+    <span class="n">Any</span><span class="p">,</span>
+    <span class="n">Optional</span><span class="p">,</span>
+    <span class="n">Text</span><span class="p">,</span>
+<span class="p">)</span>
 
 
-<div class="viewcode-block" id="InvalidObject"><a class="viewcode-back" href="../../reference/because.errors.html#because.errors.InvalidObject">[docs]</a><span class="k">class</span> <span class="nc">InvalidObject</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<div class="viewcode-block" id="BecauseError"><a class="viewcode-back" href="../../reference/because.errors.html#because.errors.BecauseError">[docs]</a><span class="k">class</span> <span class="nc">BecauseError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Base class for exceptions raised from inside the package.</span>
+<span class="sd">    &quot;&quot;&quot;</span></div>
+
+
+<div class="viewcode-block" id="ParseError"><a class="viewcode-back" href="../../reference/because.errors.html#because.errors.ParseError">[docs]</a><span class="k">class</span> <span class="nc">ParseError</span><span class="p">(</span><span class="n">BecauseError</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;An error happened while parsing a response body.</span>
+
+<span class="sd">    E.g. a JSONDecodeError</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="n">message</span><span class="p">,</span>        <span class="c1"># type: Text</span>
+            <span class="n">response</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>  <span class="c1"># type: Optional[Any]</span>
+            <span class="n">error</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>     <span class="c1"># type: Optional[Exception]</span>
+    <span class="p">):</span>
+        <span class="c1"># type: (...) -&gt; None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">message</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">response</span> <span class="o">=</span> <span class="n">response</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">error</span> <span class="o">=</span> <span class="n">error</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">ParseError</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">message</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="InvalidObject"><a class="viewcode-back" href="../../reference/because.errors.html#because.errors.InvalidObject">[docs]</a><span class="k">class</span> <span class="nc">InvalidObject</span><span class="p">(</span><span class="n">BecauseError</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Base class for errors where a valid object could not be created.</span>
 
 <span class="sd">    This is meant to be raised from __init__ to prevent instances with bizarre</span>

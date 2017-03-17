@@ -47,6 +47,7 @@
 
 <span class="kn">import</span> <span class="nn">json</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="k">import</span> <span class="n">Text</span>
+<span class="kn">from</span> <span class="nn">because.errors</span> <span class="k">import</span> <span class="n">ParseError</span>
 <span class="kn">from</span> <span class="nn">because.services.headers</span> <span class="k">import</span> <span class="n">DEFAULT_HEADERS</span>
 <span class="kn">from</span> <span class="nn">because.headers</span> <span class="k">import</span> <span class="n">Headers</span>
 <span class="kn">from</span> <span class="nn">because.service</span> <span class="k">import</span> <span class="n">Service</span><span class="p">,</span> <span class="n">Endpoint</span>
@@ -67,16 +68,17 @@
             <span class="c1"># Gives a nice traceback, we have that going for us</span>
             <span class="s2">u&quot;opensearchdescription.xml&quot;</span><span class="p">:</span> <span class="n">Endpoint</span><span class="p">(</span>
                 <span class="s2">&quot;/search/opensearchdescription.xml&quot;</span><span class="p">,</span>
-                <span class="p">{},</span>
+                <span class="n">parameters</span><span class="o">=</span><span class="p">{},</span>
             <span class="p">),</span>
 
             <span class="c1"># XML interface to the same old stuff</span>
             <span class="s2">u&quot;opensearch&quot;</span><span class="p">:</span> <span class="n">Endpoint</span><span class="p">(</span>
-                <span class="s2">&quot;/search/open?q=</span><span class="si">{q}</span><span class="s2">&amp;si=</span><span class="si">{si}</span><span class="s2">&amp;c=</span><span class="si">{c}</span><span class="s2">&amp;cat=</span><span class="si">{cat}</span><span class="s2">&quot;</span><span class="p">,</span>
-                <span class="p">{</span>
+                <span class="s2">&quot;/search/open&quot;</span><span class="p">,</span>
+                <span class="n">query</span><span class="o">=</span><span class="s2">&quot;q=</span><span class="si">{q}</span><span class="s2">&amp;si=</span><span class="si">{si}</span><span class="s2">&amp;c=</span><span class="si">{c}</span><span class="s2">&amp;cat=</span><span class="si">{cat}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">parameters</span><span class="o">=</span><span class="p">{</span>
                     <span class="s2">&quot;q&quot;</span><span class="p">:</span> <span class="n">Text</span><span class="p">,</span>
-                    <span class="s2">&quot;si&quot;</span><span class="p">:</span> <span class="n">Text</span><span class="p">,</span>
-                    <span class="s2">&quot;c&quot;</span><span class="p">:</span> <span class="n">Text</span><span class="p">,</span>
+                    <span class="s2">&quot;si&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                    <span class="s2">&quot;c&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
                     <span class="s2">&quot;cat&quot;</span><span class="p">:</span> <span class="n">Text</span><span class="p">,</span>
                 <span class="p">},</span>
                 <span class="n">headers</span><span class="o">=</span><span class="n">Headers</span><span class="p">([</span>
@@ -99,17 +101,18 @@
             <span class="c1"># bcs/bcs-search-service/src/main/java/com/boundlessgeo/bcs/brokers/PlanetImageryBroker.java</span>
             <span class="s2">u&quot;data&quot;</span><span class="p">:</span> <span class="n">Endpoint</span><span class="p">(</span>
                 <span class="s2">&quot;/search/data/&quot;</span><span class="p">,</span>
-                <span class="p">{},</span>
+                <span class="n">parameters</span><span class="o">=</span><span class="p">{},</span>
             <span class="p">),</span>
 
             <span class="s2">u&quot;categories&quot;</span><span class="p">:</span> <span class="n">Endpoint</span><span class="p">(</span>
                 <span class="s2">&quot;/search/categories&quot;</span><span class="p">,</span>
-                <span class="p">{},</span>
+                <span class="n">parameters</span><span class="o">=</span><span class="p">{},</span>
             <span class="p">),</span>
 
             <span class="s2">u&quot;category&quot;</span><span class="p">:</span> <span class="n">Endpoint</span><span class="p">(</span>
-                <span class="s2">&quot;/search/categories/</span><span class="si">{category}</span><span class="s2">?q=</span><span class="si">{q}</span><span class="s2">&quot;</span><span class="p">,</span>
-                <span class="p">{</span>
+                <span class="s2">&quot;/search/categories/</span><span class="si">{category}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">query</span><span class="o">=</span><span class="s2">&quot;q=</span><span class="si">{q}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">parameters</span><span class="o">=</span><span class="p">{</span>
                     <span class="s2">&quot;category&quot;</span><span class="p">:</span> <span class="n">Text</span><span class="p">,</span>
                     <span class="s2">&quot;q&quot;</span><span class="p">:</span> <span class="n">Text</span><span class="p">,</span>
                 <span class="p">},</span>
@@ -127,8 +130,25 @@
         <span class="k">return</span> <span class="n">response</span></div>
 
 <div class="viewcode-block" id="SearchService.parse_opensearch"><a class="viewcode-back" href="../../../../reference/because.services.search.service.html#because.services.search.service.SearchService.parse_opensearch">[docs]</a>    <span class="k">def</span> <span class="nf">parse_opensearch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>
-        <span class="c1"># TODO: checks</span>
-        <span class="c1"># TODO: check content type application/atom+xml</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">response</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ParseError</span><span class="p">(</span><span class="s2">&quot;falsy response&quot;</span><span class="p">,</span> <span class="n">response</span><span class="o">=</span><span class="n">response</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ParseError</span><span class="p">(</span><span class="s2">&quot;empty response body&quot;</span><span class="p">,</span> <span class="n">response</span><span class="o">=</span><span class="n">response</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status</span> <span class="o">!=</span> <span class="mi">200</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ParseError</span><span class="p">(</span><span class="s2">&quot;error response&quot;</span><span class="p">,</span> <span class="n">response</span><span class="o">=</span><span class="n">response</span><span class="p">)</span>
+
+        <span class="n">content_types</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="p">[</span><span class="n">b</span><span class="s2">&quot;content-type&quot;</span><span class="p">]</span>
+        <span class="n">content_type</span> <span class="o">=</span> <span class="n">content_types</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">content_types</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">content_type</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ParseError</span><span class="p">(</span>
+                <span class="s2">&quot;no content-type in response headers&quot;</span><span class="p">,</span>
+                <span class="n">response</span><span class="o">=</span><span class="n">response</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">content_type</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">b</span><span class="s2">&quot;application/atom+xml&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">ParseError</span><span class="p">(</span>
+                <span class="s2">&quot;unexpected content-type </span><span class="si">{0!r}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">content_type</span><span class="p">),</span>
+                <span class="n">response</span><span class="o">=</span><span class="n">response</span>
+            <span class="p">)</span>
         <span class="k">return</span> <span class="n">parse_opensearch_xml</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">body</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="SearchService.parse_categories"><a class="viewcode-back" href="../../../../reference/because.services.search.service.html#because.services.search.service.SearchService.parse_categories">[docs]</a>    <span class="k">def</span> <span class="nf">parse_categories</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">response</span><span class="p">):</span>

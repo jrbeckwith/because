@@ -85,6 +85,29 @@ by PrettyMixin.</p>
 
 </dd></dl>
 
+<dl class="function">
+<dt id="because.response.parse_json">
+<code class="descclassname">because.response.</code><code class="descname">parse_json</code><span class="sig-paren">(</span><em>response</em>, <em>required_keys=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/because/response.html#parse_json"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#because.response.parse_json" title="Permalink to this definition">¶</a></dt>
+<dd><p>Parse the given response object as JSON, returning data.</p>
+<p>The advantage of using this is that it does all the customary pre-checks on
+the response, raising ParseError for any that fail. Callers would therefore
+be advised to handle these exceptions in whatever way was appropriate to
+the context.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>response</strong> &#8211; The response to parse.</li>
+<li><strong>caller</strong> &#8211; If supplied, this should be the service object doing the parse, to help
+with debugging.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 </div>
 
 

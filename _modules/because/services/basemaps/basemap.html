@@ -46,6 +46,7 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">re</span>
 
+<span class="kn">from</span> <span class="nn">because.pretty</span> <span class="k">import</span> <span class="n">PrettyMixin</span>
 <span class="kn">from</span> <span class="nn">because.errors</span> <span class="k">import</span> <span class="n">InvalidObject</span>
 
 
@@ -54,16 +55,14 @@
 <span class="sd">    &quot;&quot;&quot;</span></div>
 
 
-<div class="viewcode-block" id="Basemap"><a class="viewcode-back" href="../../../../reference/because.services.basemaps.basemap.html#because.services.basemaps.basemap.Basemap">[docs]</a><span class="k">class</span> <span class="nc">Basemap</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="Basemap"><a class="viewcode-back" href="../../../../reference/because.services.basemaps.basemap.html#because.services.basemaps.basemap.Basemap">[docs]</a><span class="k">class</span> <span class="nc">Basemap</span><span class="p">(</span><span class="n">PrettyMixin</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Describes a basemap result from the basemaps discovery endpoint.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># methods: always just GET.</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span> <span class="n">url</span><span class="p">,</span>
-            <span class="c1"># In basemaps service, kind of essential</span>
             <span class="n">standard</span><span class="o">=</span><span class="s2">&quot;XYZ&quot;</span><span class="p">,</span>
             <span class="n">tile_format</span><span class="o">=</span><span class="s2">&quot;PNG&quot;</span><span class="p">,</span>
-            <span class="c1"># </span>
             <span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
             <span class="n">attribution</span><span class="o">=</span><span class="s2">&quot;Boundless&quot;</span><span class="p">,</span>
             <span class="n">access_list</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -105,8 +104,21 @@
         <span class="k">if</span> <span class="nb">set</span><span class="p">(</span><span class="n">parameter_names</span><span class="p">)</span> <span class="o">!=</span> <span class="n">expected</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">InvalidBasemap</span><span class="p">(</span>
                 <span class="s2">&quot;expected parameters for x, y, and z&quot;</span>
-            <span class="p">)</span></div>
+            <span class="p">)</span>
 
+<div class="viewcode-block" id="Basemap.pretty_tuples"><a class="viewcode-back" href="../../../../reference/because.services.basemaps.basemap.html#because.services.basemaps.basemap.Basemap.pretty_tuples">[docs]</a>    <span class="k">def</span> <span class="nf">pretty_tuples</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="p">(</span><span class="s2">&quot;title&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">title</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;url&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">url</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;standard&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">standard</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;tile_format&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tile_format</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;attribution&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">attribution</span><span class="p">),</span>
+            <span class="p">(</span><span class="s2">&quot;description&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">description</span><span class="p">)</span>
+        <span class="p">]</span></div></div>
+        <span class="c1"># access_list</span>
+        <span class="c1"># thumbnail</span>
+        <span class="c1"># style_url</span>
+        <span class="c1"># headers</span>
 </pre></div>
 
           </div>

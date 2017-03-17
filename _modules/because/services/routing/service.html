@@ -109,7 +109,8 @@
                 <span class="c1"># TODO: how to encode unlimited waypoints?</span>
                 <span class="c1"># can map &quot;addresses&quot; to Sequence[Text], but have to also</span>
                 <span class="c1"># specify how that is serialized into a URL, kind of gross</span>
-                <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/route/</span><span class="si">{service}</span><span class="s2">/?waypoints=</span><span class="si">{waypoints}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="n">path</span><span class="o">=</span><span class="s2">&quot;/route/</span><span class="si">{service}</span><span class="s2">/&quot;</span><span class="p">,</span>
+                <span class="n">query</span><span class="o">=</span><span class="s2">&quot;waypoints=</span><span class="si">{waypoints}</span><span class="s2">&quot;</span><span class="p">,</span>
                 <span class="n">parameters</span><span class="o">=</span><span class="p">{</span>
                     <span class="s2">&quot;service&quot;</span><span class="p">:</span> <span class="n">WRAPPED_SERVICES</span><span class="p">,</span>
                     <span class="s2">&quot;waypoints&quot;</span><span class="p">:</span> <span class="n">Text</span><span class="p">,</span>
