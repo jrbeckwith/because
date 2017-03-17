@@ -10,6 +10,10 @@ setup(
     url="https://github.com/harts-boundless/because",
     packages=[
         "because",
+        "because.interfaces",
+        "because.interfaces.python",
+        "because.interfaces.qt",
+        "because.interfaces.qgis",
     ],
     install_requires=[
         "typing==3.5.3.0",
