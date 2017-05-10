@@ -26,6 +26,7 @@ class Basemap(PrettyMixin):
             thumbnail=None,
             headers=None,
             style_url=None,
+            provider=None,
     ):
         """
         :arg url:
@@ -44,6 +45,7 @@ class Basemap(PrettyMixin):
         self.thumbnail = thumbnail
         self.headers = headers
         self.style_url = style_url
+        self.provider = provider
 
         # don't delete these untless implementation supports something else
         if self.tile_format not in ("PNG", "PBF"):
