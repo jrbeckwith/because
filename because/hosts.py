@@ -16,7 +16,7 @@ HOSTS = {
 
     #: This host can be used for debug if you locally run some debug HTTP
     #: server on port 8000, handy for testing without hitting real BCS.
-    "local": Host("http://localhost:8000/v1"),
+    "local": Host("http://localhost:8000"),
 }
 
 
