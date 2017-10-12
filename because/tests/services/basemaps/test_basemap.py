@@ -33,7 +33,7 @@ class TestBasemap(object):
             ],
             "attribution": "Boundlessgeo",
             "description": "A Boundless created OSM basemap",
-            "endpoint": "http://api.dev.boundlessgeo.io/v1/basemaps/boundless/osm/{x}/{y}/{z}.png",
+            "endpoint": "http://saasy.boundlessgeo.io/basemaps/boundless/osm/{x}/{y}/{z}.png",
             "name": "Boundless OSM Basemap",
             "standard": "XYZ",
             "thumbnail": None,
