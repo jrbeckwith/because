@@ -10,9 +10,9 @@ from . service import Host
 
 #:
 HOSTS = {
-    "dev": Host("https://api.dev.boundlessgeo.io/v1"),
-    "test": Host("https://api.test.boundlessgeo.io/v1"),
-    "prod": Host("https://api.boundlessgeo.io/v1"),
+    "dev": Host("https://saasy.boundlessgeo.io"),
+    "test": Host("https://saasy.boundlessgeo.io"),
+    "prod": Host("https://saasy.boundlessgeo.io"),
 
     #: This host can be used for debug if you locally run some debug HTTP
     #: server on port 8000, handy for testing without hitting real BCS.
